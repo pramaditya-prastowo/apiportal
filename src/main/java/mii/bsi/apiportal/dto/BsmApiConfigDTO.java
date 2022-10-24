@@ -6,6 +6,8 @@ import javax.persistence.Column;
 
 public class BsmApiConfigDTO {
 
+    private String responseCode;
+    private String responseMessage;
     private String keyName;
     private String keygroup;
     private String value;
@@ -24,7 +26,7 @@ public class BsmApiConfigDTO {
 
     }
 
-    public BsmApiConfigDTO(String keyName, String keygroup, String value, String description, String cacheManager, String cacheName, String enabled) {
+    public BsmApiConfigDTO(String keyName, String keygroup, String value, String description, String cacheManager, String cacheName, String enabled, String responseCode, String responseMessage) {
         this.keyName = keyName;
         this.keygroup = keygroup;
         this.value = value;
@@ -32,6 +34,8 @@ public class BsmApiConfigDTO {
         this.cacheManager = cacheManager;
         this.cacheName = cacheName;
         this.enabled = enabled;
+        this.responseCode = responseCode;
+        this.responseMessage = responseMessage;
     }
 
     public BsmApiConfigDTO(BsmApiConfig bsmApiConfig) {
@@ -98,5 +102,21 @@ public class BsmApiConfigDTO {
 
     public void setEnabled(String enabled) {
         this.enabled = enabled;
+    }
+
+    public String getResponseCode() {
+        return responseCode;
+    }
+
+    public void setResponseCode(String responseCode) {
+        this.responseCode = responseCode;
+    }
+
+    public String getResponseMessage() {
+        return responseMessage;
+    }
+
+    public void setResponseMessage(String responseMessage) {
+        this.responseMessage = responseMessage;
     }
 }

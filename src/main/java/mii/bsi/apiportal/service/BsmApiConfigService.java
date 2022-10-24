@@ -20,8 +20,11 @@ public class BsmApiConfigService {
 
         try{
             bsmApiConfigDTO = new BsmApiConfigDTO(bsmApiConfig);
+            bsmApiConfigDTO.setResponseCode("00");
+            bsmApiConfigDTO.setResponseMessage("success");
         }catch (Exception ex) {
-            bsmApiConfigDTO.setValue("Error getting config!");
+            bsmApiConfigDTO.setResponseCode("99");
+            bsmApiConfigDTO.setResponseMessage("Error getting config!");
         }
 
         return bsmApiConfigDTO;
