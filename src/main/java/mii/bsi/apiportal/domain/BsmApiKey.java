@@ -6,7 +6,7 @@ import javax.persistence.Id;
 import java.io.Serializable;
 
 @Entity
-public class BsmApiKeyConfig implements Serializable {
+public class BsmApiKey implements Serializable {
     @Id
     @Column(name="API_KEY")
     private String apiKey;
@@ -20,14 +20,14 @@ public class BsmApiKeyConfig implements Serializable {
     @Column(name="CORP_NAME")
     private String corpName;
 
-    public BsmApiKeyConfig(String apiKey, String corpId, String appName, String corpName){
+    public BsmApiKey(String apiKey, String corpId, String appName, String corpName){
         this.apiKey = apiKey;
         this.corpId = corpId;
         this.appName = appName;
         this.corpName = corpName;
     }
 
-    public BsmApiKeyConfig(){}
+    public BsmApiKey(){}
 
     public String getApiKey() {
         return apiKey;
