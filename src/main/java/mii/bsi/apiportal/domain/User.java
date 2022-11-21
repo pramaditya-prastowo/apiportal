@@ -4,6 +4,8 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotEmpty;
 
 @Table(name = "bsi_user_api_portal")
 @Entity
@@ -12,15 +14,20 @@ public class User {
     @Column(name = "id", updatable = false)
     private String id;
 
+    @NotEmpty(message = "firstName is required")
     @Column(name = "first_name")
     private String firstName;
 
+    @NotEmpty(message = "lastName is required")
     @Column(name = "last_name")
     private String lastName;
 
+    @NotEmpty(message = "Email is required")
+    @Email(message = "Email is invalid")
     @Column(name = "email")
     private String email;
 
+    @NotEmpty(message = "Password is required")
     @Column(name = "password")
     private String password;
 
@@ -47,6 +54,9 @@ public class User {
 
     @Column(name = "update_date")
     private String updateDate;
+
+    public User() {
+    }
 
     public User(String id, String firstName, String lastName, String email, String password, String coorporateName,
             String accountInactive, String accountLokced, Integer retryPasswordCount, String createBy,
