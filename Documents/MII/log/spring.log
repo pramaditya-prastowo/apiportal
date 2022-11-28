@@ -935,3 +935,8 @@ Caused by: org.hibernate.HibernateException: Access to DialectResolutionInfo can
 2022-11-01 13:09:06.526 DEBUG 14636 --- [http-nio-8080-exec-3] m.m.a.RequestResponseBodyMethodProcessor : Using 'application/json', given [*/*] and supported [application/json, application/*+json, application/json, application/*+json]
 2022-11-01 13:09:06.527 DEBUG 14636 --- [http-nio-8080-exec-3] m.m.a.RequestResponseBodyMethodProcessor : Writing [mii.bsi.apiportal.utils.ResponseHandling@7914aa94]
 2022-11-01 13:09:06.532 DEBUG 14636 --- [http-nio-8080-exec-3] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2022-11-28 13:15:13.798  WARN 2224 --- [restartedMain] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2022-11-28 13:15:13.941 DEBUG 2224 --- [restartedMain] s.w.s.m.m.a.RequestMappingHandlerAdapter : ControllerAdvice beans: 0 @ModelAttribute, 0 @InitBinder, 1 RequestBodyAdvice, 1 ResponseBodyAdvice
+2022-11-28 13:15:14.050 DEBUG 2224 --- [restartedMain] s.w.s.m.m.a.RequestMappingHandlerMapping : 9 mappings in 'requestMappingHandlerMapping'
+2022-11-28 13:15:14.082 DEBUG 2224 --- [restartedMain] o.s.w.s.handler.SimpleUrlHandlerMapping  : Patterns [/webjars/**, /**] in 'resourceHandlerMapping'
+2022-11-28 13:15:14.095 DEBUG 2224 --- [restartedMain] .m.m.a.ExceptionHandlerExceptionResolver : ControllerAdvice beans: 0 @ExceptionHandler, 1 ResponseBodyAdvice
