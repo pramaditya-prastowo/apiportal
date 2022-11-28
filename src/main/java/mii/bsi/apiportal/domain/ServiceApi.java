@@ -14,13 +14,13 @@ import lombok.Data;
 
 @Table(name = "bsi_service_api_api_portal")
 @Entity
-@Data
 @AllArgsConstructor
+@Data
 public class ServiceApi implements Serializable {
     @Id
     @Column(name = "id", updatable = false)
     private Long id;
-    @NotEmpty(message = "Service Name is required")
+    @NotEmpty(message = "Service name is required")
     private String serviceName;
     private String serviceDescription;
     private String idIcon;
