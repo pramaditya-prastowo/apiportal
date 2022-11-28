@@ -5,21 +5,26 @@ import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.validation.constraints.NotEmpty;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 @Table(name = "bsi_service_api_api_portal")
 @Entity
-@AllArgsConstructor
-@Data
-public class ServiceApi implements Serializable {
+public class ServiceApiDomain implements Serializable {
     @Id
-    @Column(name = "id", updatable = false)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id", updatable = false, unique = true)
+    private String id;
     @NotEmpty(message = "Service name is required")
     private String serviceName;
     private String serviceDescription;

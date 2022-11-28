@@ -33,8 +33,6 @@ public class UserService {
     @Autowired
     private BCryptPasswordEncoder passwordEncoder;
 
-
-
     @Autowired
     private LogService logService;
 
@@ -112,7 +110,7 @@ public class UserService {
         return responseHandling;
     }
 
-    public ResponseHandling<User> getById(String id) {
+    public ResponseEntity<ResponseHandling<User>> getById(String id) {
         ResponseHandling<User> responseHandling = new ResponseHandling<>();
         try {
             responseHandling.setPayload(userRepository.findById(id).get());
@@ -122,24 +120,25 @@ public class UserService {
             responseHandling.setResponseCode("99");
             responseHandling.setResponseMessage("failed");
         }
-        return responseHandling;
+        return ResponseEntity.status(HttpStatus.CREATED).body(responseHandling);
     }
 
-    public ResponseEntity<ResponseHandling<User>> register(User user, Errors errors){
+    public ResponseEntity<ResponseHandling<User>> register(User user, Errors errors) {
         ResponseHandling<User> responseData = new ResponseHandling<>();
         RequestData<User> requestData = new RequestData<>();
         requestData.setPayload(user);
 
         try {
 
-            if(errors.hasErrors()){
+            if (errors.hasErrors()) {
                 responseData.failed(CustomError.validRequest(errors), "Bad Request");
-                logService.saveLog(requestData, responseData, StatusCode.BAD_REQUEST, this.getClass().getName(), REGISTER);
+                logService.saveLog(requestData, responseData, StatusCode.BAD_REQUEST, this.getClass().getName(),
+                        REGISTER);
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseData);
             }
 
             User userExist = userRepository.findByEmail(requestData.getPayload().getEmail());
-            if(userExist != null){
+            if (userExist != null) {
                 responseData.failed("Email is already register");
                 logService.saveLog(requestData, responseData, StatusCode.CONFLICT, this.getClass().getName(), REGISTER);
                 return ResponseEntity.status(HttpStatus.CONFLICT).body(responseData);
@@ -160,17 +159,18 @@ public class UserService {
             tokenRepository.save(tokenVerification);
             responseData.success();
 
-        }catch (Exception e){
+        } catch (Exception e) {
             responseData.failed(e.getMessage());
             e.printStackTrace();
-            logService.saveLog(requestData, responseData, StatusCode.INTERNAL_SERVER_ERROR, this.getClass().getName(), REGISTER);
+            logService.saveLog(requestData, responseData, StatusCode.INTERNAL_SERVER_ERROR, this.getClass().getName(),
+                    REGISTER);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseData);
         }
         logService.saveLog(requestData, responseData, StatusCode.CREATED, this.getClass().getName(), REGISTER);
         return ResponseEntity.status(HttpStatus.CREATED).body(responseData);
     }
 
-    public ResponseEntity<ResponseHandling> confirmEmailVerification(String token){
+    public ResponseEntity<ResponseHandling> confirmEmailVerification(String token) {
         ResponseHandling responseData = new ResponseHandling();
         RequestData<Map<String, Object>> requestData = new RequestData<>();
         Map<String, Object> request = new HashMap<>();
@@ -178,22 +178,25 @@ public class UserService {
         requestData.setPayload(request);
 
         try {
-            if(token.equals(null) || token.equals("")){
+            if (token.equals(null) || token.equals("")) {
                 responseData.failed("Token is required");
-                logService.saveLog(requestData, responseData, StatusCode.BAD_REQUEST, this.getClass().getName(), EMAIL_VERIFICATION);
+                logService.saveLog(requestData, responseData, StatusCode.BAD_REQUEST, this.getClass().getName(),
+                        EMAIL_VERIFICATION);
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseData);
             }
 
             BsiTokenVerification resultToken = tokenRepository.findByToken(token);
-            if(resultToken == null){
+            if (resultToken == null) {
                 responseData.failed("Token is not valid");
-                logService.saveLog(requestData, responseData, StatusCode.BAD_REQUEST, this.getClass().getName(), EMAIL_VERIFICATION);
+                logService.saveLog(requestData, responseData, StatusCode.BAD_REQUEST, this.getClass().getName(),
+                        EMAIL_VERIFICATION);
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseData);
             }
 
-            if(resultToken.isTokenExpired()){
+            if (resultToken.isTokenExpired()) {
                 responseData.failed("Token is expired");
-                logService.saveLog(requestData, responseData, StatusCode.GONE, this.getClass().getName(), EMAIL_VERIFICATION);
+                logService.saveLog(requestData, responseData, StatusCode.GONE, this.getClass().getName(),
+                        EMAIL_VERIFICATION);
                 return ResponseEntity.status(HttpStatus.GONE).body(responseData);
             }
 
@@ -202,10 +205,11 @@ public class UserService {
             user.setEmailVerifiedDate(new Date());
             userRepository.save(user);
             responseData.success();
-        }catch (Exception e){
+        } catch (Exception e) {
             responseData.failed(e.getMessage());
             e.printStackTrace();
-            logService.saveLog(requestData, responseData, StatusCode.INTERNAL_SERVER_ERROR, this.getClass().getName(), REGISTER);
+            logService.saveLog(requestData, responseData, StatusCode.INTERNAL_SERVER_ERROR, this.getClass().getName(),
+                    REGISTER);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseData);
         }
         logService.saveLog(requestData, responseData, StatusCode.OK, this.getClass().getName(), EMAIL_VERIFICATION);
@@ -213,7 +217,7 @@ public class UserService {
 
     }
 
-    public ResponseEntity<ResponseHandling> resendEmailVerification(String email){
+    public ResponseEntity<ResponseHandling> resendEmailVerification(String email) {
         ResponseHandling responseData = new ResponseHandling();
         RequestData<Map<String, Object>> requestData = new RequestData<>();
         Map<String, Object> request = new HashMap<>();
@@ -221,16 +225,18 @@ public class UserService {
         requestData.setPayload(request);
 
         try {
-            if(email.equals(null) || email.equals("")){
+            if (email.equals(null) || email.equals("")) {
                 responseData.failed("Email is required");
-                logService.saveLog(requestData, responseData, StatusCode.BAD_REQUEST, this.getClass().getName(), RESEND_EMAIL_VERIFICATION);
+                logService.saveLog(requestData, responseData, StatusCode.BAD_REQUEST, this.getClass().getName(),
+                        RESEND_EMAIL_VERIFICATION);
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseData);
             }
 
             User user = userRepository.findByEmail(email);
-            if(user == null){
+            if (user == null) {
                 responseData.failed("Email is not register in system");
-                logService.saveLog(requestData, responseData, StatusCode.NOT_FOUND, this.getClass().getName(), RESEND_EMAIL_VERIFICATION);
+                logService.saveLog(requestData, responseData, StatusCode.NOT_FOUND, this.getClass().getName(),
+                        RESEND_EMAIL_VERIFICATION);
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(responseData);
             }
 
@@ -243,17 +249,18 @@ public class UserService {
 
             tokenRepository.save(tokenVerification);
             responseData.success();
-        }catch (Exception e){
+        } catch (Exception e) {
             responseData.failed(e.getMessage());
             e.printStackTrace();
-            logService.saveLog(requestData, responseData, StatusCode.INTERNAL_SERVER_ERROR, this.getClass().getName(), REGISTER);
+            logService.saveLog(requestData, responseData, StatusCode.INTERNAL_SERVER_ERROR, this.getClass().getName(),
+                    REGISTER);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseData);
         }
         logService.saveLog(requestData, responseData, StatusCode.CREATED, this.getClass().getName(), REGISTER);
         return ResponseEntity.status(HttpStatus.CREATED).body(responseData);
     }
 
-    public ResponseEntity<ResponseHandling> deleteUser(String idUser){
+    public ResponseEntity<ResponseHandling> deleteUser(String idUser) {
         ResponseHandling responseData = new ResponseHandling();
         RequestData<Map<String, Object>> requestData = new RequestData<>();
         Map<String, Object> request = new HashMap<>();
@@ -261,16 +268,18 @@ public class UserService {
         requestData.setPayload(request);
 
         try {
-            if(idUser.equals(null) || idUser.equals("")){
+            if (idUser.equals(null) || idUser.equals("")) {
                 responseData.failed("ID is required");
-                logService.saveLog(requestData, responseData, StatusCode.BAD_REQUEST, this.getClass().getName(), DELETE_USER);
+                logService.saveLog(requestData, responseData, StatusCode.BAD_REQUEST, this.getClass().getName(),
+                        DELETE_USER);
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseData);
             }
 
             User user = userRepository.findById(idUser).orElse(null);
-            if(user == null){
+            if (user == null) {
                 responseData.failed("User not found");
-                logService.saveLog(requestData, responseData, StatusCode.NOT_FOUND, this.getClass().getName(), DELETE_USER);
+                logService.saveLog(requestData, responseData, StatusCode.NOT_FOUND, this.getClass().getName(),
+                        DELETE_USER);
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(responseData);
             }
 
@@ -278,10 +287,11 @@ public class UserService {
             userRepository.save(user);
             responseData.success("User has been deleted");
 
-        }catch (Exception e){
+        } catch (Exception e) {
             responseData.failed(e.getMessage());
             e.printStackTrace();
-            logService.saveLog(requestData, responseData, StatusCode.INTERNAL_SERVER_ERROR, this.getClass().getName(), DELETE_USER);
+            logService.saveLog(requestData, responseData, StatusCode.INTERNAL_SERVER_ERROR, this.getClass().getName(),
+                    DELETE_USER);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseData);
         }
         logService.saveLog(requestData, responseData, StatusCode.OK, this.getClass().getName(), DELETE_USER);

@@ -28,7 +28,7 @@ public class UserController {
     }
 
     @GetMapping
-    public ResponseHandling<User> getById(@RequestParam String id) {
+    public ResponseEntity<ResponseHandling<User>> getById(@RequestParam String id) {
         return userService.getById(id);
     }
 
@@ -38,25 +38,23 @@ public class UserController {
     }
 
     @PostMapping(value = "/register")
-    public ResponseEntity<ResponseHandling<User>> register(@Valid @RequestBody User user, Errors errors){
+    public ResponseEntity<ResponseHandling<User>> register(@Valid @RequestBody User user, Errors errors) {
         return userService.register(user, errors);
     }
 
     @GetMapping(value = "/verification")
-    public ResponseEntity<ResponseHandling> confirmEmailVerification(@RequestParam String token){
+    public ResponseEntity<ResponseHandling> confirmEmailVerification(@RequestParam String token) {
         return userService.confirmEmailVerification(token);
     }
 
     @PostMapping(value = "/verification")
-    public ResponseEntity<ResponseHandling> resendEmailVerification(@RequestBody String email){
+    public ResponseEntity<ResponseHandling> resendEmailVerification(@RequestBody String email) {
         return userService.resendEmailVerification(email);
     }
 
     @PostMapping(value = "/delete/{id}")
-    public ResponseEntity<ResponseHandling> deleteUser(@PathVariable("id") String idUser){
+    public ResponseEntity<ResponseHandling> deleteUser(@PathVariable("id") String idUser) {
         return userService.deleteUser(idUser);
     }
-
-
 
 }
