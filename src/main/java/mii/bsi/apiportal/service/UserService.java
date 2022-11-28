@@ -40,8 +40,8 @@ public class UserService {
 
     public static final String REGISTER = "Register";
     public static final String EMAIL_VERIFICATION = "Email Verification";
-
     public static final String RESEND_EMAIL_VERIFICATION = "Resend Email Verification";
+    public static final String DELETE_USER = "Delete User";
 
     @Autowired
     private BsiTokenVerificationRepository tokenRepository;
@@ -251,5 +251,40 @@ public class UserService {
         }
         logService.saveLog(requestData, responseData, StatusCode.CREATED, this.getClass().getName(), REGISTER);
         return ResponseEntity.status(HttpStatus.CREATED).body(responseData);
+    }
+
+    public ResponseEntity<ResponseHandling> deleteUser(String idUser){
+        ResponseHandling responseData = new ResponseHandling();
+        RequestData<Map<String, Object>> requestData = new RequestData<>();
+        Map<String, Object> request = new HashMap<>();
+        request.put("id", idUser);
+        requestData.setPayload(request);
+
+        try {
+            if(idUser.equals(null) || idUser.equals("")){
+                responseData.failed("ID is required");
+                logService.saveLog(requestData, responseData, StatusCode.BAD_REQUEST, this.getClass().getName(), DELETE_USER);
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseData);
+            }
+
+            User user = userRepository.findById(idUser).orElse(null);
+            if(user == null){
+                responseData.failed("User not found");
+                logService.saveLog(requestData, responseData, StatusCode.NOT_FOUND, this.getClass().getName(), DELETE_USER);
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(responseData);
+            }
+
+            user.setAccountInactive(true);
+            userRepository.save(user);
+            responseData.success("User has been deleted");
+
+        }catch (Exception e){
+            responseData.failed(e.getMessage());
+            e.printStackTrace();
+            logService.saveLog(requestData, responseData, StatusCode.INTERNAL_SERVER_ERROR, this.getClass().getName(), DELETE_USER);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseData);
+        }
+        logService.saveLog(requestData, responseData, StatusCode.OK, this.getClass().getName(), DELETE_USER);
+        return ResponseEntity.ok(responseData);
     }
 }

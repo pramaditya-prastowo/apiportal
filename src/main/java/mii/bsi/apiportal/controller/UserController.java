@@ -5,12 +5,7 @@ import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.Errors;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import mii.bsi.apiportal.domain.User;
 import mii.bsi.apiportal.service.UserService;
@@ -45,7 +40,6 @@ public class UserController {
     @PostMapping(value = "/register")
     public ResponseEntity<ResponseHandling<User>> register(@Valid @RequestBody User user, Errors errors){
         return userService.register(user, errors);
-
     }
 
     @GetMapping(value = "/verification")
@@ -57,5 +51,12 @@ public class UserController {
     public ResponseEntity<ResponseHandling> resendEmailVerification(@RequestBody String email){
         return userService.resendEmailVerification(email);
     }
+
+    @PostMapping(value = "/delete/{id}")
+    public ResponseEntity<ResponseHandling> deleteUser(@PathVariable("id") String idUser){
+        return userService.deleteUser(idUser);
+    }
+
+
 
 }
