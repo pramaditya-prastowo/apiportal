@@ -1,44 +1,50 @@
 package mii.bsi.apiportal.utils;
 
+import lombok.Data;
+
 import java.util.ArrayList;
 import java.util.List;
 
+@Data
 public class ResponseHandling<T> {
+    private boolean error;
     private String responseCode;
-    private String reseponseMessage;
+    private String responseMessage;
     private List<String> messageError = new ArrayList<>();
     private T payload;
 
-    public String getResponseCode() {
-        return responseCode;
+    public void success(){
+        this.error = false;
+        this.responseCode = "00";
+        this.responseMessage = "Success";
+    }
+    public void success(String message){
+        this.error = false;
+        this.responseCode = "00";
+        this.responseMessage = "Success";
     }
 
-    public void setResponseCode(String responseCode) {
-        this.responseCode = responseCode;
+    public void failed(){
+        this.error = true;
+        this.responseCode = "01";
+        this.responseMessage = "Failed";
     }
 
-    public String getReseponseMessage() {
-        return reseponseMessage;
+    public void failed(List<String> errors, String responseMessage){
+        this.error = true;
+        this.responseCode = "01";
+        this.responseMessage = responseMessage;
+        this.messageError = errors;
     }
 
-    public void setReseponseMessage(String reseponseMessage) {
-        this.reseponseMessage = reseponseMessage;
+    public void failed(String message){
+        this.error = true;
+        this.responseCode = "01";
+        this.responseMessage = message;
     }
 
-    public List<String> getMessageError() {
-        return messageError;
-    }
-
-    public void setMessageError(List<String> messageError) {
-        this.messageError = messageError;
-    }
-
-    public T getPayload() {
-        return payload;
-    }
-
-    public void setPayload(T payload) {
-        this.payload = payload;
+    public void addMessageError(String message){
+        this.messageError.add(message);
     }
 
 }

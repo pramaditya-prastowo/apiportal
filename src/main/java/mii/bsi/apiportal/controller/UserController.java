@@ -3,6 +3,7 @@ package mii.bsi.apiportal.controller;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -39,6 +40,17 @@ public class UserController {
     @PostMapping(value = "/update")
     public ResponseHandling<User> update(@RequestBody User user) {
         return userService.update(user);
+    }
+
+    @PostMapping(value = "/register")
+    public ResponseEntity<ResponseHandling<User>> register(@Valid @RequestBody User user, Errors errors){
+        return userService.register(user, errors);
+
+    }
+
+    @GetMapping(value = "/verification")
+    public ResponseEntity<ResponseHandling> emailVerification(@RequestParam String token){
+        return userService.emailVerification(token);
     }
 
 }

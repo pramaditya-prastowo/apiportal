@@ -1,0 +1,16 @@
+Kepada ${fullName},<br/>
+<br/>
+ID Pengguna: ${email}<br/>
+<br/>
+Anda telah melakukan registrasi untuk api portal kami, untuk bisa melanjutkan menggunakan semua fitur api portal silahkan klik tautan dibawah:<br/>
+<br/><br/>
+<a href="${emailVerificationUrl}">Verifikasi Email</a><br/>
+<br/><br/>
+Jika tautan tidak bekerja, silahkan salin tautan diatas untuk mengatur ulang kata sandi.<br/>
+Pesan ini akan otomatis kadaluwarsa dalam waktu 24 jam kedepan. Jika anda tidak merasa melakukan permintaan atur ulang kata sandi, silahkan abaikan.<br/>
+<br/>
+Hormat kami,<br/>
+PT Bank Syariah Indonesia<br/>
+<br/>
+untuk informasi lebih lanjut, silakan menghubungi:<br/>
+BSI call 14040<br/>
