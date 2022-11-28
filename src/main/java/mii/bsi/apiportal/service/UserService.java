@@ -41,6 +41,8 @@ public class UserService {
     public static final String REGISTER = "Register";
     public static final String EMAIL_VERIFICATION = "Email Verification";
 
+    public static final String RESEND_EMAIL_VERIFICATION = "Resend Email Verification";
+
     @Autowired
     private BsiTokenVerificationRepository tokenRepository;
 
@@ -160,6 +162,7 @@ public class UserService {
 
         }catch (Exception e){
             responseData.failed(e.getMessage());
+            e.printStackTrace();
             logService.saveLog(requestData, responseData, StatusCode.INTERNAL_SERVER_ERROR, this.getClass().getName(), REGISTER);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseData);
         }
@@ -167,7 +170,7 @@ public class UserService {
         return ResponseEntity.status(HttpStatus.CREATED).body(responseData);
     }
 
-    public ResponseEntity<ResponseHandling> emailVerification(String token){
+    public ResponseEntity<ResponseHandling> confirmEmailVerification(String token){
         ResponseHandling responseData = new ResponseHandling();
         RequestData<Map<String, Object>> requestData = new RequestData<>();
         Map<String, Object> request = new HashMap<>();
@@ -208,5 +211,45 @@ public class UserService {
         logService.saveLog(requestData, responseData, StatusCode.OK, this.getClass().getName(), EMAIL_VERIFICATION);
         return ResponseEntity.ok(responseData);
 
+    }
+
+    public ResponseEntity<ResponseHandling> resendEmailVerification(String email){
+        ResponseHandling responseData = new ResponseHandling();
+        RequestData<Map<String, Object>> requestData = new RequestData<>();
+        Map<String, Object> request = new HashMap<>();
+        request.put("email", email);
+        requestData.setPayload(request);
+
+        try {
+            if(email.equals(null) || email.equals("")){
+                responseData.failed("Email is required");
+                logService.saveLog(requestData, responseData, StatusCode.BAD_REQUEST, this.getClass().getName(), RESEND_EMAIL_VERIFICATION);
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseData);
+            }
+
+            User user = userRepository.findByEmail(email);
+            if(user == null){
+                responseData.failed("Email is not register in system");
+                logService.saveLog(requestData, responseData, StatusCode.NOT_FOUND, this.getClass().getName(), RESEND_EMAIL_VERIFICATION);
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(responseData);
+            }
+
+            BsiTokenVerification tokenVerification = new BsiTokenVerification();
+            tokenVerification.generateToken();
+            tokenVerification.setUser(user);
+            tokenVerification.setIdToken(null);
+            tokenVerification.setTokenType(TokenVerificationType.EMAIL_VERIFICATION);
+            emailUtility.sendEmailVerification(user, tokenVerification.getToken());
+
+            tokenRepository.save(tokenVerification);
+            responseData.success();
+        }catch (Exception e){
+            responseData.failed(e.getMessage());
+            e.printStackTrace();
+            logService.saveLog(requestData, responseData, StatusCode.INTERNAL_SERVER_ERROR, this.getClass().getName(), REGISTER);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseData);
+        }
+        logService.saveLog(requestData, responseData, StatusCode.CREATED, this.getClass().getName(), REGISTER);
+        return ResponseEntity.status(HttpStatus.CREATED).body(responseData);
     }
 }

@@ -49,8 +49,13 @@ public class UserController {
     }
 
     @GetMapping(value = "/verification")
-    public ResponseEntity<ResponseHandling> emailVerification(@RequestParam String token){
-        return userService.emailVerification(token);
+    public ResponseEntity<ResponseHandling> confirmEmailVerification(@RequestParam String token){
+        return userService.confirmEmailVerification(token);
+    }
+
+    @PostMapping(value = "/verification")
+    public ResponseEntity<ResponseHandling> resendEmailVerification(@RequestBody String email){
+        return userService.resendEmailVerification(email);
     }
 
 }

@@ -4,6 +4,7 @@ import mii.bsi.apiportal.constant.StatusCode;
 import mii.bsi.apiportal.domain.BsiTokenVerification;
 import mii.bsi.apiportal.domain.User;
 import mii.bsi.apiportal.domain.model.TokenVerificationType;
+import mii.bsi.apiportal.dto.UpdatePasswordRequestDTO;
 import mii.bsi.apiportal.repository.BsiTokenVerificationRepository;
 import mii.bsi.apiportal.repository.UserRepository;
 import mii.bsi.apiportal.utils.EmailUtility;
@@ -12,10 +13,12 @@ import mii.bsi.apiportal.utils.ResponseHandling;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.Errors;
+import org.springframework.validation.ObjectError;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class ForgetPasswordService {
@@ -30,6 +33,9 @@ public class ForgetPasswordService {
     private EmailUtility emailUtility;
 
     @Autowired
+    private BCryptPasswordEncoder passwordEncoder;
+
+    @Autowired
     private BsiTokenVerificationRepository tokenRepository;
 
     public static String FORGET_PASSWORD = "Forget Password";
@@ -39,7 +45,8 @@ public class ForgetPasswordService {
         ResponseHandling responseData = new ResponseHandling<>();
         RequestData<Map<String, Object>> requestData = new RequestData<>();
         Map<String, Object> request = new HashMap<>();
-
+        request.put("email", email);
+        requestData.setPayload(request);
 
         try {
 
@@ -73,6 +80,7 @@ public class ForgetPasswordService {
 
         }catch (Exception e){
             responseData.failed(e.getMessage());
+            e.printStackTrace();
             logService.saveLog(requestData, responseData, StatusCode.INTERNAL_SERVER_ERROR, this.getClass().getName(), FORGET_PASSWORD);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseData);
         }
@@ -80,5 +88,61 @@ public class ForgetPasswordService {
         logService.saveLog(requestData, responseData, StatusCode.OK, this.getClass().getName(), FORGET_PASSWORD);
         return ResponseEntity.ok(responseData);
 
+    }
+
+    public ResponseEntity<ResponseHandling> updatePassword(UpdatePasswordRequestDTO request, Errors errors){
+        ResponseHandling responseData = new ResponseHandling();
+        RequestData<UpdatePasswordRequestDTO> requestData = new RequestData<>();
+        requestData.setPayload(request);
+
+        try {
+
+            if(errors.hasErrors()){
+                List<String> errorList = new ArrayList<>();
+                if(errors.hasErrors()){
+                    for (ObjectError error : errors.getAllErrors()){
+                        errorList.add(error.getDefaultMessage());
+                    }
+                }
+                responseData.failed("Bad Request");
+                responseData.setMessageError(errorList);
+                logService.saveLog(requestData, responseData, StatusCode.BAD_REQUEST, this.getClass().getName(), UPDATE_PASSWORD);
+                return ResponseEntity.badRequest().body(responseData);
+            }
+
+            BsiTokenVerification resultToken = tokenRepository.findByToken(request.getToken());
+            if(resultToken == null){
+                responseData.failed("Token is not valid");
+                logService.saveLog(requestData, responseData, StatusCode.BAD_REQUEST, this.getClass().getName(), UPDATE_PASSWORD);
+                return ResponseEntity.badRequest().body(responseData);
+            }
+
+            if(resultToken.isTokenExpired()){
+                responseData.failed("Token expired");
+                logService.saveLog(requestData, responseData, StatusCode.GONE, this.getClass().getName(), UPDATE_PASSWORD);
+                return ResponseEntity.status(HttpStatus.GONE).body(responseData);
+            }
+
+            User user = userRepository.findByEmail(resultToken.getValidEmail());
+            if(user == null){
+                responseData.failed("User not found");
+                logService.saveLog(requestData, responseData, StatusCode.NOT_FOUND, this.getClass().getName(), UPDATE_PASSWORD);
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(responseData);
+            }
+
+            user.setPassword(passwordEncoder.encode(request.getPassword()));
+            user.setUpdateBy(user.getId());
+            user.setUpdateDate(new Date());
+            userRepository.save(user);
+            responseData.success("Password has been changed");
+
+        }catch (Exception e){
+            responseData.failed(e.getMessage());
+            e.printStackTrace();
+            logService.saveLog(requestData, responseData, StatusCode.INTERNAL_SERVER_ERROR, this.getClass().getName(), UPDATE_PASSWORD);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseData);
+        }
+        logService.saveLog(requestData, responseData, StatusCode.OK, this.getClass().getName(), UPDATE_PASSWORD);
+        return ResponseEntity.ok(responseData);
     }
 }
