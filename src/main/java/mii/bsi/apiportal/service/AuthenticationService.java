@@ -74,6 +74,7 @@ public class AuthenticationService {
 
         }catch (Exception e){
             responseData.failed(e.getMessage());
+            e.printStackTrace();
             logService.saveLog(requestData, responseData, StatusCode.INTERNAL_SERVER_ERROR ,this.getClass().getName(), AUTHENTICATION);
             return ResponseEntity.internalServerError().body(responseData);
 

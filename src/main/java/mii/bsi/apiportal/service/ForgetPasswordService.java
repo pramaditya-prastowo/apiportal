@@ -39,7 +39,8 @@ public class ForgetPasswordService {
         ResponseHandling responseData = new ResponseHandling<>();
         RequestData<Map<String, Object>> requestData = new RequestData<>();
         Map<String, Object> request = new HashMap<>();
-
+        request.put("email", email);
+        requestData.setPayload(request);
 
         try {
 
@@ -73,6 +74,7 @@ public class ForgetPasswordService {
 
         }catch (Exception e){
             responseData.failed(e.getMessage());
+            e.printStackTrace();
             logService.saveLog(requestData, responseData, StatusCode.INTERNAL_SERVER_ERROR, this.getClass().getName(), FORGET_PASSWORD);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseData);
         }
