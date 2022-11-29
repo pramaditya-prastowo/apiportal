@@ -155,7 +155,9 @@ public class UserService {
             tokenVerification.setUser(user);
             tokenVerification.setIdToken(null);
             tokenVerification.setTokenType(TokenVerificationType.EMAIL_VERIFICATION);
-            emailUtility.sendEmailVerification(user, tokenVerification.getToken());
+
+            final String encToken = encryptUtility.encryptAES(tokenVerification.getToken(), Params.PASS_KEY);
+            emailUtility.sendEmailVerification(user, encToken);
 
             userRepository.save(user);
             tokenRepository.save(tokenVerification);
