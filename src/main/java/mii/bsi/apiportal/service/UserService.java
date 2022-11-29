@@ -7,13 +7,12 @@ import java.util.Map;
 
 import javax.validation.Valid;
 
+import mii.bsi.apiportal.constant.Params;
 import mii.bsi.apiportal.constant.StatusCode;
 import mii.bsi.apiportal.domain.BsiTokenVerification;
 import mii.bsi.apiportal.domain.model.TokenVerificationType;
 import mii.bsi.apiportal.repository.BsiTokenVerificationRepository;
-import mii.bsi.apiportal.utils.CustomError;
-import mii.bsi.apiportal.utils.EmailUtility;
-import mii.bsi.apiportal.utils.RequestData;
+import mii.bsi.apiportal.utils.*;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -25,7 +24,6 @@ import org.springframework.validation.ObjectError;
 
 import mii.bsi.apiportal.domain.User;
 import mii.bsi.apiportal.repository.UserRepository;
-import mii.bsi.apiportal.utils.ResponseHandling;
 
 @Service
 public class UserService {
@@ -49,6 +47,9 @@ public class UserService {
 
     @Autowired
     private EmailUtility emailUtility;
+
+    @Autowired
+    private EncryptUtility encryptUtility;
 
     public ResponseHandling<User> create(@Valid User user, Errors errors) {
         ResponseHandling<User> responseHandling = new ResponseHandling<>();
@@ -153,7 +154,9 @@ public class UserService {
             tokenVerification.setUser(user);
             tokenVerification.setIdToken(null);
             tokenVerification.setTokenType(TokenVerificationType.EMAIL_VERIFICATION);
-            emailUtility.sendEmailVerification(user, tokenVerification.getToken());
+
+            final String encToken = encryptUtility.encryptAES(tokenVerification.getToken(), Params.PASS_KEY);
+            emailUtility.sendEmailVerification(user, encToken);
 
             userRepository.save(user);
             tokenRepository.save(tokenVerification);
@@ -185,8 +188,11 @@ public class UserService {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseData);
             }
 
-            BsiTokenVerification resultToken = tokenRepository.findByToken(token);
-            if (resultToken == null) {
+            final String decToken = encryptUtility.decryptAES(token, Params.PASS_KEY);
+
+            BsiTokenVerification resultToken = tokenRepository.findByToken(decToken);
+            if(resultToken == null){
+
                 responseData.failed("Token is not valid");
                 logService.saveLog(requestData, responseData, StatusCode.BAD_REQUEST, this.getClass().getName(),
                         EMAIL_VERIFICATION);
@@ -208,8 +214,7 @@ public class UserService {
         } catch (Exception e) {
             responseData.failed(e.getMessage());
             e.printStackTrace();
-            logService.saveLog(requestData, responseData, StatusCode.INTERNAL_SERVER_ERROR, this.getClass().getName(),
-                    REGISTER);
+            logService.saveLog(requestData, responseData, StatusCode.INTERNAL_SERVER_ERROR, this.getClass().getName(), EMAIL_VERIFICATION);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseData);
         }
         logService.saveLog(requestData, responseData, StatusCode.OK, this.getClass().getName(), EMAIL_VERIFICATION);
@@ -245,19 +250,21 @@ public class UserService {
             tokenVerification.setUser(user);
             tokenVerification.setIdToken(null);
             tokenVerification.setTokenType(TokenVerificationType.EMAIL_VERIFICATION);
-            emailUtility.sendEmailVerification(user, tokenVerification.getToken());
+
+            final String encToken = encryptUtility.encryptAES(tokenVerification.getToken(), Params.PASS_KEY);
+
+            emailUtility.sendEmailVerification(user, encToken);
 
             tokenRepository.save(tokenVerification);
             responseData.success();
         } catch (Exception e) {
             responseData.failed(e.getMessage());
             e.printStackTrace();
-            logService.saveLog(requestData, responseData, StatusCode.INTERNAL_SERVER_ERROR, this.getClass().getName(),
-                    REGISTER);
+            logService.saveLog(requestData, responseData, StatusCode.INTERNAL_SERVER_ERROR, this.getClass().getName(), RESEND_EMAIL_VERIFICATION);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseData);
         }
-        logService.saveLog(requestData, responseData, StatusCode.CREATED, this.getClass().getName(), REGISTER);
-        return ResponseEntity.status(HttpStatus.CREATED).body(responseData);
+        logService.saveLog(requestData, responseData, StatusCode.OK, this.getClass().getName(), RESEND_EMAIL_VERIFICATION);
+        return ResponseEntity.status(HttpStatus.OK).body(responseData);
     }
 
     public ResponseEntity<ResponseHandling> deleteUser(String idUser) {

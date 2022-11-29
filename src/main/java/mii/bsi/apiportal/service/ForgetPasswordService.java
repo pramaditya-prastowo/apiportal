@@ -1,5 +1,6 @@
 package mii.bsi.apiportal.service;
 
+import mii.bsi.apiportal.constant.Params;
 import mii.bsi.apiportal.constant.StatusCode;
 import mii.bsi.apiportal.domain.BsiTokenVerification;
 import mii.bsi.apiportal.domain.User;
@@ -8,6 +9,7 @@ import mii.bsi.apiportal.dto.UpdatePasswordRequestDTO;
 import mii.bsi.apiportal.repository.BsiTokenVerificationRepository;
 import mii.bsi.apiportal.repository.UserRepository;
 import mii.bsi.apiportal.utils.EmailUtility;
+import mii.bsi.apiportal.utils.EncryptUtility;
 import mii.bsi.apiportal.utils.RequestData;
 import mii.bsi.apiportal.utils.ResponseHandling;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +39,9 @@ public class ForgetPasswordService {
 
     @Autowired
     private BsiTokenVerificationRepository tokenRepository;
+
+    @Autowired
+    private EncryptUtility encryptUtility;
 
     public static String FORGET_PASSWORD = "Forget Password";
     public static String UPDATE_PASSWORD = "Update Password";
@@ -70,7 +75,7 @@ public class ForgetPasswordService {
             tokenVerification.setUser(user);
             tokenVerification.setIdToken(null);
             tokenVerification.setTokenType(TokenVerificationType.FORGET_PASSWORD);
-            emailUtility.sendForgetPassword(user, tokenVerification.getToken());
+            emailUtility.sendForgetPassword(user, encryptUtility.encryptAES(tokenVerification.getToken(), Params.PASS_KEY));
 
             request.put("email", email);
             requestData.setPayload(request);
@@ -110,7 +115,9 @@ public class ForgetPasswordService {
                 return ResponseEntity.badRequest().body(responseData);
             }
 
-            BsiTokenVerification resultToken = tokenRepository.findByToken(request.getToken());
+            final String decToken = encryptUtility.decryptAES(request.getToken(), Params.PASS_KEY);
+
+            BsiTokenVerification resultToken = tokenRepository.findByToken(decToken);
             if(resultToken == null){
                 responseData.failed("Token is not valid");
                 logService.saveLog(requestData, responseData, StatusCode.BAD_REQUEST, this.getClass().getName(), UPDATE_PASSWORD);

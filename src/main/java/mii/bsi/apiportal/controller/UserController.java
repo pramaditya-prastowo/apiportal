@@ -48,7 +48,7 @@ public class UserController {
     }
 
     @PostMapping(value = "/verification")
-    public ResponseEntity<ResponseHandling> resendEmailVerification(@RequestBody String email) {
+    public ResponseEntity<ResponseHandling> resendEmailVerification(@RequestParam String email){
         return userService.resendEmailVerification(email);
     }
 
