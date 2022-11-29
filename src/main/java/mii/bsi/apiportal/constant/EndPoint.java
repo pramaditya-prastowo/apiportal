@@ -6,7 +6,8 @@ public class EndPoint {
             "/oauth2/v1/authenticate",
             "/api/key/readData",
             "/api/v1.0/user/**",
-            "/oauth2/v1/authentication"
+            "/oauth2/v1/authentication",
+            "/api/v1.0/util/**",
 //            "/forget_password/**",
 //            "/session",
 //            "/session/user",

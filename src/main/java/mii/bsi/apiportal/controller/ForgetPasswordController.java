@@ -17,12 +17,12 @@ public class ForgetPasswordController {
     @Autowired
     private ForgetPasswordService service;
 
-    @PostMapping
+    @PostMapping(value = "/request")
     public ResponseEntity<ResponseHandling> forgetPassword(@RequestBody String email){
         return service.forgetPassword(email);
     }
 
-    @PostMapping
+    @PostMapping(value = "/update")
     public ResponseEntity<ResponseHandling> updatePassword(@Valid @RequestBody UpdatePasswordRequestDTO request, Errors errors){
         return service.updatePassword(request, errors);
     }
