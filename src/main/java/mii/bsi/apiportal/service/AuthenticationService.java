@@ -18,6 +18,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.Errors;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -59,7 +60,7 @@ public class AuthenticationService {
 
             ValidationResponse<AuthenticationResponseDTO> validBusiness = validation.validationBusiness(requestData, user);
             if(!validBusiness.isValid()){
-                logService.saveLog(requestData, validInput.getResponse().getBody(), validInput.getStatusCode() ,this.getClass().getName(), AUTHENTICATION);
+                logService.saveLog(requestData, validBusiness.getResponse().getBody(), validBusiness.getStatusCode() ,this.getClass().getName(), AUTHENTICATION);
                 return validBusiness.getResponse();
             }
 
@@ -67,7 +68,7 @@ public class AuthenticationService {
 
             final String token =
                     jwtUtility.generateToken(userDetails, generateClaim(user));
-            String expiredAt = jwtUtility.getExpirationDateFromToken(token).toString();
+            Date expiredAt = jwtUtility.getExpirationDateFromToken(token);
 
             responseData.success();
             responseData.setPayload(new AuthenticationResponseDTO(user,token, expiredAt));
@@ -79,6 +80,7 @@ public class AuthenticationService {
             return ResponseEntity.internalServerError().body(responseData);
 
         }
+        logService.saveLog(requestData, responseData, StatusCode.OK ,this.getClass().getName(), AUTHENTICATION);
         return ResponseEntity.ok(responseData);
     }
 
