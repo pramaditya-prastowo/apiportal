@@ -43,7 +43,7 @@ public class User implements Serializable {
 //    @Getter(AccessLevel.NONE)
     private String password;
 
-    @Column(name = "coorporate_name")
+    @Column(name = "corporate_name")
     private String corporateName;
 
     @Column(name = "account_inactive")
