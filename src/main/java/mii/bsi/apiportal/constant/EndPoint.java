@@ -9,6 +9,7 @@ public class EndPoint {
             "/oauth2/v1/authentication",
             "/api/v1.0/util/**",
             "/api/v1.0/serviceApi/**",
+            "/api/v1.0/promo/**",
 //            "/forget_password/**",
 //            "/session",
 //            "/session/user",
