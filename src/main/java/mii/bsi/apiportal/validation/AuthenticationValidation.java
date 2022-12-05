@@ -25,6 +25,9 @@ public class AuthenticationValidation {
     @Autowired
     private BCryptPasswordEncoder passwordEncoder;
 
+    @Autowired
+    private UserRepository userRepository;
+
     public ValidationResponse<AuthenticationResponseDTO> validationRequest(
             RequestData<AuthenticationRequestDTO> requestData, Errors errors){
 
@@ -65,6 +68,19 @@ public class AuthenticationValidation {
         }
 
         if(!passwordEncoder.matches(requestData.getPayload().getPassword(), user.getPassword())){
+            user.setRetryPasswordCount(user.getRetryPasswordCount() + 1);
+
+            if(user.getRetryPasswordCount() + 1 > 2){
+                responseData.failed("Your account is locked");
+                user.setAccountLocked(true);
+                userRepository.save(user);
+                validationResponse.setValid(false);
+                validationResponse.setStatusCode(StatusCode.UNAUTHORIZED);
+                validationResponse.setResponse(ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(responseData));
+                return validationResponse;
+            }
+            user.setRetryPasswordCount(user.getRetryPasswordCount() + 1);
+            userRepository.save(user);
             responseData.failed("Email or password invalid");
             validationResponse.setValid(false);
             validationResponse.setStatusCode(StatusCode.UNAUTHORIZED);
@@ -73,7 +89,7 @@ public class AuthenticationValidation {
         }
 
         if(user.isAccountInactive()){
-            responseData.failed("User inactive");
+            responseData.failed("Your account is inactive");
             validationResponse.setValid(false);
             validationResponse.setStatusCode(StatusCode.UNAUTHORIZED);
             validationResponse.setResponse(ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(responseData));
@@ -81,7 +97,7 @@ public class AuthenticationValidation {
         }
 
         if(user.isAccountLocked()){
-            responseData.failed("User is locked");
+            responseData.failed("Your account is locked");
             validationResponse.setValid(false);
             validationResponse.setStatusCode(StatusCode.UNAUTHORIZED);
             validationResponse.setResponse(ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(responseData));

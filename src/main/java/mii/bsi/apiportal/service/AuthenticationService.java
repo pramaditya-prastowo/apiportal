@@ -21,6 +21,7 @@ import org.springframework.validation.Errors;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.TimeZone;
 
 @Service
 public class AuthenticationService {
@@ -42,6 +43,8 @@ public class AuthenticationService {
 
     public static final String AUTHENTICATION = "Authentication";
 
+    public static final String SIGN_OUT = "Sign Out";
+
 
     public ResponseEntity<ResponseHandling<AuthenticationResponseDTO>> authenticate(
             AuthenticationRequestDTO request, Errors errors) {
@@ -52,6 +55,7 @@ public class AuthenticationService {
 
             ValidationResponse<AuthenticationResponseDTO> validInput = validation.validationRequest(requestData, errors);
             if(!validInput.isValid()){
+                requestData.getPayload().setPassword(passwordEncoder.encode(request.getPassword()));
                 logService.saveLog(requestData, validInput.getResponse().getBody(), validInput.getStatusCode() , this.getClass().getName(), AUTHENTICATION);
                 return validInput.getResponse();
             }
@@ -60,6 +64,7 @@ public class AuthenticationService {
 
             ValidationResponse<AuthenticationResponseDTO> validBusiness = validation.validationBusiness(requestData, user);
             if(!validBusiness.isValid()){
+                requestData.getPayload().setPassword(passwordEncoder.encode(request.getPassword()));
                 logService.saveLog(requestData, validBusiness.getResponse().getBody(), validBusiness.getStatusCode() ,this.getClass().getName(), AUTHENTICATION);
                 return validBusiness.getResponse();
             }
@@ -69,6 +74,8 @@ public class AuthenticationService {
             final String token =
                     jwtUtility.generateToken(userDetails, generateClaim(user));
             Date expiredAt = jwtUtility.getExpirationDateFromToken(token);
+            user.setLogin(true);
+            userRepository.save(user);
 
             responseData.success();
             responseData.setPayload(new AuthenticationResponseDTO(user,token, expiredAt));
@@ -80,7 +87,38 @@ public class AuthenticationService {
             return ResponseEntity.internalServerError().body(responseData);
 
         }
+
+        requestData.getPayload().setPassword(passwordEncoder.encode(request.getPassword()));
         logService.saveLog(requestData, responseData, StatusCode.OK ,this.getClass().getName(), AUTHENTICATION);
+        return ResponseEntity.ok(responseData);
+    }
+
+    public ResponseEntity<ResponseHandling> signOut(String token){
+        ResponseHandling responseData = new ResponseHandling<>();
+        RequestData requestData = new RequestData<>();
+
+        try {
+            String username = jwtUtility.getUsernameFromToken(token);
+            User user = userRepository.findByEmail(username);
+
+            if(user == null){
+                responseData.success();
+                logService.saveLog(requestData, responseData, StatusCode.OK ,this.getClass().getName(), SIGN_OUT);
+                return ResponseEntity.ok(responseData);
+            }
+
+            user.setLogin(false);
+            userRepository.save(user);
+            responseData.success();
+
+        }catch (Exception e){
+            responseData.failed(e.getMessage());
+            e.printStackTrace();
+            logService.saveLog(requestData, responseData, StatusCode.INTERNAL_SERVER_ERROR ,this.getClass().getName(), SIGN_OUT);
+            return ResponseEntity.internalServerError().body(responseData);
+        }
+
+        logService.saveLog(requestData, responseData, StatusCode.OK ,this.getClass().getName(), SIGN_OUT);
         return ResponseEntity.ok(responseData);
     }
 

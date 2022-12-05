@@ -4,12 +4,11 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
+import mii.bsi.apiportal.domain.model.Roles;
+import mii.bsi.apiportal.domain.model.TokenVerificationType;
 import org.apache.commons.lang3.StringUtils;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
 import java.io.Serializable;
@@ -43,7 +42,7 @@ public class User implements Serializable {
 //    @Getter(AccessLevel.NONE)
     private String password;
 
-    @Column(name = "coorporate_name")
+    @Column(name = "corporate_name")
     private String corporateName;
 
     @Column(name = "account_inactive")
@@ -71,6 +70,12 @@ public class User implements Serializable {
 
 //    @Column(name = "email_verified_date")
     private Date emailVerifiedDate;
+
+    private boolean isLogin;
+
+    @Column(columnDefinition = "ENUM('MITRA', 'SUPER_ADMIN')", name = "auth_principal")
+    @Enumerated(EnumType.STRING)
+    private Roles authPrincipal = Roles.MITRA;
 
     public User() {
     }

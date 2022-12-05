@@ -39,6 +39,7 @@ public class UserController {
 
     @PostMapping(value = "/register")
     public ResponseEntity<ResponseHandling<User>> register(@Valid @RequestBody User user, Errors errors) {
+        System.out.println(user);
         return userService.register(user, errors);
     }
 
