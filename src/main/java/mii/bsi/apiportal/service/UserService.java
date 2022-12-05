@@ -133,6 +133,7 @@ public class UserService {
 
             if (errors.hasErrors()) {
                 responseData.failed(CustomError.validRequest(errors), "Bad Request");
+                requestData.getPayload().setPassword(passwordEncoder.encode(user.getPassword()));
                 logService.saveLog(requestData, responseData, StatusCode.BAD_REQUEST, this.getClass().getName(),
                         REGISTER);
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseData);
@@ -141,6 +142,7 @@ public class UserService {
             User userExist = userRepository.findByEmail(requestData.getPayload().getEmail());
             if (userExist != null) {
                 responseData.failed("Email is already register");
+                requestData.getPayload().setPassword(passwordEncoder.encode(user.getPassword()));
                 logService.saveLog(requestData, responseData, StatusCode.CONFLICT, this.getClass().getName(), REGISTER);
                 return ResponseEntity.status(HttpStatus.CONFLICT).body(responseData);
             }
@@ -161,10 +163,12 @@ public class UserService {
             userRepository.save(user);
             tokenRepository.save(tokenVerification);
             responseData.success();
+            requestData.getPayload().setPassword(passwordEncoder.encode(user.getPassword()));
 
         } catch (Exception e) {
             responseData.failed(e.getMessage());
             e.printStackTrace();
+            responseData.getPayload().setPassword(passwordEncoder.encode(user.getPassword()));
             logService.saveLog(requestData, responseData, StatusCode.INTERNAL_SERVER_ERROR, this.getClass().getName(),
                     REGISTER);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseData);

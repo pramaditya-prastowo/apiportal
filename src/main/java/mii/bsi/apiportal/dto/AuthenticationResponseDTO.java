@@ -3,6 +3,7 @@ package mii.bsi.apiportal.dto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import mii.bsi.apiportal.domain.User;
+import mii.bsi.apiportal.domain.model.Roles;
 
 import java.util.Date;
 
@@ -17,6 +18,7 @@ public class AuthenticationResponseDTO {
     private String token;
     private Date expiredAt;
     private boolean emailVerified;
+    private Roles roles;
 
     public AuthenticationResponseDTO(User user, String token, Date expiredAt){
         this.uid = user.getId();
@@ -27,6 +29,7 @@ public class AuthenticationResponseDTO {
         this.token = token;
         this.expiredAt = expiredAt;
         this.emailVerified = user.isEmailVerified();
+        this.roles = user.getAuthPrincipal();
     }
-
+    
 }
