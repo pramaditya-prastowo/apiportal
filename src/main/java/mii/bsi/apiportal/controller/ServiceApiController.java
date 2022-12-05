@@ -17,20 +17,19 @@ public class ServiceApiController {
     @Autowired
     private ServiceApiService serviceApiService;
 
-    @PostMapping(value = "/create")
+    @PostMapping
     public ResponseEntity<ResponseHandling<ServiceApiDomain>> create(@Valid @RequestBody ServiceApiDomain serviceApi,
             Errors errors) {
         return serviceApiService.create(serviceApi, errors);
-
     }
 
-    @PostMapping(value = "/update")
+    @PatchMapping
     public ResponseEntity<ResponseHandling<ServiceApiDomain>> update(@Valid @RequestBody ServiceApiDomain serviceApi,
             Errors errors) {
         return serviceApiService.create(serviceApi, errors);
     }
 
-    @GetMapping(value = "/all")
+    @GetMapping
     public ResponseEntity<ResponseHandling<Iterable<ServiceApiDomain>>> getAll(ServiceApiDomain serviceApi) {
         return serviceApiService.getAll();
     }

@@ -17,30 +17,24 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    @PostMapping(value = "/create")
-    public ResponseHandling<User> create(@Valid @RequestBody User user, Errors errors) {
-        return userService.create(user, errors);
+    @PostMapping
+    public ResponseEntity<ResponseHandling<User>> create(@Valid @RequestBody User user, Errors errors) {
+        return userService.register(user, errors);
     }
 
-    @GetMapping(value = "/all")
+    @GetMapping
     public ResponseHandling<Iterable<User>> getAll(User user) {
         return userService.getAll();
     }
 
-    @GetMapping
-    public ResponseEntity<ResponseHandling<User>> getById(@RequestParam String id) {
+    @GetMapping("/{id}")
+    public ResponseEntity<ResponseHandling<User>> getById(@PathVariable("id") String id) {
         return userService.getById(id);
     }
 
-    @PostMapping(value = "/update")
+    @PatchMapping
     public ResponseHandling<User> update(@RequestBody User user) {
         return userService.update(user);
-    }
-
-    @PostMapping(value = "/register")
-    public ResponseEntity<ResponseHandling<User>> register(@Valid @RequestBody User user, Errors errors) {
-        System.out.println(user);
-        return userService.register(user, errors);
     }
 
     @GetMapping(value = "/verification")
@@ -53,7 +47,7 @@ public class UserController {
         return userService.resendEmailVerification(email);
     }
 
-    @PostMapping(value = "/delete/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<ResponseHandling> deleteUser(@PathVariable("id") String idUser) {
         return userService.deleteUser(idUser);
     }

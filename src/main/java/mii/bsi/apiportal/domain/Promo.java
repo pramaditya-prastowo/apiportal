@@ -10,11 +10,13 @@ import javax.persistence.Table;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Table(name = "bsi_promo_api_portal")
 @Entity
 @Data
 @AllArgsConstructor
+@NoArgsConstructor
 public class Promo implements Serializable {
     @Id
     @Column(name = "id", updatable = false, unique = true)
