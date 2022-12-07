@@ -1,9 +1,7 @@
 package mii.bsi.apiportal.service;
 
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 import javax.validation.Valid;
 
@@ -13,6 +11,7 @@ import mii.bsi.apiportal.constant.StatusCode;
 import mii.bsi.apiportal.domain.BsiTokenVerification;
 import mii.bsi.apiportal.domain.model.Roles;
 import mii.bsi.apiportal.domain.model.TokenVerificationType;
+import mii.bsi.apiportal.dto.UserResponseDTO;
 import mii.bsi.apiportal.repository.BsiTokenVerificationRepository;
 import mii.bsi.apiportal.utils.*;
 import org.apache.commons.lang3.StringUtils;
@@ -104,8 +103,8 @@ public class UserService {
         return responseHandling;
     }
 
-    public ResponseEntity<ResponseHandling<Iterable<User>>> getAll(String token) {
-        ResponseHandling<Iterable<User>> responseData = new ResponseHandling<>();
+    public ResponseEntity<ResponseHandling<List<UserResponseDTO>>> getAll(String token) {
+        ResponseHandling<List<UserResponseDTO>> responseData = new ResponseHandling<>();
         try {
 
             final Claims claim = jwtUtility.getAllClaimsFromToken(token);
@@ -126,7 +125,23 @@ public class UserService {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).body(responseData);
             }
 
-            responseData.setPayload(userRepository.findAll());
+            List<User> userList = userRepository.findAll();
+            List<UserResponseDTO> userListResponse = new ArrayList<>();
+            for (User data: userList) {
+                userListResponse.add(new UserResponseDTO(
+                        data.getId(),
+                        data.getFirstName(),
+                        data.getFirstName(),
+                        data.getEmail(),
+                        data.getCorporateName(),
+                        data.isAccountInactive(),
+                        data.isAccountLocked(),
+                        data.getAuthPrincipal(),
+                        data.isEmailVerified(),
+                        data.getCreateDate()
+                ));
+            }
+            responseData.setPayload(userListResponse);
             responseData.success("success");
         } catch (Exception e) {
             e.printStackTrace();

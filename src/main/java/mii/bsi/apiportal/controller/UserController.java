@@ -2,6 +2,7 @@ package mii.bsi.apiportal.controller;
 
 import javax.validation.Valid;
 
+import mii.bsi.apiportal.dto.UserResponseDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
@@ -11,6 +12,8 @@ import org.springframework.web.bind.annotation.*;
 import mii.bsi.apiportal.domain.User;
 import mii.bsi.apiportal.service.UserService;
 import mii.bsi.apiportal.utils.ResponseHandling;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1.0/user")
@@ -24,7 +27,7 @@ public class UserController {
     }
 
     @GetMapping
-    public ResponseEntity<ResponseHandling<Iterable<User>>> getAll(@RequestHeader(HttpHeaders.AUTHORIZATION) String token) {
+    public ResponseEntity<ResponseHandling<List<UserResponseDTO>>> getAll(@RequestHeader(HttpHeaders.AUTHORIZATION) String token) {
         return userService.getAll(token.substring(7));
     }
 
