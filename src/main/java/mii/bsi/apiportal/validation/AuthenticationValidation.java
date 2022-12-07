@@ -68,11 +68,13 @@ public class AuthenticationValidation {
         }
 
         if(!passwordEncoder.matches(requestData.getPayload().getPassword(), user.getPassword())){
-            user.setRetryPasswordCount(user.getRetryPasswordCount() + 1);
+//            user.setRetryPasswordCount(user.getRetryPasswordCount() + 1);
+            int countRetryPass = user.getRetryPasswordCount();
 
-            if(user.getRetryPasswordCount() + 1 > 2){
+            if((countRetryPass+ 1) > 2){
                 responseData.failed("Your account is locked");
                 user.setAccountLocked(true);
+                user.setRetryPasswordCount(3);
                 userRepository.save(user);
                 validationResponse.setValid(false);
                 validationResponse.setStatusCode(StatusCode.UNAUTHORIZED);

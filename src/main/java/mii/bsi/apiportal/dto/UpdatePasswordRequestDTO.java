@@ -14,4 +14,7 @@ public class UpdatePasswordRequestDTO {
 
     @NotEmpty(message = "Password is Required")
     private String password;
+
+    @NotEmpty(message = "ID is Required")
+    private String id;
 }

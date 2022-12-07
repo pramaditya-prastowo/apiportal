@@ -62,6 +62,9 @@ public class ForgetPasswordService {
             }
 
             User user =  userRepository.findByEmail(email);
+            System.out.println("=========================");
+            System.out.println(user);
+            System.out.println("=========================");
 
             if(user == null){
                 responseData.failed("User not found");
@@ -115,11 +118,20 @@ public class ForgetPasswordService {
                 return ResponseEntity.badRequest().body(responseData);
             }
 
+            final String decUid = encryptUtility.decryptAES(request.getId(), Params.PASS_KEY);
             final String decToken = encryptUtility.decryptAES(request.getToken(), Params.PASS_KEY);
 
             BsiTokenVerification resultToken = tokenRepository.findByToken(decToken);
             if(resultToken == null){
                 responseData.failed("Token is not valid");
+                logService.saveLog(requestData, responseData, StatusCode.BAD_REQUEST, this.getClass().getName(), UPDATE_PASSWORD);
+                return ResponseEntity.badRequest().body(responseData);
+            }
+
+            System.out.println("value of input "+decUid +" must be " + resultToken.getUserId());
+
+            if(!resultToken.getUserId().equals(decUid)){
+                responseData.failed("ID is not valid");
                 logService.saveLog(requestData, responseData, StatusCode.BAD_REQUEST, this.getClass().getName(), UPDATE_PASSWORD);
                 return ResponseEntity.badRequest().body(responseData);
             }

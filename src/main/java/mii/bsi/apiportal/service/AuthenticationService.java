@@ -126,6 +126,7 @@ public class AuthenticationService {
         Map<String, Object> claims = new HashMap<>();
         claims.put("uid", user.getId());
         claims.put("corporateName", user.getCorporateName());
+        claims.put("role", user.getAuthPrincipal());
         return claims;
     }
 }

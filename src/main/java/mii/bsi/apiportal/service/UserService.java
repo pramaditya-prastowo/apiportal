@@ -7,9 +7,11 @@ import java.util.Map;
 
 import javax.validation.Valid;
 
+import io.jsonwebtoken.Claims;
 import mii.bsi.apiportal.constant.Params;
 import mii.bsi.apiportal.constant.StatusCode;
 import mii.bsi.apiportal.domain.BsiTokenVerification;
+import mii.bsi.apiportal.domain.model.Roles;
 import mii.bsi.apiportal.domain.model.TokenVerificationType;
 import mii.bsi.apiportal.repository.BsiTokenVerificationRepository;
 import mii.bsi.apiportal.utils.*;
@@ -34,6 +36,7 @@ public class UserService {
     @Autowired
     private LogService logService;
 
+    public static final String FETCH_ALL_USER = "Fetch All User";
     public static final String REGISTER = "Register";
     public static final String EMAIL_VERIFICATION = "Email Verification";
     public static final String RESEND_EMAIL_VERIFICATION = "Resend Email Verification";
@@ -47,6 +50,9 @@ public class UserService {
 
     @Autowired
     private EmailUtility emailUtility;
+
+    @Autowired
+    private JwtUtility jwtUtility;
 
     @Autowired
     private EncryptUtility encryptUtility;
@@ -98,17 +104,40 @@ public class UserService {
         return responseHandling;
     }
 
-    public ResponseHandling<Iterable<User>> getAll() {
-        ResponseHandling<Iterable<User>> responseHandling = new ResponseHandling<>();
+    public ResponseEntity<ResponseHandling<Iterable<User>>> getAll(String token) {
+        ResponseHandling<Iterable<User>> responseData = new ResponseHandling<>();
         try {
-            responseHandling.setPayload(userRepository.findAll());
-            responseHandling.setResponseCode("00");
-            responseHandling.setResponseMessage("success");
+
+            final Claims claim = jwtUtility.getAllClaimsFromToken(token);
+            claim.get("role");
+            if(!claim.get("role").equals(Roles.SUPER_ADMIN.toString())){
+                responseData.failed("Access denied");
+                logService.saveLog(new RequestData<>(), responseData, StatusCode.FORBIDDEN, this.getClass().getName(),
+                        FETCH_ALL_USER);
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(responseData);
+            }
+            final String username = jwtUtility.getUsernameFromToken(token);
+            User user = userRepository.findByEmail(username);
+
+            if(!user.getAuthPrincipal().equals(Roles.SUPER_ADMIN)){
+                responseData.failed("Access denied");
+                logService.saveLog(new RequestData<>(), responseData, StatusCode.FORBIDDEN, this.getClass().getName(),
+                        FETCH_ALL_USER);
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(responseData);
+            }
+
+            responseData.setPayload(userRepository.findAll());
+            responseData.success("success");
         } catch (Exception e) {
-            responseHandling.setResponseMessage("failed");
-            responseHandling.setResponseCode("99");
+            e.printStackTrace();
+            responseData.failed(e.getMessage());
+            logService.saveLog(new RequestData<>(), responseData, StatusCode.INTERNAL_SERVER_ERROR, this.getClass().getName(),
+                    FETCH_ALL_USER);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseData);
         }
-        return responseHandling;
+        logService.saveLog(new RequestData<>(), responseData, StatusCode.OK, this.getClass().getName(),
+                FETCH_ALL_USER);
+        return ResponseEntity.ok(responseData);
     }
 
     public ResponseEntity<ResponseHandling<User>> getById(String id) {

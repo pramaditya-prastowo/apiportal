@@ -1,5 +1,6 @@
 package mii.bsi.apiportal.utils;
 
+import mii.bsi.apiportal.constant.Params;
 import mii.bsi.apiportal.domain.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
@@ -27,6 +28,9 @@ public class EmailUtility {
 
     @Autowired
     private FreeMarkerConfigurer freemarkerConfigurer;
+
+    @Autowired
+    private EncryptUtility encryptUtility;
 
     public String sendEmailVerification(User user, String token){
         JavaMailSenderImpl mailSender = getMailSender();
@@ -75,13 +79,14 @@ public class EmailUtility {
         try {
 
             mailSender.setJavaMailProperties(getProperties());
+            final String encUid = encryptUtility.encryptAES(user.getId(), Params.PASS_KEY);
 
             String from = USERNAME;
             String subject = "Forget Password";
 
             Map<String, Object> model = new HashMap<>();
             model.put("fullName", user.getFirstName()+ " " + user.getLastName());
-            model.put("resetPasswordUrl", "http://localhost/reset_password?token=" + token);
+            model.put("resetPasswordUrl", "http://localhost:4200/reset-password?token=" + token+"&id="+encUid);
             model.put("email", user.getEmail());
             String content = geContentFromTemplate(model, "id", "resetPassword.vm");
 

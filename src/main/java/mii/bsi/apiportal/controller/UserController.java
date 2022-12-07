@@ -3,6 +3,7 @@ package mii.bsi.apiportal.controller;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
@@ -23,8 +24,8 @@ public class UserController {
     }
 
     @GetMapping
-    public ResponseHandling<Iterable<User>> getAll(User user) {
-        return userService.getAll();
+    public ResponseEntity<ResponseHandling<Iterable<User>>> getAll(@RequestHeader(HttpHeaders.AUTHORIZATION) String token) {
+        return userService.getAll(token.substring(7));
     }
 
     @GetMapping("/{id}")
