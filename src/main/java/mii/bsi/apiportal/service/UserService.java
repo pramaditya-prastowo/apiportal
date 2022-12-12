@@ -12,6 +12,7 @@ import mii.bsi.apiportal.domain.BsiTokenVerification;
 import mii.bsi.apiportal.domain.model.Roles;
 import mii.bsi.apiportal.domain.model.TokenVerificationType;
 import mii.bsi.apiportal.dto.UserResponseDTO;
+import mii.bsi.apiportal.dto.VerificationEmailRequest;
 import mii.bsi.apiportal.repository.BsiTokenVerificationRepository;
 import mii.bsi.apiportal.utils.*;
 import org.apache.commons.lang3.StringUtils;
@@ -37,6 +38,8 @@ public class UserService {
 
     public static final String FETCH_ALL_USER = "Fetch All User";
     public static final String REGISTER = "Register";
+
+    public static final String REGISTER_BY_ADMIN = "Register by Admin";
     public static final String EMAIL_VERIFICATION = "Email Verification";
     public static final String RESEND_EMAIL_VERIFICATION = "Resend Email Verification";
     public static final String DELETE_USER = "Delete User";
@@ -109,16 +112,18 @@ public class UserService {
 
             final Claims claim = jwtUtility.getAllClaimsFromToken(token);
             claim.get("role");
-            if(!claim.get("role").equals(Roles.SUPER_ADMIN.toString())){
+            if(!(claim.get("role").equals(Roles.SUPER_ADMIN.toString()) || claim.get("role").equals(Roles.ADMIN.toString()))){
                 responseData.failed("Access denied");
                 logService.saveLog(new RequestData<>(), responseData, StatusCode.FORBIDDEN, this.getClass().getName(),
                         FETCH_ALL_USER);
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).body(responseData);
             }
+
+
             final String username = jwtUtility.getUsernameFromToken(token);
             User user = userRepository.findByEmail(username);
 
-            if(!user.getAuthPrincipal().equals(Roles.SUPER_ADMIN)){
+            if(!(user.getAuthPrincipal().equals(Roles.SUPER_ADMIN) || user.getAuthPrincipal().equals(Roles.ADMIN))){
                 responseData.failed("Access denied");
                 logService.saveLog(new RequestData<>(), responseData, StatusCode.FORBIDDEN, this.getClass().getName(),
                         FETCH_ALL_USER);
@@ -131,7 +136,7 @@ public class UserService {
                 userListResponse.add(new UserResponseDTO(
                         data.getId(),
                         data.getFirstName(),
-                        data.getFirstName(),
+                        data.getLastName(),
                         data.getEmail(),
                         data.getCorporateName(),
                         data.isAccountInactive(),
@@ -221,30 +226,117 @@ public class UserService {
         return ResponseEntity.status(HttpStatus.CREATED).body(responseData);
     }
 
-    public ResponseEntity<ResponseHandling> confirmEmailVerification(String token) {
+    public ResponseEntity<ResponseHandling<User>> registerByAdmin(User user,String token, Errors errors) {
+        ResponseHandling<User> responseData = new ResponseHandling<>();
+        RequestData<User> requestData = new RequestData<>();
+        requestData.setPayload(user);
+
+        try {
+
+            if (errors.hasErrors()) {
+                responseData.failed(CustomError.validRequest(errors), "Bad Request");
+                requestData.getPayload().setPassword(passwordEncoder.encode(user.getPassword()));
+                logService.saveLog(requestData, responseData, StatusCode.BAD_REQUEST, this.getClass().getName(),
+                        REGISTER_BY_ADMIN);
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseData);
+            }
+
+            User userExist = userRepository.findByEmail(requestData.getPayload().getEmail());
+            if (userExist != null) {
+                responseData.failed("Email is already register");
+                requestData.getPayload().setPassword(passwordEncoder.encode(user.getPassword()));
+                logService.saveLog(requestData, responseData, StatusCode.CONFLICT, this.getClass().getName(), REGISTER_BY_ADMIN);
+                return ResponseEntity.status(HttpStatus.CONFLICT).body(responseData);
+            }
+
+
+            final Claims claim = jwtUtility.getAllClaimsFromToken(token);
+            if(!(claim.get("role").equals(Roles.SUPER_ADMIN.toString()) || claim.get("role").equals(Roles.ADMIN.toString()))){
+                System.out.println("Di atas");
+                responseData.failed("Access denied");
+                requestData.getPayload().setPassword(passwordEncoder.encode(user.getPassword()));
+                logService.saveLog(requestData, responseData, StatusCode.FORBIDDEN, this.getClass().getName(), REGISTER_BY_ADMIN);
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(responseData);
+            }
+
+            if((user.getAuthPrincipal().equals(Roles.ADMIN) || user.getAuthPrincipal().equals(Roles.SUPER_ADMIN))){
+
+                if(!claim.get("role").equals(Roles.SUPER_ADMIN.toString())){
+                    System.out.println("Di bawah");
+                    responseData.failed("Access denied");
+                    requestData.getPayload().setPassword(passwordEncoder.encode(user.getPassword()));
+                    logService.saveLog(requestData, responseData, StatusCode.FORBIDDEN, this.getClass().getName(), REGISTER_BY_ADMIN);
+                    return ResponseEntity.status(HttpStatus.FORBIDDEN).body(responseData);
+                }
+
+            }
+
+            String sequence = userRepository.getUserSequence();
+            user.generateCreated(sequence);
+            user.setPassword(passwordEncoder.encode(user.getPassword()));
+
+            BsiTokenVerification tokenVerification = new BsiTokenVerification();
+            tokenVerification.generateToken();
+            tokenVerification.setUser(user);
+            tokenVerification.setIdToken(null);
+            tokenVerification.setTokenType(TokenVerificationType.EMAIL_VERIFICATION);
+
+            final String encToken = encryptUtility.encryptAES(tokenVerification.getToken(), Params.PASS_KEY);
+            emailUtility.sendEmailVerification(user, encToken);
+
+            userRepository.save(user);
+            tokenRepository.save(tokenVerification);
+            responseData.success();
+            requestData.getPayload().setPassword(passwordEncoder.encode(user.getPassword()));
+
+        } catch (Exception e) {
+            responseData.failed(e.getMessage());
+            e.printStackTrace();
+            requestData.getPayload().setPassword(passwordEncoder.encode(user.getPassword()));
+            logService.saveLog(requestData, responseData, StatusCode.INTERNAL_SERVER_ERROR, this.getClass().getName(),
+                    REGISTER_BY_ADMIN);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseData);
+        }
+        logService.saveLog(requestData, responseData, StatusCode.CREATED, this.getClass().getName(), REGISTER_BY_ADMIN);
+        return ResponseEntity.status(HttpStatus.CREATED).body(responseData);
+    }
+
+    public ResponseEntity<ResponseHandling> confirmEmailVerification(VerificationEmailRequest request, Errors errors) {
         ResponseHandling responseData = new ResponseHandling();
-        RequestData<Map<String, Object>> requestData = new RequestData<>();
-        Map<String, Object> request = new HashMap<>();
-        request.put("token", token);
+        RequestData<VerificationEmailRequest> requestData = new RequestData<>();
         requestData.setPayload(request);
 
         try {
-            if (token.equals(null) || token.equals("")) {
-                responseData.failed("Token is required");
+
+            if(errors.hasErrors()){
+                responseData.failed(CustomError.validRequest(errors), "Bad request");
                 logService.saveLog(requestData, responseData, StatusCode.BAD_REQUEST, this.getClass().getName(),
                         EMAIL_VERIFICATION);
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseData);
             }
 
-            final String decToken = encryptUtility.decryptAES(token, Params.PASS_KEY);
+            final String decToken = encryptUtility.decryptAES(request.getToken(), Params.PASS_KEY);
+            final String decUid = encryptUtility.decryptAES(request.getId(), Params.PASS_KEY);
 
             BsiTokenVerification resultToken = tokenRepository.findByToken(decToken);
             if(resultToken == null){
-
                 responseData.failed("Token is not valid");
                 logService.saveLog(requestData, responseData, StatusCode.BAD_REQUEST, this.getClass().getName(),
                         EMAIL_VERIFICATION);
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseData);
+            }
+
+            User user = userRepository.findByEmail(resultToken.getValidEmail());
+            if(user.isEmailVerified()){
+                responseData.success("Email already verified");
+                logService.saveLog(requestData, responseData, StatusCode.OK, this.getClass().getName(), EMAIL_VERIFICATION);
+                return ResponseEntity.ok(responseData);
+            }
+
+            if(!resultToken.getUserId().equals(decUid)){
+                responseData.failed("ID is not valid");
+                logService.saveLog(requestData, responseData, StatusCode.BAD_REQUEST, this.getClass().getName(), EMAIL_VERIFICATION);
+                return ResponseEntity.badRequest().body(responseData);
             }
 
             if (resultToken.isTokenExpired()) {
@@ -254,11 +346,11 @@ public class UserService {
                 return ResponseEntity.status(HttpStatus.GONE).body(responseData);
             }
 
-            User user = userRepository.findByEmail(resultToken.getValidEmail());
+//            User user = userRepository.findByEmail(resultToken.getValidEmail());
             user.setEmailVerified(true);
             user.setEmailVerifiedDate(new Date());
             userRepository.save(user);
-            responseData.success();
+            responseData.success("Email verified successfully");
         } catch (Exception e) {
             responseData.failed(e.getMessage());
             e.printStackTrace();
@@ -315,7 +407,7 @@ public class UserService {
         return ResponseEntity.status(HttpStatus.OK).body(responseData);
     }
 
-    public ResponseEntity<ResponseHandling> deleteUser(String idUser) {
+    public ResponseEntity<ResponseHandling> deleteUser(String idUser, String token) {
         ResponseHandling responseData = new ResponseHandling();
         RequestData<Map<String, Object>> requestData = new RequestData<>();
         Map<String, Object> request = new HashMap<>();

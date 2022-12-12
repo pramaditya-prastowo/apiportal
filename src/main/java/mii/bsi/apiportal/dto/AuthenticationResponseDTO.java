@@ -17,6 +17,8 @@ public class AuthenticationResponseDTO {
     private String corporateName;
     private String token;
     private Date expiredAt;
+
+    private Date createDate;
     private boolean emailVerified;
     private Roles roles;
 
@@ -28,6 +30,7 @@ public class AuthenticationResponseDTO {
         this.corporateName = user.getCorporateName();
         this.token = token;
         this.expiredAt = expiredAt;
+        this.createDate = user.getCreateDate();
         this.emailVerified = user.isEmailVerified();
         this.roles = user.getAuthPrincipal();
     }

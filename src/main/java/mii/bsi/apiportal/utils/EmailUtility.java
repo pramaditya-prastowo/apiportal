@@ -36,7 +36,7 @@ public class EmailUtility {
         JavaMailSenderImpl mailSender = getMailSender();
 
         try {
-
+            final String encUid = encryptUtility.encryptAES(user.getId(), Params.PASS_KEY);
             mailSender.setJavaMailProperties(getProperties());
 
             String from = USERNAME;
@@ -44,7 +44,7 @@ public class EmailUtility {
 
             Map<String, Object> model = new HashMap<>();
             model.put("fullName", user.getFirstName()+ " " + user.getLastName());
-            model.put("emailVerificationUrl", "http://localhost/verification_email?token=" + token);
+            model.put("emailVerificationUrl", "http://localhost:4200/verification_email?token=" + token+"&uid=" + encUid);
             model.put("email", user.getEmail());
             String content = geContentFromTemplate(model, "id", "emailVerification.vm");
 

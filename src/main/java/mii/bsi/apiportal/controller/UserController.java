@@ -2,7 +2,9 @@ package mii.bsi.apiportal.controller;
 
 import javax.validation.Valid;
 
+import mii.bsi.apiportal.dto.UpdatePasswordRequestDTO;
 import mii.bsi.apiportal.dto.UserResponseDTO;
+import mii.bsi.apiportal.dto.VerificationEmailRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
@@ -22,8 +24,16 @@ public class UserController {
     private UserService userService;
 
     @PostMapping
-    public ResponseEntity<ResponseHandling<User>> create(@Valid @RequestBody User user, Errors errors) {
+    public ResponseEntity<ResponseHandling<User>> registerByMitra(@Valid @RequestBody User user, Errors errors) {
         return userService.register(user, errors);
+    }
+
+    @PostMapping(value = "/admin")
+    public ResponseEntity<ResponseHandling<User>> registerByAdmin(
+            @Valid @RequestBody User user,
+            @RequestHeader(HttpHeaders.AUTHORIZATION) String token,
+            Errors errors) {
+        return userService.registerByAdmin(user,token.substring(7), errors);
     }
 
     @GetMapping
@@ -41,9 +51,9 @@ public class UserController {
         return userService.update(user);
     }
 
-    @GetMapping(value = "/verification")
-    public ResponseEntity<ResponseHandling> confirmEmailVerification(@RequestParam String token) {
-        return userService.confirmEmailVerification(token);
+    @PatchMapping(value = "/verification")
+    public ResponseEntity<ResponseHandling> confirmEmailVerification(@Valid @RequestBody VerificationEmailRequest request, Errors errors) {
+        return userService.confirmEmailVerification(request, errors);
     }
 
     @PostMapping(value = "/verification")
@@ -52,8 +62,9 @@ public class UserController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<ResponseHandling> deleteUser(@PathVariable("id") String idUser) {
-        return userService.deleteUser(idUser);
+    public ResponseEntity<ResponseHandling> deleteUser(@RequestHeader(HttpHeaders.AUTHORIZATION) String token,
+                                                       @PathVariable("id") String idUser) {
+        return userService.deleteUser(idUser, token.substring(7));
     }
 
 }

@@ -45,6 +45,9 @@ public class User implements Serializable {
     @Column(name = "corporate_name")
     private String corporateName;
 
+    @Column(name = "mobile_phone")
+    private String mobilePhone;
+
     @Column(name = "account_inactive")
     private boolean accountInactive;
 
@@ -73,7 +76,7 @@ public class User implements Serializable {
 
     private boolean isLogin;
 
-    @Column(columnDefinition = "ENUM('MITRA', 'SUPER_ADMIN')", name = "auth_principal")
+    @Column(columnDefinition = "ENUM('MITRA', 'SUPER_ADMIN', 'ADMIN')", name = "auth_principal")
     @Enumerated(EnumType.STRING)
     private Roles authPrincipal = Roles.MITRA;
 

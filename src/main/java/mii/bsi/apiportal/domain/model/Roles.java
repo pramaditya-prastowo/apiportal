@@ -3,6 +3,8 @@ package mii.bsi.apiportal.domain.model;
 public enum Roles {
 
     SUPER_ADMIN("SUPER_ADMIN"),
+
+    ADMIN("ADMIN"),
     MITRA("MITRA");
 
     private final String text;

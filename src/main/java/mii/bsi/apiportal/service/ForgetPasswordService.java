@@ -8,10 +8,7 @@ import mii.bsi.apiportal.domain.model.TokenVerificationType;
 import mii.bsi.apiportal.dto.UpdatePasswordRequestDTO;
 import mii.bsi.apiportal.repository.BsiTokenVerificationRepository;
 import mii.bsi.apiportal.repository.UserRepository;
-import mii.bsi.apiportal.utils.EmailUtility;
-import mii.bsi.apiportal.utils.EncryptUtility;
-import mii.bsi.apiportal.utils.RequestData;
-import mii.bsi.apiportal.utils.ResponseHandling;
+import mii.bsi.apiportal.utils.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -106,14 +103,7 @@ public class ForgetPasswordService {
         try {
 
             if(errors.hasErrors()){
-                List<String> errorList = new ArrayList<>();
-                if(errors.hasErrors()){
-                    for (ObjectError error : errors.getAllErrors()){
-                        errorList.add(error.getDefaultMessage());
-                    }
-                }
-                responseData.failed("Bad Request");
-                responseData.setMessageError(errorList);
+                responseData.failed(CustomError.validRequest(errors), "Bad request");
                 logService.saveLog(requestData, responseData, StatusCode.BAD_REQUEST, this.getClass().getName(), UPDATE_PASSWORD);
                 return ResponseEntity.badRequest().body(responseData);
             }
