@@ -3,6 +3,7 @@ package mii.bsi.apiportal.controller;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
@@ -19,18 +20,20 @@ public class ServiceApiController {
 
     @PostMapping
     public ResponseEntity<ResponseHandling<ServiceApiDomain>> create(@Valid @RequestBody ServiceApiDomain serviceApi,
-            Errors errors) {
-        return serviceApiService.create(serviceApi, errors);
+                                                                     @RequestHeader(HttpHeaders.AUTHORIZATION) String token,
+                                                                     Errors errors) {
+        return serviceApiService.create(serviceApi,token.substring(7), errors);
     }
 
     @PatchMapping
     public ResponseEntity<ResponseHandling<ServiceApiDomain>> update(@Valid @RequestBody ServiceApiDomain serviceApi,
-            Errors errors) {
-        return serviceApiService.create(serviceApi, errors);
+
+                                                                     Errors errors) {
+        return serviceApiService.update(serviceApi, errors);
     }
 
     @GetMapping
-    public ResponseEntity<ResponseHandling<Iterable<ServiceApiDomain>>> getAll(ServiceApiDomain serviceApi) {
+    public ResponseEntity<ResponseHandling<Iterable<ServiceApiDomain>>> getAll() {
         return serviceApiService.getAll();
     }
 

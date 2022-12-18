@@ -24,7 +24,7 @@ public class ServiceApiDomain implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", updatable = false, unique = true)
-    private String id;
+    private Long id;
     @NotEmpty(message = "Service name is required")
     private String serviceName;
     private String serviceDescription;

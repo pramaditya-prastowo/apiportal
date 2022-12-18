@@ -2,6 +2,7 @@ package mii.bsi.apiportal.service;
 
 import java.util.Date;
 
+import mii.bsi.apiportal.utils.JwtUtility;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,11 +24,14 @@ public class ServiceApiService {
     @Autowired
     private ServiceApiRepository serviceApiRepository;
 
+    @Autowired
+    private JwtUtility jwtUtility;
+
     public static final String CREATE = "Create";
     public static final String GETALL = "Get All";
     public static final String GETBYID = "Get By Id";
 
-    public ResponseEntity<ResponseHandling<ServiceApiDomain>> create(ServiceApiDomain serviceApi, Errors errors) {
+    public ResponseEntity<ResponseHandling<ServiceApiDomain>> create(ServiceApiDomain serviceApi,String token, Errors errors) {
         ResponseHandling<ServiceApiDomain> responseData = new ResponseHandling<>();
         RequestData<ServiceApiDomain> requestData = new RequestData<>();
         requestData.setPayload(serviceApi);
@@ -37,7 +41,12 @@ public class ServiceApiService {
                 responseData.failed(CustomError.validRequest(errors), "Bad Request");
                 logService.saveLog(requestData, responseData, StatusCode.BAD_REQUEST, this.getClass().getName(),
                         CREATE);
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseData);
             }
+            final String username = jwtUtility.getUsernameFromToken(token);
+            serviceApi.setCreateDate(new Date());
+            serviceApi.setCreateBy(username.split("@")[0]);
+
 
             serviceApiRepository.save(serviceApi);
             responseData.success();

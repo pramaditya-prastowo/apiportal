@@ -25,7 +25,7 @@ public class BsiTokenVerification {
     private Date tokenCreateDate = new Date();
     private String validEmail;
     private String userId;
-    @Column(columnDefinition = "ENUM('FORGET_PASSWORD', 'EMAIL_VERIFICATION',)")
+    @Column(columnDefinition = "ENUM('FORGET_PASSWORD', 'EMAIL_VERIFICATION')")
     @Enumerated(EnumType.STRING)
     private TokenVerificationType tokenType;
 

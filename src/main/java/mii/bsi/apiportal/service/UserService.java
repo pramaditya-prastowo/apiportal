@@ -130,7 +130,7 @@ public class UserService {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).body(responseData);
             }
 
-            List<User> userList = userRepository.findAll();
+            List<User> userList = userRepository.findByAccountActive();
             List<UserResponseDTO> userListResponse = new ArrayList<>();
             for (User data: userList) {
                 userListResponse.add(new UserResponseDTO(

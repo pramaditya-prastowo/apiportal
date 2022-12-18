@@ -44,7 +44,7 @@ public class EmailUtility {
 
             Map<String, Object> model = new HashMap<>();
             model.put("fullName", user.getFirstName()+ " " + user.getLastName());
-            model.put("emailVerificationUrl", "http://localhost:4200/verification_email?token=" + token+"&uid=" + encUid);
+            model.put("emailVerificationUrl", "http://localhost:4200/verification-email?token=" + token+"&uid=" + encUid);
             model.put("email", user.getEmail());
             String content = geContentFromTemplate(model, "id", "emailVerification.vm");
 

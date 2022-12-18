@@ -21,7 +21,7 @@ public class ResponseHandling<T> {
     public void success(String message){
         this.error = false;
         this.responseCode = "00";
-        this.responseMessage = "Success";
+        this.responseMessage = message;
     }
 
     public void failed(){

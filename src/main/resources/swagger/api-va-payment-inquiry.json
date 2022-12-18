@@ -1,0 +1,289 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "API Virtual Account - Inquiry",
+    "description": "API Virtual Account - Inquiry",
+    "version": "1.0"
+  },
+  "servers": [
+    {
+      "url": "http://qa-apiesb-app:5555/rest"
+    }
+  ],
+  "paths": {
+    "/ApiVaPaymentSnap/resources/snap/inquiry": {
+      "post": {
+        "operationId": "_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "required": [
+                  "channelCode",
+                  "currency",
+                  "customerNo",
+                  "inquiryRequestId",
+                  "language",
+                  "partnerServiceId",
+                  "trxDateInit",
+                  "virtualAccountNo"
+                ],
+                "properties": {
+                  "partnerServiceId": {
+                    "type": "string"
+                  },
+                  "customerNo": {
+                    "type": "string"
+                  },
+                  "virtualAccountNo": {
+                    "type": "string"
+                  },
+                  "trxDateInit": {
+                    "type": "string"
+                  },
+                  "inquiryRequestId": {
+                    "type": "string"
+                  },
+                  "language": {
+                    "type": "string"
+                  },
+                  "currency": {
+                    "type": "string"
+                  },
+                  "channelCode": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiVaPaymentSnap.resources.snap.inquiry:_post_$response"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Access Denied",
+            "content": {}
+          }
+        },
+        "x-codegen-request-body-name": "additionalInfo"
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "ApiVaPaymentSnap.resources.snap.inquiry:_post_$response": {
+        "required": [
+          "additionalInfo",
+          "currency",
+          "inquiryRequestId",
+          "responseCode",
+          "responseMessage",
+          "virtualAccountData"
+        ],
+        "type": "object",
+        "properties": {
+          "additionalInfo": {
+            "$ref": "#/components/schemas/ApiVaPaymentSnap.resources.snap.inquiry:_post.additionalInfo"
+          },
+          "currency": {
+            "type": "string"
+          },
+          "responseMessage": {
+            "type": "string"
+          },
+          "inquiryRequestId": {
+            "type": "string"
+          },
+          "virtualAccountData": {
+            "$ref": "#/components/schemas/ApiVaPaymentSnap.resources.snap.inquiry:_post.virtualAccountData"
+          },
+          "responseCode": {
+            "type": "string"
+          }
+        }
+      },
+      "ApiVaPaymentSnap.resources.snap.inquiry:_post.reservedDocList": {
+        "required": [
+          "attributeName",
+          "attributeValue"
+        ],
+        "type": "object",
+        "properties": {
+          "attributeValue": {
+            "type": "string"
+          },
+          "attributeName": {
+            "type": "string"
+          }
+        }
+      },
+      "ApiVaPaymentSnap.resources.snap.inquiry:_post.additionalInfo": {
+        "required": [
+          "BillInfoList",
+          "billCompanyChargeAmount",
+          "billCurrency",
+          "billCustomerChargeAmount",
+          "billKey1",
+          "billKey2",
+          "billKey3",
+          "billPaidFlag",
+          "cardAcceptorTermId",
+          "companyAccountNumber",
+          "companyCode",
+          "customerAccountType",
+          "customerChargeAmount",
+          "merchantType",
+          "paymentType",
+          "remarkHint",
+          "reservedDocList",
+          "reservedField1",
+          "reservedField2",
+          "traceNumber",
+          "track2data"
+        ],
+        "type": "object",
+        "properties": {
+          "companyCode": {
+            "type": "string"
+          },
+          "cardAcceptorTermId": {
+            "type": "string"
+          },
+          "billCompanyChargeAmount": {
+            "type": "string"
+          },
+          "traceNumber": {
+            "type": "string"
+          },
+          "companyAccountNumber": {
+            "type": "string"
+          },
+          "customerAccountType": {
+            "type": "string"
+          },
+          "reservedField2": {
+            "type": "string"
+          },
+          "billPaidFlag": {
+            "type": "string"
+          },
+          "paymentType": {
+            "type": "string"
+          },
+          "track2data": {
+            "type": "string"
+          },
+          "reservedField1": {
+            "type": "string"
+          },
+          "BillInfoList": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ApiVaPaymentSnap.resources.snap.inquiry:_post.BillInfoList"
+            }
+          },
+          "billCustomerChargeAmount": {
+            "type": "string"
+          },
+          "customerChargeAmount": {
+            "type": "string"
+          },
+          "billCurrency": {
+            "type": "string"
+          },
+          "billKey2": {
+            "type": "string"
+          },
+          "remarkHint": {
+            "type": "string"
+          },
+          "billKey3": {
+            "type": "string"
+          },
+          "reservedDocList": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ApiVaPaymentSnap.resources.snap.inquiry:_post.reservedDocList"
+            }
+          },
+          "billKey1": {
+            "type": "string"
+          },
+          "merchantType": {
+            "type": "string"
+          }
+        }
+      },
+      "ApiVaPaymentSnap.resources.snap.inquiry:_post.virtualAccountData": {
+        "required": [
+          "billDetails",
+          "currency",
+          "inquiryRequestId"
+        ],
+        "type": "object",
+        "properties": {
+          "billDetails": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ApiVaPaymentSnap.resources.snap.inquiry:_post.billDetails"
+            }
+          },
+          "currency": {
+            "type": "string"
+          },
+          "inquiryRequestId": {
+            "type": "string"
+          }
+        }
+      },
+      "ApiVaPaymentSnap.resources.snap.inquiry:_post.billDetails": {
+        "required": [
+          "additionalInfo",
+          "billAmount",
+          "billCode",
+          "billName"
+        ],
+        "type": "object",
+        "properties": {
+          "billName": {
+            "type": "string"
+          },
+          "billAmount": {
+            "type": "string"
+          },
+          "additionalInfo": {
+            "$ref": "#/components/schemas/ApiVaPaymentSnap.resources.snap.inquiry:_post.additionalInfo"
+          },
+          "billCode": {
+            "type": "string"
+          }
+        }
+      },
+      "ApiVaPaymentSnap.resources.snap.inquiry:_post.BillInfoList": {
+        "required": [
+          "label",
+          "value"
+        ],
+        "type": "object",
+        "properties": {
+          "label": {
+            "type": "string"
+          },
+          "value": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}
