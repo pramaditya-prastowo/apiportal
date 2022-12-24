@@ -1,7 +1,14 @@
 package mii.bsi.apiportal.service;
 
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
 
+import io.jsonwebtoken.Claims;
+import mii.bsi.apiportal.domain.User;
+import mii.bsi.apiportal.domain.model.Roles;
+import mii.bsi.apiportal.repository.UserRepository;
 import mii.bsi.apiportal.utils.JwtUtility;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -25,11 +32,15 @@ public class ServiceApiService {
     private ServiceApiRepository serviceApiRepository;
 
     @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
     private JwtUtility jwtUtility;
 
     public static final String CREATE = "Create";
     public static final String GETALL = "Get All";
     public static final String GETBYID = "Get By Id";
+    public static final String DELETE = "Delete";
 
     public ResponseEntity<ResponseHandling<ServiceApiDomain>> create(ServiceApiDomain serviceApi,String token, Errors errors) {
         ResponseHandling<ServiceApiDomain> responseData = new ResponseHandling<>();
@@ -89,7 +100,7 @@ public class ServiceApiService {
         ResponseHandling<Iterable<ServiceApiDomain>> responseData = new ResponseHandling<>();
         RequestData<ServiceApiDomain> requestData = new RequestData<>();
         try {
-            responseData.setPayload(serviceApiRepository.findAll());
+            responseData.setPayload(serviceApiRepository.findByServiceApiActive());
             responseData.success();
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseData);
@@ -98,16 +109,53 @@ public class ServiceApiService {
         return ResponseEntity.status(HttpStatus.OK).body(responseData);
     }
 
-    public ResponseEntity<ResponseHandling<ServiceApiDomain>> getById(String id) {
+    public ResponseEntity<ResponseHandling<ServiceApiDomain>> getById(Long id) {
         ResponseHandling<ServiceApiDomain> responseData = new ResponseHandling<>();
         RequestData<ServiceApiDomain> requestData = new RequestData<>();
         try {
-            responseData.setPayload(serviceApiRepository.findById(id.toString()).get());
+            responseData.setPayload(serviceApiRepository.findByIdActive(id));
             responseData.success();
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseData);
         }
         logService.saveLog(requestData, responseData, StatusCode.OK, this.getClass().getName(), GETBYID);
         return ResponseEntity.status(HttpStatus.OK).body(responseData);
+    }
+
+    public ResponseEntity<ResponseHandling> deleteById(Long id, String token){
+        ResponseHandling responseData = new ResponseHandling();
+        RequestData<Map<String, Object>> requestData = new RequestData<>();
+        Map<String, Object> request = new HashMap<>();
+        request.put("id", id);
+        requestData.setPayload(request);
+
+        try {
+            final String username = jwtUtility.getUsernameFromToken(token);
+            final Claims claim = jwtUtility.getAllClaimsFromToken(token);
+            if(!(claim.get("role").equals(Roles.SUPER_ADMIN.toString()) || claim.get("role").equals(Roles.ADMIN.toString()))){
+                responseData.failed("Access denied");
+                logService.saveLog(requestData, responseData, StatusCode.FORBIDDEN, this.getClass().getName(), DELETE);
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(responseData);
+            }
+
+            User admin = userRepository.findByEmail(username);
+            ServiceApiDomain apiDomain = serviceApiRepository.getReferenceById(id);
+            System.out.println(apiDomain);
+            apiDomain.setInActive(true);
+            apiDomain.setUpdateBy(admin.getId());
+            apiDomain.setUpdateDate(new Date());
+
+            serviceApiRepository.save(apiDomain);
+            responseData.success();
+
+        }catch (Exception e){
+            responseData.failed(e.getMessage());
+            e.printStackTrace();
+            logService.saveLog(requestData, responseData, StatusCode.INTERNAL_SERVER_ERROR, this.getClass().getName(),
+                    DELETE);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseData);
+        }
+        logService.saveLog(requestData, responseData, StatusCode.OK, this.getClass().getName(), DELETE);
+        return ResponseEntity.ok(responseData);
     }
 }

@@ -4,6 +4,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import mii.bsi.apiportal.domain.Promo;
 
-public interface PromoRepository extends JpaRepository<Promo, String> {
+public interface PromoRepository extends JpaRepository<Promo, Long> {
 
 }

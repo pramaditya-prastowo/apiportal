@@ -28,9 +28,13 @@ public class ServiceApiDomain implements Serializable {
     @NotEmpty(message = "Service name is required")
     private String serviceName;
     private String serviceDescription;
-    private String idIcon;
-    private String linkUrl;
+    private String icon;
+    private String swagger;
+//    private String linkUrl;
     private String createBy;
+    private boolean inActive;
+    private String subtitle;
+    private String sampleDescription;
     private Date createDate;
     private String updateBy;
     private Date updateDate;

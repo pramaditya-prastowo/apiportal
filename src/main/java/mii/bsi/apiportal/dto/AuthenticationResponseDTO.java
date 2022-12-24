@@ -10,11 +10,12 @@ import java.util.Date;
 @Data
 @AllArgsConstructor
 public class AuthenticationResponseDTO {
-    private String uid;
+    private String id;
     private String email;
     private String firstName;
     private String lastName;
     private String corporateName;
+    private String mobilePhone;
     private String token;
     private Date expiredAt;
 
@@ -23,10 +24,11 @@ public class AuthenticationResponseDTO {
     private Roles roles;
 
     public AuthenticationResponseDTO(User user, String token, Date expiredAt){
-        this.uid = user.getId();
+        this.id = user.getId();
         this.email = user.getEmail();
         this.firstName = user.getFirstName();
         this.lastName = user.getLastName();
+        this.mobilePhone = user.getMobilePhone();
         this.corporateName = user.getCorporateName();
         this.token = token;
         this.expiredAt = expiredAt;

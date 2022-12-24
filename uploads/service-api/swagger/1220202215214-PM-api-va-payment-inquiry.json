@@ -1,0 +1,533 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "API Virtual Account - Inquiry",
+    "description": "API Virtual Account - Inquiry",
+    "version": "1.0"
+  },
+  "servers": [
+    {
+      "url": "http://qa-apiesb-app:5555/rest"
+    }
+  ],
+  "paths": {
+    "/ApiVaPaymentSnap/resources/snap/inquiry": {
+      "post": {
+        "operationId": "_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "required": [
+                  "channelCode",
+                  "currency",
+                  "customerNo",
+                  "inquiryRequestId",
+                  "language",
+                  "partnerServiceId",
+                  "trxDateInit",
+                  "virtualAccountNo"
+                ],
+                "properties": {
+                  "partnerServiceId": {
+                    "type": "string"
+                  },
+                  "customerNo": {
+                    "type": "string"
+                  },
+                  "virtualAccountNo": {
+                    "type": "string"
+                  },
+                  "trxDateInit": {
+                    "type": "string"
+                  },
+                  "inquiryRequestId": {
+                    "type": "string"
+                  },
+                  "language": {
+                    "type": "string"
+                  },
+                  "currency": {
+                    "type": "string"
+                  },
+                  "channelCode": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiVaPaymentSnap.resources.snap.inquiry:_post_$response"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Access Denied",
+            "content": {}
+          }
+        },
+        "x-codegen-request-body-name": "additionalInfo"
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "ApiVaPaymentSnap.resources.snap.inquiry:_post_$response": {
+        "required": [
+          "additionalInfo",
+          "currency",
+          "inquiryRequestId",
+          "responseCode",
+          "responseMessage",
+          "virtualAccountData"
+        ],
+        "type": "object",
+        "properties": {
+          "additionalInfo": {
+            "$ref": "#/components/schemas/ApiVaPaymentSnap.resources.snap.inquiry:_post.additionalInfo"
+          },
+          "currency": {
+            "type": "string"
+          },
+          "responseMessage": {
+            "type": "string"
+          },
+          "inquiryRequestId": {
+            "type": "string"
+          },
+          "virtualAccountData": {
+            "$ref": "#/components/schemas/ApiVaPaymentSnap.resources.snap.inquiry:_post.virtualAccountData"
+          },
+          "responseCode": {
+            "type": "string"
+          }
+        }
+      },
+      "ApiVaPaymentSnap.resources.snap.inquiry:_post.reservedDocList": {
+        "required": [
+          "attributeName",
+          "attributeValue"
+        ],
+        "type": "object",
+        "properties": {
+          "attributeValue": {
+            "type": "string"
+          },
+          "attributeName": {
+            "type": "string"
+          }
+        }
+      },
+      "ApiVaPaymentSnap.resources.snap.inquiry:_post.additionalInfo": {
+        "required": [
+          "BillInfoList",
+          "billCompanyChargeAmount",
+          "billCurrency",
+          "billCustomerChargeAmount",
+          "billKey1",
+          "billKey2",
+          "billKey3",
+          "billPaidFlag",
+          "cardAcceptorTermId",
+          "companyAccountNumber",
+          "companyCode",
+          "customerAccountType",
+          "customerChargeAmount",
+          "merchantType",
+          "paymentType",
+          "remarkHint",
+          "reservedDocList",
+          "reservedField1",
+          "reservedField2",
+          "traceNumber",
+          "track2data"
+        ],
+        "type": "object",
+        "properties": {
+          "companyCode": {
+            "type": "string"
+          },
+          "cardAcceptorTermId": {
+            "type": "string"
+          },
+          "billCompanyChargeAmount": {
+            "type": "string"
+          },
+          "traceNumber": {
+            "type": "string"
+          },
+          "companyAccountNumber": {
+            "type": "string"
+          },
+          "customerAccountType": {
+            "type": "string"
+          },
+          "reservedField2": {
+            "type": "string"
+          },
+          "billPaidFlag": {
+            "type": "string"
+          },
+          "paymentType": {
+            "type": "string"
+          },
+          "track2data": {
+            "type": "string"
+          },
+          "reservedField1": {
+            "type": "string"
+          },
+          "BillInfoList": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ApiVaPaymentSnap.resources.snap.inquiry:_post.BillInfoList"
+            }
+          },
+          "billCustomerChargeAmount": {
+            "type": "string"
+          },
+          "customerChargeAmount": {
+            "type": "string"
+          },
+          "billCurrency": {
+            "type": "string"
+          },
+          "billKey2": {
+            "type": "string"
+          },
+          "remarkHint": {
+            "type": "string"
+          },
+          "billKey3": {
+            "type": "string"
+          },
+          "reservedDocList": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ApiVaPaymentSnap.resources.snap.inquiry:_post.reservedDocList"
+            }
+          },
+          "billKey1": {
+            "type": "string"
+          },
+          "merchantType": {
+            "type": "string"
+          }
+        }
+      },
+      "ApiVaPaymentSnap.resources.snap.inquiry:_post.virtualAccountData": {
+        "required": [
+          "billDetails",
+          "currency",
+          "inquiryRequestId"
+        ],
+        "type": "object",
+        "properties": {
+          "billDetails": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ApiVaPaymentSnap.resources.snap.inquiry:_post.billDetails"
+            }
+          },
+          "currency": {
+            "type": "string"
+          },
+          "inquiryRequestId": {
+            "type": "string"
+          }
+        }
+      },
+      "ApiVaPaymentSnap.resources.snap.inquiry:_post.billDetails": {
+        "required": [
+          "additionalInfo",
+          "billAmount",
+          "billCode",
+          "billName"
+        ],
+        "type": "object",
+        "properties": {
+          "billName": {
+            "type": "string"
+          },
+          "billAmount": {
+            "type": "string"
+          },
+          "additionalInfo": {
+            "$ref": "#/components/schemas/ApiVaPaymentSnap.resources.snap.inquiry:_post.additionalInfo"
+          },
+          "billCode": {
+            "type": "string"
+          }
+        }
+      },
+      "ApiVaPaymentSnap.resources.snap.inquiry:_post.BillInfoList": {
+        "required": [
+          "label",
+          "value"
+        ],
+        "type": "object",
+        "properties": {
+          "label": {
+            "type": "string"
+          },
+          "value": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  },
+  "spesification" : {
+    "header": [
+        {
+            "key": "X-SIGNATURE",
+            "value": "",
+            "format": "Alphanumeric",
+            "mandatory": "M",
+            "length" : "",
+            "description": "SHA-256"
+        },
+        {
+            "key": "X-TIMESTAMP",
+            "value": "",
+            "format": "Datetime",
+            "mandatory": "M",
+            "length" : "",
+            "description": "The timestamp must be presented in ISO8601 format (yyyy-MM-ddTHH:mm:ss.SSSTZD)"
+        },
+        {
+            "key": "X-PARTNER-ID",
+            "value": "",
+            "format": "Alphanumeric",
+            "mandatory": "M",
+            "length" : "",
+            "description": ""
+        },
+        {
+            "key": "CHANNEL-ID",
+            "value": "",
+            "format": "Alpha",
+            "mandatory": "M",
+            "length" : "",
+            "description": ""
+        },
+        {
+            "key": "X-EXTERNAL-ID",
+            "value": "",
+            "format": "String",
+            "mandatory": "M",
+            "length" : "128",
+            "description": ""
+        },
+        {
+            "key": "Content-Type",
+            "value": "",
+            "format": "Alpha",
+            "mandatory": "M",
+            "length" : "",
+            "description": "application/json"
+        }
+    ],
+    "request": [
+        {
+            "field": "partnerServiceId",
+            "data_type": "String",
+            "format": "",
+            "mandatory": "M",
+            "length" : "8",
+            "description": "Derivative of XPARTNERID, similar to company code, 8 digit left padding space. partnerServic eId + customerNo or virtualAccou ntNo",
+            "sample": "099"
+        }, 
+        {
+            "field": "customerNo",
+            "data_type": "String",
+            "format": "",
+            "mandatory": "M",
+            "length" : "20",
+            "description": "Unique number (up to 20 digits). partnerServic eId + customerNo or virtualAccou ntNo",
+            "sample": "12345678901234"
+        }, 
+        {
+            "field": "virtualAccountNo",
+            "data_type": "String",
+            "format": "",
+            "mandatory": "M",
+            "length" : "28",
+            "description": "partnerServic eId (8 digit left padding space) + customerNo (up to 20 digits). partnerServiceId + customerNo or virtualAccou ntNo",
+            "sample": "2110199457"
+        }, 
+        {
+            "field": "trxDateInit",
+            "data_type": "Date",
+            "format": "",
+            "mandatory": "O",
+            "length" : "25",
+            "description": "PJP internal system datetime with timezone, which follows the ISO-8601 standard",
+            "sample": "20210609144500"
+        }, 
+        {
+            "field": "inquiryRequestId",
+            "data_type": "String",
+            "format": "",
+            "mandatory": "M",
+            "length" : "128",
+            "description": "Unique identifier for this Inquiry. Generated by PJP.",
+            "sample": "123456789"
+        }, 
+        {
+            "field": "language",
+            "data_type": "String",
+            "format": "",
+            "mandatory": "O",
+            "length" : "2",
+            "description": "Language code based on ISO 639-1",
+            "sample": "01"
+        }, 
+        {
+            "field": "channelCode",
+            "data_type": "Number",
+            "format": "",
+            "mandatory": "O",
+            "length" : "4",
+            "description": "Channel code based on ISO 18245",
+            "sample": "2"
+        }, 
+        {
+            "field": "additionalInfo",
+            "data_type": "Object",
+            "format": "",
+            "mandatory": "O",
+            "length" : "",
+            "description": "Additional Information for custom use",
+            "sample": ""
+        }, 
+        {
+            "field": "",
+            "data_type": "",
+            "format": "",
+            "mandatory": "",
+            "length" : "",
+            "description": "",
+            "sample": ""
+        }
+    ],
+    "response": [
+        {
+            "field": "responseCode",
+            "data_type": "String",
+            "format": "",
+            "mandatory": "M",
+            "length" : "7",
+            "description": "ResponseCode",
+            "sample": "2001100"
+        },
+        {
+            "field": "responseMessage",
+            "data_type": "String",
+            "format": "",
+            "mandatory": "M",
+            "length" : "150",
+            "description": "ResponseDescription",
+            "sample": "Successful"
+        },
+        {
+            "field": "virtualAccountData",
+            "data_type": "Object",
+            "format": "",
+            "mandatory": "M",
+            "length" : "",
+            "description": "",
+            "sample": ""
+        },
+        {
+            "field": "partnerServiceId",
+            "data_type": "String",
+            "format": "",
+            "mandatory": "M",
+            "length" : "8",
+            "description": "Derivative of XPARTNERID, similar to company code, 8 digit left padding space. partnerServic eId + customerNo or virtualAccou ntNo",
+            "sample": "099"
+        },
+        {
+            "field": "inquiryRequestId",
+            "data_type": "String",
+            "format": "",
+            "mandatory": "M",
+            "length" : "128",
+            "description": "From Inquiry Request",
+            "sample": ""
+        },
+        {
+            "field": "currency",
+            "data_type": "String",
+            "format": "",
+            "mandatory": "M",
+            "length" : "3",
+            "description": "Currency",
+            "sample": "360"
+        },
+        {
+            "field": "billDetails",
+            "data_type": "Array of Objects",
+            "format": "",
+            "mandatory": "O",
+            "length" : "",
+            "description": "",
+            "sample": ""
+        },
+        {
+            "field": "billCode",
+            "data_type": "String",
+            "format": "",
+            "mandatory": "O",
+            "length" : "2",
+            "description": "Bill code for Customer choose",
+            "sample": "01"
+        },
+        {
+            "field": "billName",
+            "data_type": "String",
+            "format": "",
+            "mandatory": "O",
+            "length" : "20",
+            "description": "Bill Name",
+            "sample": "TOPUP"
+        },
+        {
+            "field": "billAmount",
+            "data_type": "Object",
+            "format": "",
+            "mandatory": "O",
+            "length" : "",
+            "description": "",
+            "sample": "10000"
+        },
+        {
+            "field": "additionalInfo",
+            "data_type": "Object",
+            "format": "",
+            "mandatory": "O",
+            "length" : "",
+            "description": "Additional Information for custom use",
+            "sample": ""
+        }
+    ],
+    "sample_header" : "\nXSIGNATURE:3a2264babc4bea574fdb03d81520be00f1752633c208f52eb9dd367821ff38cc0d408a53bf88f\ne41496cb00c2dce95b4730eea1cb77809b6d1a3d9b6dcd0bfb5\nX-TIMESTAMP:2022-02-12T13:07:00+07:00\nX-PARTNER-ID:099\nX-EXTERNAL-ID:41807553358950093184162180797837\nCHANNEL-ID:12345\n",
+    "sample_request" : "{\n    \"partnerServiceId\": \"099\",\n    \"customerNo\": \"12345678901234\",\n    \"virtualAccountNo\": \"7095592389\",\n    \"trxDateInit\": \"20210609144500\",\n    \"inquiryRequestId\": \"00000048\",\n    \"language\": \"01\",\n    \"currency\": \"360\",\n    \"channelCode\": \"2\",\n    \"additionalInfo\": {\n        \"traceNumber\": \"70048\",\n        \"cardAcceptorTermId\": \"2\",\n        \"customerAccountType\": \"2\",\n        \"billKey1\": \"081224000978\",\n        \"billKey2\": \"10000\",\n        \"billKey3\": \"\",\n        \"reservedField1\": \"\",\n        \"reservedField2\": \"\",\n        \"reservedDocList\": [\n            {\n                \"attributeName\": \"\",\n                \"attributeValue\": \"\"\n            }\n        ],\n        \"track2data\": \"1\",\n        \"companyCode\": \"200194\"\n    }\n}",
+    "sample_response": "\n{\n    \"responseCode\": \"2002400\",\n    \"responseMessage\": \"Successful\",\n    \"virtualAccountData\": {\n        \"partnerServiceId\": \"889\",\n        \"inquiryRequestId\": \"22345111\",\n        \"customerNo\": \"2110199457\",\n        \"virtualAccountName\": \"FANNY OKTISEFTIANA\",\n        \"virtualAccountNo\":\n    \"88921101994572110199457\",\n        \"billDetails\": [\n        {\n            \"billCode\": \"01\",\n            \"billName\": \"SHOPEE PAY\",\n            \"additionalInfo\": {\n                \"billCustomerChargeAmount\": \"0\",\n                \"billCompanyChargeAmount\": \"0\",\n                \"billPaidFlag\": \"0\",\n                \"billCurrency\": \"360\",\n                \"billKey1\":\"60808122686926\",\n                \"billKey2\": \"50000\",\n                \"billKey3\": \"\"\n            },\n            \"billAmount\": {\n                \"value\": \"52000\",\n                \"currency\": \"IDR\"\n            }\n        }\n        ]\n    }\n}",
+    "sample_error": "",
+    "list_error": [
+        
+    ]
+
+  }
+}

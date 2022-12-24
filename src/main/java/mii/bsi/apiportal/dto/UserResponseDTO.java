@@ -18,6 +18,7 @@ public class UserResponseDTO {
     private String corporateName;
     private boolean inActive;
     private boolean locked;
+    private String mobilePhone;
     private Roles role;
     private boolean emailVerified;
     private Date createDate;

@@ -13,6 +13,8 @@ public interface UserRepository extends JpaRepository<User, String> {
 
     public User findByEmail(String paramString);
 
+//    public User findById(String paramString);
+
     @Query(value = "SELECT * from bsi_user_api_portal where account_inactive = false", nativeQuery = true)
     public List<User> findByAccountActive();
 

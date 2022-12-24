@@ -27,7 +27,6 @@ public class ServiceApiController {
 
     @PatchMapping
     public ResponseEntity<ResponseHandling<ServiceApiDomain>> update(@Valid @RequestBody ServiceApiDomain serviceApi,
-
                                                                      Errors errors) {
         return serviceApiService.update(serviceApi, errors);
     }
@@ -38,7 +37,12 @@ public class ServiceApiController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ResponseHandling<ServiceApiDomain>> getById(@PathVariable("id") String id) {
+    public ResponseEntity<ResponseHandling<ServiceApiDomain>> getById(@PathVariable("id") Long id) {
         return serviceApiService.getById(id);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<ResponseHandling> delete(@PathVariable("id") Long id,@RequestHeader(HttpHeaders.AUTHORIZATION) String token){
+        return serviceApiService.deleteById(id, token.substring(7));
     }
 }

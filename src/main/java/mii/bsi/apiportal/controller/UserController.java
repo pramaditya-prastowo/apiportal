@@ -28,7 +28,7 @@ public class UserController {
         return userService.register(user, errors);
     }
 
-    @PostMapping(value = "/admin")
+    @PostMapping(value = "/by-admin")
     public ResponseEntity<ResponseHandling<User>> registerByAdmin(
             @Valid @RequestBody User user,
             @RequestHeader(HttpHeaders.AUTHORIZATION) String token,
@@ -47,8 +47,13 @@ public class UserController {
     }
 
     @PatchMapping
-    public ResponseHandling<User> update(@RequestBody User user) {
-        return userService.update(user);
+    public ResponseEntity<ResponseHandling> update(@RequestBody User user,@RequestHeader(HttpHeaders.AUTHORIZATION) String token ) {
+        return userService.update(user, token.substring(7));
+    }
+
+    @PatchMapping("/by-admin")
+    public ResponseEntity<ResponseHandling> updateByAdmin(@RequestBody User user, @RequestHeader(HttpHeaders.AUTHORIZATION) String token) {
+        return userService.updateByAdmin(user, token.substring(7));
     }
 
     @PatchMapping(value = "/verification")

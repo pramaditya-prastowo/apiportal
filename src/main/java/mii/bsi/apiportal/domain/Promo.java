@@ -22,8 +22,8 @@ public class Promo implements Serializable {
     @Column(name = "id", updatable = false, unique = true)
     private Long id;
     private String title;
-    private String startPromo;
-    private String endPromo;
+    private Date startPromo;
+    private Date endPromo;
     private String kodePromo;
     private String description;
     private String icon1;

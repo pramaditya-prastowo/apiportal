@@ -68,7 +68,7 @@ public class PromoService {
         RequestData<Promo> requestData = new RequestData<>();
 
         try {
-            responseData.setPayload(promoRepository.findById(id).get());
+            responseData.setPayload(promoRepository.getReferenceById(Long.parseLong(id)));
             responseData.success();
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseData);

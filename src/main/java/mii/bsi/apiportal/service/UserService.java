@@ -43,6 +43,8 @@ public class UserService {
     public static final String EMAIL_VERIFICATION = "Email Verification";
     public static final String RESEND_EMAIL_VERIFICATION = "Resend Email Verification";
     public static final String DELETE_USER = "Delete User";
+    public static final String UPDATE_BY_ADMIN = "Update by Admin";
+    public static final String UPDATE_BY_MITRA = "Update by Mitra";
 
     @Autowired
     private BsiTokenVerificationRepository tokenRepository;
@@ -87,24 +89,113 @@ public class UserService {
         return responseHandling;
     }
 
-    public ResponseHandling<User> update(User user) {
-        ResponseHandling<User> responseHandling = new ResponseHandling<>();
+    public ResponseEntity<ResponseHandling> update(User user, String token) {
+        ResponseHandling responseData = new ResponseHandling<>();
+        RequestData requestData = new RequestData();
+
         try {
-            String pattern = "yyyyMMddHHmmss";
-            SimpleDateFormat timestamp = new SimpleDateFormat(pattern);
-            String date = timestamp.format(new Date());
-            user.getId();
-            user.setUpdateDate(new Date());
-            responseHandling.setPayload(userRepository.save(user));
-            responseHandling.setResponseCode("00");
-            responseHandling.setResponseMessage("success");
+
+            User newUser = userRepository.findById(user.getId()).orElse(null);
+            if(newUser == null){
+                responseData.failed("User not found");
+                logService.saveLog(new RequestData<>(), responseData, StatusCode.NOT_FOUND, this.getClass().getName(),
+                        UPDATE_BY_ADMIN);
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(responseData);
+            }
+
+            final String username = jwtUtility.getUsernameFromToken(token);
+            User userUpdate = userRepository.findByEmail(username);
+            if(userUpdate == null){
+                responseData.failed("Access denied");
+                logService.saveLog(requestData, responseData, StatusCode.FORBIDDEN, this.getClass().getName(), UPDATE_BY_ADMIN);
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(responseData);
+            }
+
+            newUser.setFirstName(user.getFirstName());
+            newUser.setLastName(user.getLastName());
+            newUser.setCorporateName(user.getCorporateName());
+            newUser.setAuthPrincipal(user.getAuthPrincipal());
+            newUser.setUpdateDate(new Date());
+            newUser.setUpdateBy(userUpdate.getId());
+            newUser.setMobilePhone(user.getMobilePhone());
+            userRepository.save(newUser);
+
+            responseData.success();
+
         } catch (Exception e) {
-            responseHandling.setResponseCode("99");
-            responseHandling.setResponseMessage("failed");
-            responseHandling.setPayload(user);
+            e.printStackTrace();
+            responseData.failed(e.getMessage());
+            logService.saveLog(new RequestData<>(), responseData, StatusCode.INTERNAL_SERVER_ERROR, this.getClass().getName(),
+                    UPDATE_BY_ADMIN);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseData);
         }
-        return responseHandling;
+        logService.saveLog(new RequestData<>(), responseData, StatusCode.OK, this.getClass().getName(),
+                UPDATE_BY_ADMIN);
+        return ResponseEntity.ok(responseData);
     }
+
+    public ResponseEntity<ResponseHandling> updateByAdmin(User user, String token) {
+        ResponseHandling responseData = new ResponseHandling<>();
+        RequestData requestData = new RequestData();
+
+        try {
+
+            User newUser = userRepository.findById(user.getId()).orElse(null);
+            if(newUser == null){
+                responseData.failed("User not found");
+                logService.saveLog(new RequestData<>(), responseData, StatusCode.NOT_FOUND, this.getClass().getName(),
+                        UPDATE_BY_ADMIN);
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(responseData);
+            }
+
+            final Claims claim = jwtUtility.getAllClaimsFromToken(token);
+            if(!(claim.get("role").equals(Roles.SUPER_ADMIN.toString()) || claim.get("role").equals(Roles.ADMIN.toString()))){
+                responseData.failed("Access denied");
+                logService.saveLog(requestData, responseData, StatusCode.FORBIDDEN, this.getClass().getName(), UPDATE_BY_ADMIN);
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(responseData);
+            }
+
+            if((user.getAuthPrincipal().equals(Roles.ADMIN) || user.getAuthPrincipal().equals(Roles.SUPER_ADMIN))){
+
+                if(!claim.get("role").equals(Roles.SUPER_ADMIN.toString())){
+                    responseData.failed("Access denied");
+                    logService.saveLog(requestData, responseData, StatusCode.FORBIDDEN, this.getClass().getName(), UPDATE_BY_ADMIN);
+                    return ResponseEntity.status(HttpStatus.FORBIDDEN).body(responseData);
+                }
+
+            }
+
+            final String username = jwtUtility.getUsernameFromToken(token);
+            User admin = userRepository.findByEmail(username);
+            if(admin == null){
+                responseData.failed("Access denied");
+                logService.saveLog(requestData, responseData, StatusCode.FORBIDDEN, this.getClass().getName(), UPDATE_BY_ADMIN);
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(responseData);
+            }
+
+            newUser.setFirstName(user.getFirstName());
+            newUser.setLastName(user.getLastName());
+            newUser.setMobilePhone(user.getMobilePhone());
+            newUser.setCorporateName(user.getCorporateName());
+            newUser.setAuthPrincipal(user.getAuthPrincipal());
+            newUser.setUpdateDate(new Date());
+            newUser.setUpdateBy(admin.getId());
+            userRepository.save(newUser);
+
+            responseData.success();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            responseData.failed(e.getMessage());
+            logService.saveLog(new RequestData<>(), responseData, StatusCode.INTERNAL_SERVER_ERROR, this.getClass().getName(),
+                    UPDATE_BY_ADMIN);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseData);
+        }
+        logService.saveLog(new RequestData<>(), responseData, StatusCode.OK, this.getClass().getName(),
+                UPDATE_BY_ADMIN);
+        return ResponseEntity.ok(responseData);
+    }
+
 
     public ResponseEntity<ResponseHandling<List<UserResponseDTO>>> getAll(String token) {
         ResponseHandling<List<UserResponseDTO>> responseData = new ResponseHandling<>();
@@ -141,6 +232,7 @@ public class UserService {
                         data.getCorporateName(),
                         data.isAccountInactive(),
                         data.isAccountLocked(),
+                        data.getMobilePhone(),
                         data.getAuthPrincipal(),
                         data.isEmailVerified(),
                         data.getCreateDate()
@@ -271,9 +363,15 @@ public class UserService {
 
             }
 
+            final String username = jwtUtility.getUsernameFromToken(token);
+            User admin = userRepository.findByEmail(username);
+
             String sequence = userRepository.getUserSequence();
             user.generateCreated(sequence);
+            user.setCreateBy(admin.getId());
             user.setPassword(passwordEncoder.encode(user.getPassword()));
+
+            System.out.println(user);
 
             BsiTokenVerification tokenVerification = new BsiTokenVerification();
             tokenVerification.generateToken();
@@ -282,6 +380,8 @@ public class UserService {
             tokenVerification.setTokenType(TokenVerificationType.EMAIL_VERIFICATION);
 
             final String encToken = encryptUtility.encryptAES(tokenVerification.getToken(), Params.PASS_KEY);
+
+            //send email verification
             emailUtility.sendEmailVerification(user, encToken);
 
             userRepository.save(user);
