@@ -15,8 +15,11 @@ public interface UserRepository extends JpaRepository<User, String> {
 
 //    public User findById(String paramString);
 
-    @Query(value = "SELECT * from bsi_user_api_portal where account_inactive = false", nativeQuery = true)
+    @Query(value = "SELECT * from bsi_user_api_portal  where account_inactive = false", nativeQuery = true)
     public List<User> findByAccountActive();
+
+    @Query(value="select count(id) from bsi_user_api_portal where auth_principal = ?1", nativeQuery = true)
+    long countUserByAuthPrincipal(String paramString);
 
     @Query(value = "SELECT * from bsi_user_api_portal where account_inactive = true", nativeQuery = true)
     public List<User> findByAccountInActive();

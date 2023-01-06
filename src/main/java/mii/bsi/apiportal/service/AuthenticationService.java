@@ -61,6 +61,7 @@ public class AuthenticationService {
             }
 
             User user = userRepository.findByEmail(requestData.getPayload().getEmail());
+            System.out.println(user);
 
             ValidationResponse<AuthenticationResponseDTO> validBusiness = validation.validationBusiness(requestData, user);
             if(!validBusiness.isValid()){

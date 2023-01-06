@@ -45,6 +45,7 @@ public class UserService {
     public static final String DELETE_USER = "Delete User";
     public static final String UPDATE_BY_ADMIN = "Update by Admin";
     public static final String UPDATE_BY_MITRA = "Update by Mitra";
+    public static final String COUNT_MITRA = "Count Mitra";
 
     @Autowired
     private BsiTokenVerificationRepository tokenRepository;
@@ -224,6 +225,7 @@ public class UserService {
             List<User> userList = userRepository.findByAccountActive();
             List<UserResponseDTO> userListResponse = new ArrayList<>();
             for (User data: userList) {
+
                 userListResponse.add(new UserResponseDTO(
                         data.getId(),
                         data.getFirstName(),
@@ -235,7 +237,8 @@ public class UserService {
                         data.getMobilePhone(),
                         data.getAuthPrincipal(),
                         data.isEmailVerified(),
-                        data.getCreateDate()
+                        data.getCreateDate(),
+                        data.getGroupId()
                 ));
             }
             responseData.setPayload(userListResponse);
@@ -542,6 +545,34 @@ public class UserService {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseData);
         }
         logService.saveLog(requestData, responseData, StatusCode.OK, this.getClass().getName(), DELETE_USER);
+        return ResponseEntity.ok(responseData);
+    }
+
+    public ResponseEntity<ResponseHandling<Integer>> countMitra(String token){
+        ResponseHandling responseData= new ResponseHandling();
+        try {
+            final Claims claim = jwtUtility.getAllClaimsFromToken(token);
+            claim.get("role");
+            if(!(claim.get("role").equals(Roles.SUPER_ADMIN.toString()) || claim.get("role").equals(Roles.ADMIN.toString()))){
+                responseData.failed("Access denied");
+                logService.saveLog(new RequestData<>(), responseData, StatusCode.FORBIDDEN, this.getClass().getName(),
+                        COUNT_MITRA);
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(responseData);
+            }
+            long count = userRepository.countUserByAuthPrincipal(Roles.MITRA.toString());
+            responseData.setPayload(count);
+            responseData.success();
+
+
+        }catch (Exception e){
+            e.printStackTrace();
+            responseData.failed(e.getMessage());
+            logService.saveLog(new RequestData<>(), responseData, StatusCode.INTERNAL_SERVER_ERROR, this.getClass().getName(),
+                    COUNT_MITRA);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseData);
+        }
+        logService.saveLog(new RequestData<>(), responseData, StatusCode.OK, this.getClass().getName(),
+                COUNT_MITRA);
         return ResponseEntity.ok(responseData);
     }
 }

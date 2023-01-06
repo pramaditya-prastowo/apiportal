@@ -1,0 +1,313 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "description": "payment for API VA Payment",
+    "version": "1.0",
+    "title": "payment"
+  },
+  "host": "qa-apiesb-app:5555",
+  "basePath": "/rest",
+  "schemes": [
+    "http"
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/ApiVaPaymentSnap/resources/snap/payment": {
+      "post": {
+        "operationId": "_post",
+        "parameters": [
+          {
+            "name": "partnerServiceId",
+            "in": "formData",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "customerNo",
+            "in": "formData",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "trxId",
+            "in": "formData",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "trxDateTime",
+            "in": "formData",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "channelCode",
+            "in": "formData",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "bodyParameters",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ApiVaPaymentSnap.resources.snap.payment:_post_bodyParameters"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/ApiVaPaymentSnap.resources.snap.payment:_post_$response"
+            }
+          },
+          "401": {
+            "description": "Access Denied"
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "ApiVaPaymentSnap.resources.snap.payment:_post.paidAmount": {
+      "required": [
+        "currency",
+        "value"
+      ],
+      "properties": {
+        "currency": {
+          "type": "string"
+        },
+        "value": {
+          "type": "string"
+        }
+      }
+    },
+    "ApiVaPaymentSnap.resources.snap.payment:_post.reservedDocList": {
+      "required": [
+        "attributeName",
+        "attributeValue"
+      ],
+      "properties": {
+        "attributeValue": {
+          "type": "string"
+        },
+        "attributeName": {
+          "type": "string"
+        }
+      }
+    },
+    "ApiVaPaymentSnap.resources.snap.payment:_post_bodyParameters": {
+      "required": [
+        "additionalInfo",
+        "paidAmount"
+      ],
+      "properties": {
+        "additionalInfo": {
+          "$ref": "#/definitions/ApiVaPaymentSnap.resources.snap.payment:_post.additionalInfo"
+        },
+        "paidAmount": {
+          "$ref": "#/definitions/ApiVaPaymentSnap.resources.snap.payment:_post.paidAmount"
+        }
+      }
+    },
+    "ApiVaPaymentSnap.resources.snap.payment:_post_$response": {
+      "required": [
+        "additionalInfo",
+        "partnerServiceId",
+        "responseCode",
+        "responseMessage",
+        "trxId"
+      ],
+      "properties": {
+        "partnerServiceId": {
+          "type": "string"
+        },
+        "additionalInfo": {
+          "$ref": "#/definitions/ApiVaPaymentSnap.resources.snap.payment:_post.additionalInfo"
+        },
+        "responseMessage": {
+          "type": "string"
+        },
+        "trxId": {
+          "type": "string"
+        },
+        "responseCode": {
+          "type": "string"
+        }
+      }
+    },
+    "ApiVaPaymentSnap.resources.snap.payment:_post.receiptInfo": {
+      "required": [
+        "label",
+        "value"
+      ],
+      "properties": {
+        "label": {
+          "type": "string"
+        },
+        "value": {
+          "type": "string"
+        }
+      }
+    },
+    "ApiVaPaymentSnap.resources.snap.payment:_post.additionalInfo": {
+      "required": [
+        "billFlagMap",
+        "billKey1",
+        "billKey2",
+        "billKey3",
+        "cardAcceptorTermId",
+        "companyCode",
+        "creditAccount",
+        "creditAmount",
+        "creditAmountCorporate",
+        "creditCurrency",
+        "currencyCode",
+        "customerAccountType",
+        "customerChargesAmount",
+        "debitAccount",
+        "debitAmount",
+        "debitAmountCorporate",
+        "debitCurrency",
+        "ebsRemark",
+        "ibtBuyRate",
+        "ibtSellRate",
+        "languageCode",
+        "merchantType",
+        "primaryAccountNumber",
+        "receiptInfo",
+        "reserved1",
+        "reserved2",
+        "reservedDocList",
+        "reservedField1",
+        "reservedField2",
+        "sBankReference",
+        "traceNumber",
+        "track2data",
+        "ttBuyRate",
+        "ttSellRate",
+        "valueDate"
+      ],
+      "properties": {
+        "sBankReference": {
+          "type": "string"
+        },
+        "debitAccount": {
+          "type": "string"
+        },
+        "traceNumber": {
+          "type": "string"
+        },
+        "debitCurrency": {
+          "type": "string"
+        },
+        "ibtSellRate": {
+          "type": "string"
+        },
+        "primaryAccountNumber": {
+          "type": "string"
+        },
+        "track2data": {
+          "type": "string"
+        },
+        "creditAmountCorporate": {
+          "type": "string"
+        },
+        "reservedField1": {
+          "type": "string"
+        },
+        "billKey2": {
+          "type": "string"
+        },
+        "billKey3": {
+          "type": "string"
+        },
+        "billFlagMap": {
+          "type": "string"
+        },
+        "reservedDocList": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ApiVaPaymentSnap.resources.snap.payment:_post.reservedDocList"
+          }
+        },
+        "ebsRemark": {
+          "type": "string"
+        },
+        "reserved2": {
+          "type": "string"
+        },
+        "reserved1": {
+          "type": "string"
+        },
+        "billKey1": {
+          "type": "string"
+        },
+        "merchantType": {
+          "type": "string"
+        },
+        "companyCode": {
+          "type": "string"
+        },
+        "cardAcceptorTermId": {
+          "type": "string"
+        },
+        "debitAmountCorporate": {
+          "type": "string"
+        },
+        "creditAccount": {
+          "type": "string"
+        },
+        "ibtBuyRate": {
+          "type": "string"
+        },
+        "customerAccountType": {
+          "type": "string"
+        },
+        "debitAmount": {
+          "type": "string"
+        },
+        "valueDate": {
+          "type": "string"
+        },
+        "languageCode": {
+          "type": "string"
+        },
+        "reservedField2": {
+          "type": "string"
+        },
+        "customerChargesAmount": {
+          "type": "string"
+        },
+        "ttSellRate": {
+          "type": "string"
+        },
+        "receiptInfo": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ApiVaPaymentSnap.resources.snap.payment:_post.receiptInfo"
+          }
+        },
+        "ttBuyRate": {
+          "type": "string"
+        },
+        "creditCurrency": {
+          "type": "string"
+        },
+        "creditAmount": {
+          "type": "string"
+        },
+        "currencyCode": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}

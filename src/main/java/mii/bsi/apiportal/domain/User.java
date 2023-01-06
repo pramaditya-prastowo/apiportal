@@ -76,9 +76,15 @@ public class User implements Serializable {
 
     private boolean isLogin;
 
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "group_id")
+//    private Groups groups;
+
     @Column(columnDefinition = "ENUM('MITRA', 'SUPER_ADMIN', 'ADMIN')", name = "auth_principal")
     @Enumerated(EnumType.STRING)
     private Roles authPrincipal = Roles.MITRA;
+
+    private Long groupId;
 
     public User() {
     }
@@ -94,6 +100,10 @@ public class User implements Serializable {
         setRetryPasswordCount(0);
         setEmailVerified(false);
         setCreateDate(new Date());
+    }
+
+    public Long getGroupId(){
+        return groupId;
     }
 
 //    public User(String id, String firstName, String lastName, String email, String password, String coorporateName,

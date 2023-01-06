@@ -72,4 +72,9 @@ public class UserController {
         return userService.deleteUser(idUser, token.substring(7));
     }
 
+    @GetMapping("/count")
+    public ResponseEntity<ResponseHandling<Integer>> getCountMitra(@RequestHeader(HttpHeaders.AUTHORIZATION) String token){
+        return userService.countMitra(token.substring(7));
+    }
+
 }

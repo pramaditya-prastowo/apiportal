@@ -22,4 +22,5 @@ public class UserResponseDTO {
     private Roles role;
     private boolean emailVerified;
     private Date createDate;
+    private Long groupId;
 }

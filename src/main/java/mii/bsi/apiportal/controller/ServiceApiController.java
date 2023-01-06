@@ -45,4 +45,9 @@ public class ServiceApiController {
     public ResponseEntity<ResponseHandling> delete(@PathVariable("id") Long id,@RequestHeader(HttpHeaders.AUTHORIZATION) String token){
         return serviceApiService.deleteById(id, token.substring(7));
     }
+
+    @GetMapping("/count")
+    public ResponseEntity<ResponseHandling<Integer>> getCountServiceAPI(@RequestHeader(HttpHeaders.AUTHORIZATION) String token){
+        return serviceApiService.getCountServiceAPI(token.substring(7));
+    }
 }

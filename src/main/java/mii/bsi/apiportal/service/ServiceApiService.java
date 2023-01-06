@@ -41,6 +41,7 @@ public class ServiceApiService {
     public static final String GETALL = "Get All";
     public static final String GETBYID = "Get By Id";
     public static final String DELETE = "Delete";
+    public static final String COUNT_SERVICE = "Count Service";
 
     public ResponseEntity<ResponseHandling<ServiceApiDomain>> create(ServiceApiDomain serviceApi,String token, Errors errors) {
         ResponseHandling<ServiceApiDomain> responseData = new ResponseHandling<>();
@@ -156,6 +157,34 @@ public class ServiceApiService {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseData);
         }
         logService.saveLog(requestData, responseData, StatusCode.OK, this.getClass().getName(), DELETE);
+        return ResponseEntity.ok(responseData);
+    }
+
+    public ResponseEntity<ResponseHandling<Integer>> getCountServiceAPI(String token){
+        ResponseHandling responseData = new ResponseHandling<>();
+        try {
+            final Claims claim = jwtUtility.getAllClaimsFromToken(token);
+            claim.get("role");
+            if(!(claim.get("role").equals(Roles.SUPER_ADMIN.toString()) || claim.get("role").equals(Roles.ADMIN.toString()))){
+                responseData.failed("Access denied");
+                logService.saveLog(new RequestData<>(), responseData, StatusCode.FORBIDDEN, this.getClass().getName(),
+                        COUNT_SERVICE);
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(responseData);
+            }
+
+            long count = serviceApiRepository.countServiceApi();
+            responseData.setPayload(count);
+            responseData.success();
+
+        }catch (Exception e){
+            e.printStackTrace();
+            responseData.failed(e.getMessage());
+            logService.saveLog(new RequestData<>(), responseData, StatusCode.INTERNAL_SERVER_ERROR, this.getClass().getName(),
+                    COUNT_SERVICE);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseData);
+        }
+        logService.saveLog(new RequestData<>(), responseData, StatusCode.OK, this.getClass().getName(),
+                COUNT_SERVICE);
         return ResponseEntity.ok(responseData);
     }
 }

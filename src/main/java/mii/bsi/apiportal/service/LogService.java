@@ -11,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 @Service
 @Slf4j
@@ -42,5 +44,16 @@ public class LogService {
         log.info("==================================================================");
 
         logRepository.save(logData);
+    }
+
+    public Map<String, Object> setValueRequest(Map<String, Object> request, String key, Object value){
+        request.put(key, value);
+        return request;
+    }
+
+    public Map<String, Object> setValueRequest(String key, Object value){
+        Map<String, Object> request = new HashMap<>();
+        request.put(key, value);
+        return request;
     }
 }

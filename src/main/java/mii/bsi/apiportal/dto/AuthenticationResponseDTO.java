@@ -18,10 +18,10 @@ public class AuthenticationResponseDTO {
     private String mobilePhone;
     private String token;
     private Date expiredAt;
-
     private Date createDate;
     private boolean emailVerified;
     private Roles roles;
+    private Long groupId;
 
     public AuthenticationResponseDTO(User user, String token, Date expiredAt){
         this.id = user.getId();
@@ -35,6 +35,7 @@ public class AuthenticationResponseDTO {
         this.createDate = user.getCreateDate();
         this.emailVerified = user.isEmailVerified();
         this.roles = user.getAuthPrincipal();
+        this.groupId = user.getGroupId();
     }
     
 }
