@@ -1,12 +1,8 @@
 package mii.bsi.apiportal.service;
 
-import antlr.StringUtils;
-import io.jsonwebtoken.Claims;
 import mii.bsi.apiportal.constant.StatusCode;
 import mii.bsi.apiportal.domain.Groups;
 import mii.bsi.apiportal.domain.Menu;
-import mii.bsi.apiportal.domain.User;
-import mii.bsi.apiportal.domain.model.Roles;
 import mii.bsi.apiportal.dto.AuthGuardPageRequestDTO;
 import mii.bsi.apiportal.repository.GroupsRepository;
 import mii.bsi.apiportal.repository.MenuRepository;
@@ -15,7 +11,7 @@ import mii.bsi.apiportal.utils.CustomError;
 import mii.bsi.apiportal.utils.JwtUtility;
 import mii.bsi.apiportal.utils.RequestData;
 import mii.bsi.apiportal.utils.ResponseHandling;
-import mii.bsi.apiportal.validation.AdminValidation;
+import mii.bsi.apiportal.validation.UserValidation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -40,7 +36,8 @@ public class GroupsService {
     private UserRepository userRepository;
     @Autowired
     private MenuRepository menuRepository;
-    @Autowired AdminValidation adminValidation;
+    @Autowired
+    UserValidation adminValidation;
 
     public static final String GET_ALL = "Get All";
     public static final String GET_BY_ID = "Get By ID";

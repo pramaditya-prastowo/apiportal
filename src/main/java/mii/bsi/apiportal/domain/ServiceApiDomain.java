@@ -34,6 +34,7 @@ public class ServiceApiDomain implements Serializable {
     private String createBy;
     private boolean inActive;
     private String subtitle;
+    private Long groupServiceApi;
     private String sampleDescription;
     private Date createDate;
     private String updateBy;

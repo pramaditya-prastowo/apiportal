@@ -1,13 +1,12 @@
 package mii.bsi.apiportal.service;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 import io.jsonwebtoken.Claims;
+import mii.bsi.apiportal.domain.GroupsServiceEntity;
 import mii.bsi.apiportal.domain.User;
 import mii.bsi.apiportal.domain.model.Roles;
+import mii.bsi.apiportal.repository.GroupServiceRepository;
 import mii.bsi.apiportal.repository.UserRepository;
 import mii.bsi.apiportal.utils.JwtUtility;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +32,8 @@ public class ServiceApiService {
 
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private GroupServiceRepository groupServiceRepository;
 
     @Autowired
     private JwtUtility jwtUtility;
@@ -42,6 +43,8 @@ public class ServiceApiService {
     public static final String GETBYID = "Get By Id";
     public static final String DELETE = "Delete";
     public static final String COUNT_SERVICE = "Count Service";
+
+    public static final String GET_ALL_GROUP = "Get All Group";
 
     public ResponseEntity<ResponseHandling<ServiceApiDomain>> create(ServiceApiDomain serviceApi,String token, Errors errors) {
         ResponseHandling<ServiceApiDomain> responseData = new ResponseHandling<>();
@@ -107,6 +110,27 @@ public class ServiceApiService {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseData);
         }
         logService.saveLog(requestData, responseData, StatusCode.OK, this.getClass().getName(), GETALL);
+        return ResponseEntity.status(HttpStatus.OK).body(responseData);
+    }
+
+    public ResponseEntity<ResponseHandling<List<GroupsServiceEntity>>> getAllGroupApi(){
+        ResponseHandling<List<GroupsServiceEntity>> responseData = new ResponseHandling<>();
+        RequestData requestData = new RequestData();
+
+        try {
+
+            List<GroupsServiceEntity> listGroup = groupServiceRepository.findAll();
+            responseData.success();
+            responseData.setPayload(listGroup);
+
+        }catch (Exception e){
+            responseData.failed(e.getMessage());
+            logService.saveLog(requestData, responseData, StatusCode.INTERNAL_SERVER_ERROR, this.getClass().getName(),
+                    GET_ALL_GROUP);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseData);
+        }
+        logService.saveLog(requestData, responseData, StatusCode.OK, this.getClass().getName(),
+                GET_ALL_GROUP);
         return ResponseEntity.status(HttpStatus.OK).body(responseData);
     }
 

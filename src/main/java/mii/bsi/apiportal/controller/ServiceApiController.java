@@ -2,6 +2,7 @@ package mii.bsi.apiportal.controller;
 
 import javax.validation.Valid;
 
+import mii.bsi.apiportal.domain.GroupsServiceEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
@@ -11,6 +12,8 @@ import org.springframework.web.bind.annotation.*;
 import mii.bsi.apiportal.domain.ServiceApiDomain;
 import mii.bsi.apiportal.service.ServiceApiService;
 import mii.bsi.apiportal.utils.ResponseHandling;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1.0/serviceApi")
@@ -34,6 +37,11 @@ public class ServiceApiController {
     @GetMapping
     public ResponseEntity<ResponseHandling<Iterable<ServiceApiDomain>>> getAll() {
         return serviceApiService.getAll();
+    }
+
+    @GetMapping("/groups")
+    public ResponseEntity<ResponseHandling<List<GroupsServiceEntity>>> getAllGroupApi() {
+        return serviceApiService.getAllGroupApi();
     }
 
     @GetMapping("/{id}")

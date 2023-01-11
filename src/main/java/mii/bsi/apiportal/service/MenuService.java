@@ -6,7 +6,7 @@ import mii.bsi.apiportal.domain.model.Roles;
 import mii.bsi.apiportal.repository.MenuRepository;
 import mii.bsi.apiportal.utils.RequestData;
 import mii.bsi.apiportal.utils.ResponseHandling;
-import mii.bsi.apiportal.validation.AdminValidation;
+import mii.bsi.apiportal.validation.UserValidation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +20,7 @@ public class MenuService {
     @Autowired
     private MenuRepository menuRepository;
     @Autowired
-    private AdminValidation adminValidation;
+    private UserValidation adminValidation;
     @Autowired
     private LogService logService;
     public static final String GET_ALL = "Get All";

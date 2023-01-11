@@ -66,4 +66,21 @@ public class FilesController {
             return ResponseEntity.internalServerError().body(null);
         }
     }
+
+    @PostMapping("/apps")
+    public ResponseEntity<ResponseHandling> uploadIconApps(@RequestParam("file") MultipartFile file){
+        ResponseHandling responseData = new ResponseHandling();
+        String message = "";
+        try {
+            storageService.save(file, FileGroup.MY_APPLICATION);
+
+            message = "Uploaded the file successfully: " + file.getOriginalFilename();
+            responseData.success(message);
+            return ResponseEntity.status(HttpStatus.OK).body(responseData);
+        } catch (Exception e) {
+            message = "Could not upload the file: " + file.getOriginalFilename() + ". Error: " + e.getMessage();
+            responseData.failed(message);
+            return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(responseData);
+        }
+    }
 }

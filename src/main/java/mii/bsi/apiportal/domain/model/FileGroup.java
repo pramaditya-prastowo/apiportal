@@ -3,7 +3,8 @@ package mii.bsi.apiportal.domain.model;
 public enum FileGroup {
     SERVICE_API("Service API"),
 
-    MITRA("MITRA");
+    MITRA("MITRA"),
+    MY_APPLICATION("My Application");
 
     private final String text;
 

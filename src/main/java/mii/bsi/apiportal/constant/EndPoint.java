@@ -15,7 +15,8 @@ public class EndPoint {
             "/api/v1.0/promo/**",
             "/api/v1.0/forget_password",
             "/swagger/**",
-            "/api/files/service-api/**"
+            "/api/files/service-api/**",
+            "/api/v1.0/serviceApi/groups"
 //            "/forget_password/**",
 //            "/session",
 //            "/session/user",
