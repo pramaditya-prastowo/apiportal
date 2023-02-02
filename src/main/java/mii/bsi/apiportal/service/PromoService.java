@@ -27,6 +27,7 @@ public class PromoService {
     private PromoRepository promoRepository;
 
     public static final String CREATE = "Create";
+    public static final String UPDATE = "Update";
     public static final String GETALL = "Get All";
     public static final String GETBYID = "Get By Id";
 
@@ -64,6 +65,50 @@ public class PromoService {
 
         logService.saveLog(requestData, responseData, StatusCode.CREATED, this.getClass().getName(), CREATE);
         return ResponseEntity.status(HttpStatus.CREATED).body(responseData);
+    }
+
+    public ResponseEntity<ResponseHandling> update(String token, Promo promo, Errors errors) {
+        ResponseHandling<Promo> responseData = new ResponseHandling<>();
+        RequestData<Promo> requestData = new RequestData<>();
+
+        try {
+
+            if(!adminValidation.isAdmin(token)){
+                responseData.failed("Access denied");
+                logService.saveLog(requestData, responseData, StatusCode.FORBIDDEN, this.getClass().getName(),
+                        UPDATE);
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(responseData);
+            }
+
+            if (errors.hasErrors()) {
+                responseData.failed(CustomError.validRequest(errors), "Bad Request");
+                logService.saveLog(requestData, responseData, StatusCode.BAD_REQUEST, this.getClass().getName(),
+                        UPDATE);
+            }
+
+            User user = adminValidation.getUserFromToken(token);
+            Promo promoDb = promoRepository.findByIdPromo(promo.getId());
+            if(promoDb == null){
+                responseData.failed(CustomError.validRequest(errors), "Bad Request");
+                logService.saveLog(requestData, responseData, StatusCode.BAD_REQUEST, this.getClass().getName(),
+                        UPDATE);
+            }
+            promo.setUpdateDate(new Date());
+            promo.setUpdateBy(user.getId());
+            promo.setCreateBy(promoDb.getCreateBy());
+            promo.setCreateDate(promoDb.getCreateDate());
+
+            promoRepository.save(promo);
+            responseData.success();
+        } catch (Exception e) {
+            responseData.failed(e.getMessage());
+            logService.saveLog(requestData, responseData, StatusCode.INTERNAL_SERVER_ERROR, this.getClass().getName(),
+                    UPDATE);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseData);
+        }
+
+        logService.saveLog(requestData, responseData, StatusCode.CREATED, this.getClass().getName(), UPDATE);
+        return ResponseEntity.status(HttpStatus.OK).body(responseData);
     }
 
     public ResponseEntity<ResponseHandling<Iterable<Promo>>> getAll() {

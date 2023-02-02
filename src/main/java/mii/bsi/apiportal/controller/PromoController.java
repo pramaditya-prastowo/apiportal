@@ -27,6 +27,14 @@ public class PromoController {
 
     }
 
+    @PatchMapping
+    public ResponseEntity<ResponseHandling> update(@Valid @RequestBody Promo promo,
+                                                   @RequestHeader(HttpHeaders.AUTHORIZATION) String token,
+                                                   Errors errors) {
+        return promoService.create(token.substring(7), promo, errors);
+
+    }
+
     @GetMapping
     public ResponseEntity<ResponseHandling<Iterable<Promo>>> getAll(Promo promo) {
         return promoService.getAll();

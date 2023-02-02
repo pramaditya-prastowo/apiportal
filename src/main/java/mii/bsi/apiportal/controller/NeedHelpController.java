@@ -28,4 +28,14 @@ public class NeedHelpController {
     public ResponseEntity<ResponseHandling<List<NeedHelp>>> getHelp(@RequestHeader(HttpHeaders.AUTHORIZATION) String token){
         return needHelpService.getHelp(token.substring(7));
     }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<ResponseHandling<NeedHelp>> getHelpById(@RequestHeader(HttpHeaders.AUTHORIZATION) String token, @PathVariable("id") Long id){
+        return needHelpService.getById(token.substring(7), id);
+    }
+
+    @PatchMapping
+    public ResponseEntity<ResponseHandling> updateStatusHelp(@RequestHeader(HttpHeaders.AUTHORIZATION) String token, @RequestBody NeedHelp help){
+        return needHelpService.updateStatusHelp(token.substring(7), help);
+    }
 }
