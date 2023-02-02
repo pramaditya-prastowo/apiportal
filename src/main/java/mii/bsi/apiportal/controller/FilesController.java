@@ -83,4 +83,47 @@ public class FilesController {
             return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(responseData);
         }
     }
+    @GetMapping("/apps/{filename}")
+    @ResponseBody
+    public ResponseEntity<Resource> getFileApps(@PathVariable String filename) {
+        try {
+            Resource file = storageService.load(filename, FileGroup.MY_APPLICATION);
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + file.getFilename() + "\"").body(file);
+        }catch (Exception e){
+            e.printStackTrace();
+
+            return ResponseEntity.internalServerError().body(null);
+        }
+    }
+
+    @PostMapping("/promo")
+    public ResponseEntity<ResponseHandling> uploadBannerPromo(@RequestParam("file") MultipartFile file){
+        ResponseHandling responseData = new ResponseHandling();
+        String message = "";
+        try {
+            storageService.save(file, FileGroup.PROMO);
+
+            message = "Uploaded the file successfully: " + file.getOriginalFilename();
+            responseData.success(message);
+            return ResponseEntity.status(HttpStatus.OK).body(responseData);
+        } catch (Exception e) {
+            message = "Could not upload the file: " + file.getOriginalFilename() + ". Error: " + e.getMessage();
+            responseData.failed(message);
+            return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(responseData);
+        }
+    }
+
+    @GetMapping("/promo/{filename}")
+    @ResponseBody
+    public ResponseEntity<Resource> getFilePromo(@PathVariable String filename) {
+        try {
+            Resource file = storageService.load(filename, FileGroup.PROMO);
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + file.getFilename() + "\"").body(file);
+        }catch (Exception e){
+            e.printStackTrace();
+            return ResponseEntity.internalServerError().body(null);
+        }
+    }
 }

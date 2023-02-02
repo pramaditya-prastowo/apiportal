@@ -4,7 +4,8 @@ public enum FileGroup {
     SERVICE_API("Service API"),
 
     MITRA("MITRA"),
-    MY_APPLICATION("My Application");
+    MY_APPLICATION("My Application"),
+    PROMO("Promo");
 
     private final String text;
 

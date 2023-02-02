@@ -42,8 +42,11 @@ public class GroupsService {
     public static final String GET_ALL = "Get All";
     public static final String GET_BY_ID = "Get By ID";
     public static final String CREATE = "Create";
+    public static final String UPDATE = "Update";
     public static final String VALIDATE_PAGE = "Validate Page";
     public static final String GET_MENU = "Get Menu By Group ID";
+
+
 
 
     public ResponseEntity<ResponseHandling<List<Groups>>> getAll(String token){
@@ -241,5 +244,37 @@ public class GroupsService {
         return ResponseEntity.ok(responseData);
     }
 
+    public ResponseEntity<ResponseHandling> updateGroup(String token, Groups groups){
+        ResponseHandling responseData = new ResponseHandling();
+        RequestData<Groups> requestData = new RequestData<>();
+        requestData.setPayload(groups);
 
+        try {
+            if(!adminValidation.isAdmin(token)){
+                responseData.failed("Access denied");
+                responseData.setPayload(false);
+                logService.saveLog(requestData, responseData, StatusCode.FORBIDDEN, this.getClass().getName(),
+                        UPDATE);
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(responseData);
+            }
+
+            Groups groupDb = groupsRepository.getReferenceById(groups.getId());
+            groupDb.setName(groups.getName());
+            groupDb.setDescription(groups.getDescription());
+            groupDb.setPermission(groups.getPermission());
+            groupsRepository.save(groupDb);
+            responseData.success();
+
+        }catch (Exception e){
+            e.printStackTrace();
+            responseData.failed(e.getMessage());
+            responseData.setPayload(false);
+            logService.saveLog(requestData, responseData, StatusCode.INTERNAL_SERVER_ERROR, this.getClass().getName(),
+                    UPDATE);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseData);
+        }
+        logService.saveLog(requestData, responseData, StatusCode.OK, this.getClass().getName(),
+                UPDATE);
+        return ResponseEntity.ok(responseData);
+    }
 }

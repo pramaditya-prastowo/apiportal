@@ -5,8 +5,10 @@ import mii.bsi.apiportal.constant.StatusCode;
 import mii.bsi.apiportal.domain.Application;
 import mii.bsi.apiportal.domain.ApplicationServiceApi;
 import mii.bsi.apiportal.domain.User;
+import mii.bsi.apiportal.dto.ApplicationDetailResponseDTO;
 import mii.bsi.apiportal.repository.AppServiceApiRepository;
 import mii.bsi.apiportal.repository.MyAppsRepository;
+import mii.bsi.apiportal.repository.dao.impl.AppServiceApiDao;
 import mii.bsi.apiportal.utils.CustomError;
 import mii.bsi.apiportal.utils.RequestData;
 import mii.bsi.apiportal.utils.ResponseHandling;
@@ -17,6 +19,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.Errors;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -33,6 +36,8 @@ public class MyAppService {
     private UserValidation userValidation;
     @Autowired
     private AppServiceApiRepository appServiceApiRepository;
+    @Autowired
+    private AppServiceApiDao serviceApiDao;
 
     public static final String GET_BY_USER = "Get by UserId";
     public static final String GET_BY_ID = "Get by ID";
@@ -101,9 +106,10 @@ public class MyAppService {
             apps.setUserId(user.getId());
             Application application = myAppsRepository.save(apps);
 
-            for (Integer data : apps.getListService()) {
+            for (Object data : apps.getListService()) {
                 ApplicationServiceApi appService = new ApplicationServiceApi();
-                appService.setServiceApiId(data.longValue());
+                Integer value = (Integer) data;
+                appService.setServiceApiId(value.longValue());
                 appService.setAppId(application.getId());
                 appServiceApiRepository.save(appService);
             }
@@ -123,8 +129,8 @@ public class MyAppService {
         return ResponseEntity.status(HttpStatus.CREATED).body(responseData);
     }
 
-    public ResponseEntity<ResponseHandling<Application>> getById(Long appId, String token){
-        ResponseHandling<Application> responseData = new ResponseHandling<>();
+    public ResponseEntity<ResponseHandling<ApplicationDetailResponseDTO>> getById(Long appId, String token){
+        ResponseHandling<ApplicationDetailResponseDTO> responseData = new ResponseHandling<>();
         RequestData<Map<String, Object>> requestData = new RequestData<>();
         requestData.setPayload(logService.setValueRequest("id", appId));
         try {
@@ -150,7 +156,12 @@ public class MyAppService {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(responseData);
             }
 
-            responseData.setPayload(application);
+            List<ApplicationServiceApi> listApi = serviceApiDao.getServiceApiByAppId(appId);
+            ApplicationDetailResponseDTO responseDTO = new ApplicationDetailResponseDTO();
+            responseDTO.setApplication(application);
+            responseDTO.setListService(listApi);
+
+            responseData.setPayload(responseDTO);
             responseData.success();
             System.out.println(gson.toJson(responseData));
         }catch (Exception e){

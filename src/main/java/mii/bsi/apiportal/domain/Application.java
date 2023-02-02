@@ -36,5 +36,5 @@ public class Application implements Serializable {
     private String updatedBy;
 
     @Transient
-    private List<Integer> listService = new ArrayList<>();
+    private List<Object> listService = new ArrayList<>();
 }

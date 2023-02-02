@@ -18,4 +18,6 @@ public class ApplicationServiceApi {
     private Long id;
     private Long appId;
     private Long serviceApiId;
+    @Transient
+    private String serviceApiName;
 }

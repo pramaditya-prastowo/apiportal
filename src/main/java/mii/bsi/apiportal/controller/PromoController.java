@@ -3,6 +3,7 @@ package mii.bsi.apiportal.controller;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
@@ -17,10 +18,12 @@ public class PromoController {
     @Autowired
     private PromoService promoService;
 
+
     @PostMapping
-    public ResponseEntity<ResponseHandling<Promo>> create(@Valid @RequestBody Promo promo,
+    public ResponseEntity<ResponseHandling> create(@Valid @RequestBody Promo promo,
+                                                          @RequestHeader(HttpHeaders.AUTHORIZATION) String token,
             Errors errors) {
-        return promoService.create(promo, errors);
+        return promoService.create(token.substring(7), promo, errors);
 
     }
 

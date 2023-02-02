@@ -2,6 +2,7 @@ package mii.bsi.apiportal.controller;
 
 import mii.bsi.apiportal.domain.Application;
 import mii.bsi.apiportal.domain.ServiceApiDomain;
+import mii.bsi.apiportal.dto.ApplicationDetailResponseDTO;
 import mii.bsi.apiportal.service.MyAppService;
 import mii.bsi.apiportal.utils.ResponseHandling;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,7 +36,7 @@ public class MyApplicationController {
 
 
     @GetMapping("/{id}")
-    public ResponseEntity<ResponseHandling<Application>> getById(@PathVariable("id") Long id,@RequestHeader(HttpHeaders.AUTHORIZATION) String token) {
+    public ResponseEntity<ResponseHandling<ApplicationDetailResponseDTO>> getById(@PathVariable("id") Long id, @RequestHeader(HttpHeaders.AUTHORIZATION) String token) {
         return myAppService.getById(id, token.substring(7));
     }
 }

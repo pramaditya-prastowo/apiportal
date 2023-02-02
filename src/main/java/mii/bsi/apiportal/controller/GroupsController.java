@@ -46,9 +46,14 @@ public class GroupsController {
     }
 
     @GetMapping("/menu")
-    public ResponseEntity<ResponseHandling<List<Menu>>> getMenu(@RequestHeader(HttpHeaders.AUTHORIZATION) String token, @RequestParam Long groupId){
+    public ResponseEntity<ResponseHandling<List<Menu>>> getMenu(@RequestHeader(HttpHeaders.AUTHORIZATION) String token,
+                                                                @RequestParam Long groupId){
         return groupsService.getMenuByGroupId(token.substring(7), groupId);
     }
 
-
+    @PatchMapping
+    public ResponseEntity<ResponseHandling> updateGroup(@RequestHeader(HttpHeaders.AUTHORIZATION) String token,
+                                                        @RequestBody Groups groups){
+        return groupsService.updateGroup(token.substring(7), groups);
+    }
 }

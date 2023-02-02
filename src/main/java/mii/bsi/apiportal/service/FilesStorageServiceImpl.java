@@ -22,6 +22,7 @@ public class FilesStorageServiceImpl implements FilesStorageService {
     private final Path serviceApiIcon = Paths.get("uploads/service-api/icon");
     private final Path serviceApiSwagger = Paths.get("uploads/service-api/swagger");
     private final Path iconMyApps = Paths.get("uploads/apps/icon");
+    private final Path bannerPromo = Paths.get("uploads/promo/banner");
 
     @Override
     public void init() {
@@ -30,6 +31,7 @@ public class FilesStorageServiceImpl implements FilesStorageService {
             Files.createDirectories(serviceApiIcon);
             Files.createDirectories(serviceApiSwagger);
             Files.createDirectories(iconMyApps);
+            Files.createDirectories(bannerPromo);
         } catch (IOException e) {
             throw new RuntimeException("Could not initialize folder for upload!");
         }
@@ -50,6 +52,10 @@ public class FilesStorageServiceImpl implements FilesStorageService {
                     break;
                 case MY_APPLICATION:
                     Files.copy(file.getInputStream(), this.iconMyApps.resolve(file.getOriginalFilename()));
+                    break;
+                case PROMO:
+                    Files.copy(file.getInputStream(), this.bannerPromo.resolve(file.getOriginalFilename()));
+                    break;
             }
 
         } catch (Exception e) {
@@ -106,6 +112,8 @@ public class FilesStorageServiceImpl implements FilesStorageService {
                 return file;
             case MY_APPLICATION:
                 return iconMyApps.resolve(filename);
+            case PROMO:
+                return bannerPromo.resolve(filename);
         }
         return null;
     }
