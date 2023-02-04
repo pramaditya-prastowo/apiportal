@@ -1,0 +1,371 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "API Direct Debit - Payment",
+    "description": "API Direct Debit - Payment",
+    "version": "1.0"
+  },
+  "servers": [
+    {
+      "url": "http://qa-apiesb-app:5555/rest"
+    }
+  ],
+  "paths": {
+    "/BsmDirectDebitApiSnap/resources/snap/payment": {
+      "post": {
+        "operationId": "_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "required": [
+                  "chargeToken",
+                  "partnerReferenceNo"
+                ],
+                "properties": {
+                  "partnerReferenceNo": {
+                    "type": "string"
+                  },
+                  "chargeToken": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BsmDirectDebitApiSnap.resources.snap.payment:_post_$response"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Access Denied",
+            "content": {}
+          }
+        },
+        "x-codegen-request-body-name": "bodyParameters"
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "BsmDirectDebitApiSnap.resources.snap.payment:_post.urlParam": {
+        "required": [
+          "isDeepLink",
+          "type",
+          "url"
+        ],
+        "type": "object",
+        "properties": {
+          "isDeepLink": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string"
+          }
+        }
+      },
+      "BsmDirectDebitApiSnap.resources.snap.payment:_post_bodyParameters": {
+        "required": [
+          "additionalInfo",
+          "transAmount",
+          "urlParam"
+        ],
+        "type": "object",
+        "properties": {
+          "transAmount": {
+            "$ref": "#/components/schemas/BsmDirectDebitApiSnap.resources.snap.payment:_post.transAmount"
+          },
+          "additionalInfo": {
+            "$ref": "#/components/schemas/BsmDirectDebitApiSnap.resources.snap.payment:_post.additionalInfo"
+          },
+          "urlParam": {
+            "$ref": "#/components/schemas/BsmDirectDebitApiSnap.resources.snap.payment:_post.urlParam"
+          }
+        }
+      },
+      "BsmDirectDebitApiSnap.resources.snap.payment:_post_$response": {
+        "required": [
+          "partnerReferenceNo",
+          "referenceNo",
+          "responseCode",
+          "responseMessage"
+        ],
+        "type": "object",
+        "properties": {
+          "referenceNo": {
+            "type": "string"
+          },
+          "partnerReferenceNo": {
+            "type": "string"
+          },
+          "responseMessage": {
+            "type": "string"
+          },
+          "responseCode": {
+            "type": "string"
+          }
+        }
+      },
+      "BsmDirectDebitApiSnap.resources.snap.payment:_post.transAmount": {
+        "required": [
+          "currency",
+          "value"
+        ],
+        "type": "object",
+        "properties": {
+          "currency": {
+            "type": "string"
+          },
+          "value": {
+            "type": "string"
+          }
+        }
+      },
+      "BsmDirectDebitApiSnap.resources.snap.payment:_post.additionalInfo": {
+        "required": [
+          "transactionDatetime"
+        ],
+        "type": "object",
+        "properties": {
+          "transactionDatetime": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  },
+  "spesification": {
+    "header": [
+      {
+        "key": "Authorization",
+        "value": "",
+        "format": "Alphanumeric",
+        "mandatory": "M",
+        "length": "",
+        "description": "Bearer <token>"
+      },
+      {
+        "key": "X-TIMESTAMP",
+        "value": "",
+        "format": "Datetime",
+        "mandatory": "M",
+        "length": "",
+        "description": "The timestamp must be presented in ISO8601 format (yyyy-MM-ddTHH:mm:ss.TZ)"
+      },
+      {
+        "key": "X-SIGNATURE",
+        "value": "",
+        "format": "Alphanumeric",
+        "mandatory": "M",
+        "length": "",
+        "description": "Transaction signature. Please refer to Transaction Signature section"
+      },
+      {
+        "key": "X-PARTNER-ID",
+        "value": "",
+        "format": "Alphanumeric",
+        "mandatory": "M",
+        "length": "",
+        "description": "Partner ID given by BSI upon onboarding process"
+      },
+      {
+        "key": "X-EXTERNAL-ID",
+        "value": "",
+        "format": "String",
+        "mandatory": "M",
+        "length": "128",
+        "description": "Numeric String. Unique ID per request generated by partner"
+      },
+      {
+        "key": "CHANNEL-ID",
+        "value": "",
+        "format": "Alpha",
+        "mandatory": "M",
+        "length": "",
+        "description": "Numeric String. Unique ID provide by Bank BSI"
+      },
+      {
+        "key": "Content-Type",
+        "value": "",
+        "format": "Alpha",
+        "mandatory": "M",
+        "length": "",
+        "description": "application/json"
+      }
+    ],
+    "request": [
+      {
+        "field": "partnerReferenceNo",
+        "data_type": "String",
+        "format": "",
+        "mandatory": "O",
+        "length": "64",
+        "description": "Transaction identifier on partner\r\nsystem\r\n",
+        "sample": "87654322"
+      },
+      {
+        "field": "chargeToken",
+        "data_type": "String",
+        "format": "",
+        "mandatory": "O",
+        "length": "40",
+        "description": "OTP string code that is to be verified with the passcode obtained by the user",
+        "sample": "NDA0MzA1 OTQwMDA wNjQxNF8 wODEyMjA yODQ0Nzhf MjEzNTM0 ODIxODYz X251bGw=\r\n"
+      },
+      {
+        "field": "payOptionDetails",
+        "data_type": "Array of Object",
+        "format": "",
+        "mandatory": "o",
+        "length": "",
+        "description": "",
+        "sample": ""
+      },
+      {
+        "field": "transAmount",
+        "data_type": "Object",
+        "format": "",
+        "mandatory": "o",
+        "length": "",
+        "description": "",
+        "sample": ""
+      },
+      {
+        "field": "value",
+        "data_type": "String (ISO4217)",
+        "format": "",
+        "mandatory": "M",
+        "length": "16,2",
+        "description": "Paid Amount with 2 decimal",
+        "sample": "10000"
+      },
+      {
+        "field": "currency",
+        "data_type": "String",
+        "format": "",
+        "mandatory": "M",
+        "length": "3",
+        "description": "Currency",
+        "sample": "360"
+      },
+      {
+        "field": "urlParam",
+        "data_type": "Array of Object",
+        "format": "",
+        "mandatory": "O",
+        "length": "",
+        "description": "",
+        "sample": ""
+      },
+      {
+        "field": "url",
+        "data_type": "String",
+        "format": "",
+        "mandatory": "O",
+        "length": "512",
+        "description": "The URL",
+        "sample": "http:\/\/iniurl.com"
+      },
+      {
+        "field": "type",
+        "data_type": "String",
+        "format": "",
+        "mandatory": "M",
+        "length": "32",
+        "description": "URL Type PAY_RETU RN\/PAY_NOTIFY",
+        "sample": "payment"
+      },
+      {
+        "field": "isDeepLink",
+        "data_type": "String",
+        "format": "",
+        "mandatory": "M",
+        "length": "1",
+        "description": "Whther the URL is a deeplink URL or not",
+        "sample": "N"
+      },
+      {
+        "field": "additionalInfo",
+        "data_type": "Object",
+        "format": "",
+        "mandatory": "O",
+        "length": "",
+        "description": "Additional Information for custom use",
+        "sample": "\"transaction Datetime\": \"2020-12-07 21:00:00\""
+      },
+      {
+        "field": "transactionDatetime",
+        "data_type": "",
+        "format": "",
+        "mandatory": "",
+        "length": "",
+        "description": "",
+        "sample": "2020-12-07 21:00:00"
+      }
+    ],
+    "response": [
+      {
+        "field": "responseCode",
+        "data_type": "String",
+        "format": "",
+        "mandatory": "M",
+        "length": "7",
+        "description": "Response Code\r\n",
+        "sample": "2000400"
+      },
+      {
+        "field": "responseMessage",
+        "data_type": "String",
+        "format": "",
+        "mandatory": "M",
+        "length": "150",
+        "description": "Response Description\r\n",
+        "sample": "Successful"
+      },
+      {
+        "field": "referenceNo",
+        "data_type": "String",
+        "format": "",
+        "mandatory": "O",
+        "length": "64",
+        "description": "Transaction identifier on service provider system Must be filled upon successful transaction",
+        "sample": "0230656948"
+      },
+      {
+        "field": "partnerReferenceNo",
+        "data_type": "String",
+        "format": "",
+        "mandatory": "O",
+        "length": "64",
+        "description": "Transaction identifier on service consumer system",
+        "sample": "90909092"
+      }
+    ],
+    "sample_header": "\ncontent-type:application/json \nX-SIGNATURE:07f06dbdfab5cba89454863604e950ae595070b76520fd30f760765b4d28c1266927ce5b026b2acdb61c7af45e26201d4e6259bf6467d1e81ae4fbc30126658b \nX-TIMESTAMP:2022-02-12T13:07:00+07:00 \nX-PARTNER-ID:DDBSI00002 CHANNEL-ID:12345 \nX-EXTERNAL-ID:41807553358950093184162180797837",
+    "sample_request": "\n{\r\n    \"partnerReferenceNo\": \"87654322\",\r\n    \"chargeToken\": \"NDA0MzA1OTQwMDAwNjQxNF8wODEyMjAyODQ0NzhfMjEzNTM0ODIxODYzX251bGw=\",\r\n    \"payOptionDetails\": [\r\n        {\r\n            \"transAmount\": {\r\n                \"value\": \"10000\",\r\n                \"currency\": \"IDR\"\r\n            }\r\n        }\r\n    ],\r\n    \"urlParam\": {\r\n        \"url\": \"http://iniurl.com\",\r\n        \"type\": \"payment\",\r\n        \"isDeepLink\": \"N\"\r\n    },\r\n    \"additionalInfo\": {\r\n        \"transactionDatetime\": \"2020-12-07 21:00:00\"\r\n    }\r\n}",
+    "sample_response": "\n{\r\n    \"responseCode\": \"2005400\",\r\n    \"responseMessage\": \"Successful\",\r\n    \"referenceNo\": \"9478483384\",\r\n    \"partnerReferenceNo\": \"87654322\"\r\n}",
+    "sample_error": "",
+    "list_error": [
+      {
+        "http_status": "",
+        "service_code": "",
+        "case_code": "",
+        "status": "",
+        "response_description": "",
+        "description": ""
+      }
+    ]
+  }
+}

@@ -1,0 +1,490 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "accountStatements",
+    "description": "BSM Core API accountStatements",
+    "version": "1.0"
+  },
+  "servers": [
+    {
+      "url": "http://qa-apiesb-app:5555/rest"
+    }
+  ],
+  "paths": {
+    "/BsmCoreApi/resources/snap/accountStatements": {
+      "post": {
+        "operationId": "_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "required": [
+                  "accountNo",
+                  "fromDateTime",
+                  "toDateTime"
+                ],
+                "properties": {
+                  "accountNo": {
+                    "type": "string",
+                    "description": ""
+                  },
+                  "fromDateTime": {
+                    "type": "string",
+                    "description": ""
+                  },
+                  "toDateTime": {
+                    "type": "string",
+                    "description": ""
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BsmCoreApi.resources.snap.accountStatements:_post_$response"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Access Denied",
+            "content": {}
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "BsmCoreApi.resources.snap.accountStatements:_post.balance": {
+        "required": [
+          "currency",
+          "value"
+        ],
+        "type": "object",
+        "properties": {
+          "currency": {
+            "type": "string"
+          },
+          "value": {
+            "type": "string"
+          }
+        }
+      },
+      "BsmCoreApi.resources.snap.accountStatements:_post.endingBalance": {
+        "required": [
+          "currency",
+          "value"
+        ],
+        "type": "object",
+        "properties": {
+          "currency": {
+            "type": "string"
+          },
+          "value": {
+            "type": "string"
+          }
+        }
+      },
+      "BsmCoreApi.resources.snap.accountStatements:_post.amount": {
+        "required": [
+          "currency",
+          "value"
+        ],
+        "type": "object",
+        "properties": {
+          "currency": {
+            "type": "string"
+          },
+          "value": {
+            "type": "string"
+          }
+        }
+      },
+      "BsmCoreApi.resources.snap.accountStatements:_post.detailData": {
+        "required": [
+          "amount",
+          "balance",
+          "deskripsiTrx",
+          "jenisTrx",
+          "referensiTrx",
+          "remark",
+          "transactionDate",
+          "transactionId",
+          "transactionTime",
+          "type"
+        ],
+        "type": "object",
+        "properties": {
+          "amount": {
+            "$ref": "#/components/schemas/BsmCoreApi.resources.snap.accountStatements:_post.amount"
+          },
+          "balance": {
+            "$ref": "#/components/schemas/BsmCoreApi.resources.snap.accountStatements:_post.balance"
+          },
+          "referensiTrx": {
+            "type": "string"
+          },
+          "jenisTrx": {
+            "type": "string"
+          },
+          "remark": {
+            "type": "string"
+          },
+          "deskripsiTrx": {
+            "type": "string"
+          },
+          "transactionDate": {
+            "type": "string"
+          },
+          "transactionTime": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string"
+          },
+          "transactionId": {
+            "type": "string"
+          }
+        }
+      },
+      "BsmCoreApi.resources.snap.accountStatements:_post_$response": {
+        "required": [
+          "detailData",
+          "endingBalance",
+          "responseCode",
+          "responseMessage",
+          "startingBalance"
+        ],
+        "type": "object",
+        "properties": {
+          "endingBalance": {
+            "$ref": "#/components/schemas/BsmCoreApi.resources.snap.accountStatements:_post.endingBalance"
+          },
+          "detailData": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/BsmCoreApi.resources.snap.accountStatements:_post.detailData"
+            }
+          },
+          "responseMessage": {
+            "type": "string"
+          },
+          "responseCode": {
+            "type": "string"
+          },
+          "startingBalance": {
+            "$ref": "#/components/schemas/BsmCoreApi.resources.snap.accountStatements:_post.startingBalance"
+          }
+        }
+      },
+      "BsmCoreApi.resources.snap.accountStatements:_post.startingBalance": {
+        "required": [
+          "currency",
+          "value"
+        ],
+        "type": "object",
+        "properties": {
+          "currency": {
+            "type": "string"
+          },
+          "value": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  },
+  "spesification": {
+    "header": [
+      {
+        "key": "Authorization",
+        "value": "",
+        "format": "Alphanumeric",
+        "mandatory": "M",
+        "length": "",
+        "description": "Bearer <token>"
+      },
+      {
+        "key": "X-TIMESTAMP",
+        "value": "",
+        "format": "Datetime",
+        "mandatory": "M",
+        "length": "",
+        "description": "The timestamp must be presented in ISO8601 format (yyyy-MM-ddTHH:mm:ss.TZ)"
+      },
+      {
+        "key": "X-SIGNATURE",
+        "value": "",
+        "format": "Alphanumeric",
+        "mandatory": "M",
+        "length": "",
+        "description": "Transaction signature. Please refer to Transaction Signature section"
+      },
+      {
+        "key": "X-PARTNER-ID",
+        "value": "",
+        "format": "Alphanumeric",
+        "mandatory": "M",
+        "length": "",
+        "description": "Partner ID given by BSI upon onboarding process"
+      },
+      {
+        "key": "X-EXTERNAL-ID",
+        "value": "",
+        "format": "String",
+        "mandatory": "M",
+        "length": "128",
+        "description": "Numeric String. Unique ID per request generated by partner"
+      },
+      {
+        "key": "CHANNEL-ID",
+        "value": "",
+        "format": "Alpha",
+        "mandatory": "M",
+        "length": "",
+        "description": "Numeric String. Unique ID provide by Bank BSI"
+      },
+      {
+        "key": "Content-Type",
+        "value": "",
+        "format": "Alpha",
+        "mandatory": "M",
+        "length": "",
+        "description": "application/json"
+      }
+    ],
+    "request": [
+      {
+        "field": "accountNo",
+        "data_type": "String",
+        "format": "",
+        "mandatory": "C",
+        "length": "16",
+        "description": "Bank account number. must be filled if bankAccount No is Null",
+        "sample": "2110199457"
+      },
+      {
+        "field": "fromDateTime",
+        "data_type": "ISODateTime ISO-8601",
+        "format": "",
+        "mandatory": "O",
+        "length": "25",
+        "description": "Starting time range. Default: NOW (DESC) or NOW -1 months(ASC)",
+        "sample": "2016-01-01T12:09:00-07:00"
+      },
+      {
+        "field": "toDateTime",
+        "data_type": "Starting time range. Default: NOW (DESC) or NOW -1 months(ASC)",
+        "format": "",
+        "mandatory": "O",
+        "length": "25",
+        "description": "Ending time range. Default: NOW (DESC) or NOW -1 months(ASC)",
+        "sample": "2016-10-01T12:09:00-07:00"
+      }
+    ],
+    "response": [
+      {
+        "field": "responseCode",
+        "data_type": "String",
+        "format": "",
+        "mandatory": "M",
+        "length": "7",
+        "description": "Response Code\r\n",
+        "sample": "2001400"
+      },
+      {
+        "field": "responseMessage",
+        "data_type": "String",
+        "format": "",
+        "mandatory": "M",
+        "length": "150",
+        "description": "Response Description\r\n",
+        "sample": "Successful"
+      },
+      {
+        "field": "referenceNo",
+        "data_type": "",
+        "format": "",
+        "mandatory": "",
+        "length": "",
+        "description": "",
+        "sample": "2020102977770000000009"
+      },
+      {
+        "field": "startingBalance",
+        "data_type": "Objeeect",
+        "format": "",
+        "mandatory": "M",
+        "length": "",
+        "description": "",
+        "sample": ""
+      },
+      {
+        "field": "value",
+        "data_type": "String (ISO4217)",
+        "format": "",
+        "mandatory": "M",
+        "length": "16,2",
+        "description": "Transaction Amount. Nominal inputted by Customer with 2 decimal",
+        "sample": "403678.00"
+      },
+      {
+        "field": "currency",
+        "data_type": "String (ISO4217)",
+        "format": "",
+        "mandatory": "M",
+        "length": "3",
+        "description": "Currency",
+        "sample": "IDR"
+      },
+      {
+        "field": "endingBalance",
+        "data_type": "Object",
+        "format": "",
+        "mandatory": "M",
+        "length": "",
+        "description": "",
+        "sample": ""
+      },
+      {
+        "field": "value",
+        "data_type": "String (ISO4217)",
+        "format": "",
+        "mandatory": "M",
+        "length": "16,2",
+        "description": "Transaction Amount. Nominal inputted by Customer with 2 decimal",
+        "sample": "405678.00"
+      },
+      {
+        "field": "currency",
+        "data_type": "String (ISO4217)",
+        "format": "",
+        "mandatory": "M",
+        "length": "3",
+        "description": "Currency",
+        "sample": "IDR"
+      },
+      {
+        "field": "detailData",
+        "data_type": "Array of object",
+        "format": "",
+        "mandatory": "",
+        "length": "",
+        "description": "",
+        "sample": ""
+      },
+      {
+        "field": "balance",
+        "data_type": "Array of Object",
+        "format": "",
+        "mandatory": "O",
+        "length": "N\/A",
+        "description": "Starting and ending balance before the first\/last transaction.",
+        "sample": ""
+      },
+      {
+        "field": "value",
+        "data_type": "String (ISO4217)",
+        "format": "",
+        "mandatory": "M",
+        "length": "16,2",
+        "description": "Net amount of the transaction. If it's IDR then value includes 2 decimal digits.e.g. IDR 10.000,- will be placed with 10000.00",
+        "sample": "403678.00"
+      },
+      {
+        "field": "currency",
+        "data_type": "String (ISO4217)",
+        "format": "",
+        "mandatory": "M",
+        "length": "3",
+        "description": "Currency",
+        "sample": "IDR"
+      },
+      {
+        "field": "amount",
+        "data_type": "Object",
+        "format": "",
+        "mandatory": "M",
+        "length": "",
+        "description": "",
+        "sample": ""
+      },
+      {
+        "field": "value",
+        "data_type": "String (ISO4217)",
+        "format": "",
+        "mandatory": "M",
+        "length": "16,2",
+        "description": "Origin net amount of the transaction. If it's IDR then value includes 2 decimal digits.e.g. IDR 10.000,- will be placed with 10000.00",
+        "sample": "2000.00-"
+      },
+      {
+        "field": "currency",
+        "data_type": "String (ISO4217)",
+        "format": "",
+        "mandatory": "M",
+        "length": "3",
+        "description": "Currency",
+        "sample": "IDR"
+      },
+      {
+        "field": "transactionId",
+        "data_type": "String",
+        "format": "",
+        "mandatory": "O",
+        "length": "35",
+        "description": "Internal transaction identifier from publisher perspective",
+        "sample": "2110199457.ATM.FEE.S"
+      },
+      {
+        "field": "type",
+        "data_type": "String",
+        "format": "",
+        "mandatory": "M",
+        "length": "6",
+        "description": "Transaction type. CREDIT\/DEBIT",
+        "sample": "D"
+      },
+      {
+        "field": "remark",
+        "data_type": "String",
+        "format": "",
+        "mandatory": "M",
+        "length": "256",
+        "description": "Transaction remark.",
+        "sample": "Biaya Administrasi"
+      },
+      {
+        "field": "transactionDate",
+        "data_type": "ISODateTi me ISO-8601",
+        "format": "",
+        "mandatory": "M",
+        "length": "25",
+        "description": "Timestamp of the Transaction.",
+        "sample": "null"
+      }
+    ],
+    "sample_header": "\nX-SIGNATURE:b93d8757069a878ab10fa36de4c4ef5b9f0c9058efe83e1dedfb3a95cc146a130da8d0aeda9f3123954bb275640c534663bab0f62e24a49491389d1670c68652 \nX-TIMESTAMP:2022-02-12T13:07:00+07:00 \nContent-Type:application/json \nX-PARTNER-ID:889 \nX-EXTERNAL-ID:41807553358950093184162180797837 \nCHANNEL-ID:12345",
+    "sample_request": "\n{\r\n    \"accountNo\": \"2110199457\",\r\n    \"fromDateTime\": \"2016-01-01T12:09:00-07:00\",\r\n    \"toDateTime\": \"2016-01-10T12:09:00-07:00\"\r\n}",
+    "sample_response": "\n{\r\n    \"responseCode\": \"2001400\",\r\n    \"responseMessage\": \"Successful\",\r\n    \"referenceNo\": \"2020102977770000000009\",\r\n    \"startingBalance\": {\r\n        \"value\": \"403678.00\",\r\n        \"currency\": \"IDR\"\r\n    },\r\n    \"endingBalance\": {\r\n        \"value\": \"405678.00\",\r\n        \"currency\": \"IDR\"\r\n    },\r\n    \"detailData\": [\r\n        {\r\n            \"balance\": {\r\n                \"value\": \"403678.00\",\r\n                \"currency\": \"IDR\"\r\n            },\r\n            \"amount\": {\r\n                \"value\": \"2000.00-\",\r\n                \"currency\": \"IDR\"\r\n            },\r\n            \"transactionId\": \"2110199457.ATM.FEE.S\",\r\n            \"type\": \"D\",\r\n            \"remark\": \"Biaya Administrasi\",\r\n            \"transactionDate\": null\r\n        }\r\n    ]\r\n}",
+    "sample_error": "",
+    "list_error": [
+      {
+        "http_status": "",
+        "service_code": "",
+        "case_code": "",
+        "status": "",
+        "response_description": "",
+        "description": ""
+      }
+    ]
+  }
+}

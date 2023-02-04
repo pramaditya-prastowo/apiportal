@@ -1,0 +1,379 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "API Balance Inquiry",
+    "description": "Informasi Saldo - API Balance Inquiry",
+    "version": "1.0"
+  },
+  "servers": [
+    {
+      "url": "http://qa-apiesb-app:5555/rest"
+    }
+  ],
+  "paths": {
+    "/BsmCoreApi/resources/snap/balanceInquirySaving": {
+      "post": {
+        "operationId": "_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "required": [
+                  "accountNo"
+                ],
+                "properties": {
+                  "accountNo": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BsmCoreApi.resources.snap.balanceInquirySaving:_post_$response"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Access Denied",
+            "content": {}
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "BsmCoreApi.resources.snap.balanceInquirySaving:_post.additionalInfo": {
+        "required": [
+          "accountType"
+        ],
+        "type": "object",
+        "properties": {
+          "accountType": {
+            "type": "string"
+          }
+        }
+      },
+      "BsmCoreApi.resources.snap.balanceInquirySaving:_post.ledgerBalance": {
+        "required": [
+          "currency",
+          "value"
+        ],
+        "type": "object",
+        "properties": {
+          "currency": {
+            "type": "string"
+          },
+          "value": {
+            "type": "string"
+          }
+        }
+      },
+      "BsmCoreApi.resources.snap.balanceInquirySaving:_post.holdAmount": {
+        "required": [
+          "currency",
+          "value"
+        ],
+        "type": "object",
+        "properties": {
+          "currency": {
+            "type": "string"
+          },
+          "value": {
+            "type": "string"
+          }
+        }
+      },
+      "BsmCoreApi.resources.snap.balanceInquirySaving:_post_$response": {
+        "required": [
+          "accountInfos",
+          "accountNo",
+          "additionalInfo",
+          "name",
+          "responseCode",
+          "responseMessage"
+        ],
+        "type": "object",
+        "properties": {
+          "accountNo": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "additionalInfo": {
+            "$ref": "#/components/schemas/BsmCoreApi.resources.snap.balanceInquirySaving:_post.additionalInfo"
+          },
+          "responseMessage": {
+            "type": "string"
+          },
+          "accountInfos": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/BsmCoreApi.resources.snap.balanceInquirySaving:_post.accountInfos"
+            }
+          },
+          "responseCode": {
+            "type": "string"
+          }
+        }
+      },
+      "BsmCoreApi.resources.snap.balanceInquirySaving:_post.accountInfos": {
+        "required": [
+          "availableBalance",
+          "holdAmount",
+          "ledgerBalance"
+        ],
+        "type": "object",
+        "properties": {
+          "ledgerBalance": {
+            "$ref": "#/components/schemas/BsmCoreApi.resources.snap.balanceInquirySaving:_post.ledgerBalance"
+          },
+          "holdAmount": {
+            "$ref": "#/components/schemas/BsmCoreApi.resources.snap.balanceInquirySaving:_post.holdAmount"
+          },
+          "availableBalance": {
+            "$ref": "#/components/schemas/BsmCoreApi.resources.snap.balanceInquirySaving:_post.availableBalance"
+          }
+        }
+      },
+      "BsmCoreApi.resources.snap.balanceInquirySaving:_post.availableBalance": {
+        "required": [
+          "currency",
+          "value"
+        ],
+        "type": "object",
+        "properties": {
+          "currency": {
+            "type": "string"
+          },
+          "value": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  },
+  "spesification": {
+    "header": [
+      {
+        "key": "Authorization",
+        "value": "",
+        "format": "Alphanumeric",
+        "mandatory": "M",
+        "length": "",
+        "description": "Bearer <token>"
+      },
+      {
+        "key": "X-TIMESTAMP",
+        "value": "",
+        "format": "Datetime",
+        "mandatory": "M",
+        "length": "",
+        "description": "The timestamp must be presented in ISO8601 format (yyyy-MM-ddTHH:mm:ss.TZ)"
+      },
+      {
+        "key": "X-SIGNATURE",
+        "value": "",
+        "format": "Alphanumeric",
+        "mandatory": "M",
+        "length": "",
+        "description": "Transaction signature. Please refer to Transaction Signature section"
+      },
+      {
+        "key": "X-PARTNER-ID",
+        "value": "",
+        "format": "Alphanumeric",
+        "mandatory": "M",
+        "length": "",
+        "description": "Partner ID given by BSI upon onboarding process"
+      },
+      {
+        "key": "X-EXTERNAL-ID",
+        "value": "",
+        "format": "String",
+        "mandatory": "M",
+        "length": "128",
+        "description": "Numeric String. Unique ID per request generated by partner"
+      },
+      {
+        "key": "CHANNEL-ID",
+        "value": "",
+        "format": "Alpha",
+        "mandatory": "M",
+        "length": "",
+        "description": "Numeric String. Unique ID provide by Bank BSI"
+      },
+      {
+        "key": "Content-Type",
+        "value": "",
+        "format": "Alpha",
+        "mandatory": "M",
+        "length": "",
+        "description": "application/json"
+      }
+    ],
+    "request": [
+      {
+        "field": "accountNo",
+        "data_type": "String",
+        "format": "",
+        "mandatory": "C",
+        "length": "16",
+        "description": "Bank account number. must be filled if bankCardTo ken is Null and Authorizatio n-Customer is Null",
+        "sample": "7095592389"
+      }
+    ],
+    "response": [
+      {
+        "field": "responseCode",
+        "data_type": "String",
+        "format": "",
+        "mandatory": "M",
+        "length": "7",
+        "description": "Response Code\r\n",
+        "sample": "2001100"
+      },
+      {
+        "field": "responseMessage",
+        "data_type": "String",
+        "format": "",
+        "mandatory": "M",
+        "length": "150",
+        "description": "Response Description\r\n",
+        "sample": "Request has been processed successfully"
+      },
+      {
+        "field": "accountNo",
+        "data_type": "String",
+        "format": "",
+        "mandatory": "O",
+        "length": "32",
+        "description": "Registered account number",
+        "sample": "115471119"
+      },
+      {
+        "field": "name",
+        "data_type": "String",
+        "format": "",
+        "mandatory": "O",
+        "length": "140",
+        "description": "Customer account name",
+        "sample": "JONOMAD E"
+      },
+      {
+        "field": "accountInfo",
+        "data_type": "Object",
+        "format": "",
+        "mandatory": "O",
+        "length": "",
+        "description": "",
+        "sample": ""
+      },
+      {
+        "field": "holdAmount",
+        "data_type": "Object",
+        "format": "",
+        "mandatory": "O",
+        "length": "",
+        "description": "",
+        "sample": ""
+      },
+      {
+        "field": "value",
+        "data_type": "String (ISO4217)",
+        "format": "",
+        "mandatory": "M",
+        "length": "16,2",
+        "description": "Hold amount that cannot be used. If it's IDR then value includes 2 decimal digits. e.g. IDR 20.000,- will be placed with 20000.00",
+        "sample": "30000.00"
+      },
+      {
+        "field": "currency",
+        "data_type": "String",
+        "format": "",
+        "mandatory": "M",
+        "length": "3",
+        "description": "Currency",
+        "sample": "IDR"
+      },
+      {
+        "field": "availableBalance",
+        "data_type": "Object",
+        "format": "",
+        "mandatory": "O",
+        "length": "",
+        "description": "",
+        "sample": ""
+      },
+      {
+        "field": "value",
+        "data_type": "String (ISO4217)",
+        "format": "",
+        "mandatory": "M",
+        "length": "16,2",
+        "description": "Hold amount that cannot be used. If it's IDR then value includes 2 decimal digits. e.g. IDR 20.000,- will be placed with 20000.00",
+        "sample": "30000.00"
+      },
+      {
+        "field": "currency",
+        "data_type": "String",
+        "format": "",
+        "mandatory": "M",
+        "length": "3",
+        "description": "Currency",
+        "sample": "IDR"
+      },
+      {
+        "field": "ledgerBalance",
+        "data_type": "Object",
+        "format": "",
+        "mandatory": "O",
+        "length": "",
+        "description": "",
+        "sample": ""
+      },
+      {
+        "field": "value",
+        "data_type": "String (ISO4217)",
+        "format": "",
+        "mandatory": "M",
+        "length": "16,2",
+        "description": "Hold amount that cannot be used. If it's IDR then value includes 2 decimal digits. e.g. IDR 20.000,- will be placed with 20000.00",
+        "sample": "30000.00"
+      },
+      {
+        "field": "currency",
+        "data_type": "String",
+        "format": "",
+        "mandatory": "M",
+        "length": "3",
+        "description": "Currency",
+        "sample": "IDR"
+      }
+    ],
+    "sample_header": "\nX-SIGNATURE:a2638ff9fdcbd10be3702fbd9f728bca6c1796b132d76c2ce2ed5be772834dd0ff28fe850ee5afd 70fc789781c69a8efa05aecda050ec428d1047e60f3fd04cd \nX-TIMESTAMP:2022-02-12T13:07:00+07:00 \nX-PARTNER-ID:889 \nX-EXTERNAL-ID:41807553358950093184162180797837 \nCHANNEL-ID:12345",
+    "sample_request": "\n{\r\n \"accountNo\": \"7095592389\"\r\n}",
+    "sample_response": "\n{\r\n    \"responseCode\": \"2001100\",\r\n    \"responseMessage\": \"Successful\",\r\n    \"accountNo\": \"7095592389\",\r\n    \"name\": \"URASIMA NASA KARYA PT\",\r\n    \"accountInfos\": [\r\n        {\r\n            \"holdAmount\": {\r\n                \"value\": \"0.00\",\r\n                \"currency\": \"IDR\"\r\n            },\r\n            \"availableBalance\": {\r\n                \"value\": \"1100487395429.00\",\r\n                \"currency\": \"IDR\"\r\n            },\r\n            \"ledgerBalance\": {\r\n                \"value\": \"1100487445429.00\",\r\n                \"currency\": \"IDR\"\r\n            }\r\n        }\r\n    ]\r\n}",
+    "sample_error": "",
+    "list_error": [
+      {
+        "http_status": "",
+        "service_code": "",
+        "case_code": "",
+        "status": "",
+        "response_description": "",
+        "description": ""
+      }
+    ]
+  }
+}
