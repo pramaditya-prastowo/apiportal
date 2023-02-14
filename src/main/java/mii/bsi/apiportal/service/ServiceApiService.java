@@ -9,6 +9,7 @@ import mii.bsi.apiportal.domain.model.Roles;
 import mii.bsi.apiportal.repository.GroupServiceRepository;
 import mii.bsi.apiportal.repository.UserRepository;
 import mii.bsi.apiportal.utils.JwtUtility;
+import mii.bsi.apiportal.validation.UserValidation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -34,11 +35,14 @@ public class ServiceApiService {
     private UserRepository userRepository;
     @Autowired
     private GroupServiceRepository groupServiceRepository;
+    @Autowired
+    UserValidation adminValidation;
 
     @Autowired
     private JwtUtility jwtUtility;
 
     public static final String CREATE = "Create";
+    public static final String UPDATE = "Update";
     public static final String GETALL = "Get All";
     public static final String GETBYID = "Get By Id";
     public static final String DELETE = "Delete";
@@ -75,38 +79,84 @@ public class ServiceApiService {
         return ResponseEntity.status(HttpStatus.CREATED).body(responseData);
     }
 
-    public ResponseEntity<ResponseHandling<ServiceApiDomain>> update(ServiceApiDomain serviceApi, Errors errors) {
+    public ResponseEntity<ResponseHandling<ServiceApiDomain>> update(ServiceApiDomain serviceApi,String token, Errors errors) {
         ResponseHandling<ServiceApiDomain> responseData = new ResponseHandling<>();
         RequestData<ServiceApiDomain> requestData = new RequestData<>();
         requestData.setPayload(serviceApi);
 
         try {
+
+            if(!adminValidation.isAdmin(token)){
+                responseData.failed("Access denied");
+                logService.saveLog(requestData, responseData, StatusCode.FORBIDDEN, this.getClass().getName(),
+                        UPDATE);
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(responseData);
+            }
             if (errors.hasErrors()) {
                 responseData.failed(CustomError.validRequest(errors), "Bad Request");
                 logService.saveLog(requestData, responseData, StatusCode.BAD_REQUEST, this.getClass().getName(),
-                        CREATE);
+                        UPDATE);
+            }
+
+            ServiceApiDomain serviceDb = serviceApiRepository.findByIdActive(serviceApi.getId());
+            if(!serviceApi.getIcon().equals("")){
+                serviceDb.setIcon(serviceApi.getIcon());
+            }
+            if(!serviceApi.getSwagger().equals("")){
+                serviceDb.setSwagger(serviceApi.getSwagger());
             }
             serviceApi.getId();
-            serviceApi.setUpdateDate(new Date());
-            serviceApiRepository.save(serviceApi);
+
+            serviceDb.setUpdateDate(new Date());
+            serviceDb.setUpdateBy("");
+            serviceDb.setServiceName(serviceApi.getServiceName());
+            serviceDb.setSubtitle(serviceApi.getSubtitle());
+            serviceDb.setServiceDescription(serviceApi.getServiceDescription());
+            serviceDb.setSampleDescription(serviceApi.getSampleDescription());
+            serviceApiRepository.save(serviceDb);
             responseData.success();
         } catch (Exception e) {
             responseData.failed(e.getMessage());
             logService.saveLog(requestData, responseData, StatusCode.INTERNAL_SERVER_ERROR, this.getClass().getName(),
-                    CREATE);
+                    UPDATE);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseData);
         }
-        logService.saveLog(requestData, responseData, StatusCode.CREATED, this.getClass().getName(), CREATE);
-        return ResponseEntity.status(HttpStatus.CREATED).body(responseData);
+        logService.saveLog(requestData, responseData, StatusCode.OK, this.getClass().getName(), UPDATE);
+        return ResponseEntity.status(HttpStatus.OK).body(responseData);
     }
 
-    public ResponseEntity<ResponseHandling<Iterable<ServiceApiDomain>>> getAll() {
-        ResponseHandling<Iterable<ServiceApiDomain>> responseData = new ResponseHandling<>();
+    public ResponseEntity<ResponseHandling<List<ServiceApiDomain>>> getAll() {
+        ResponseHandling<List<ServiceApiDomain>> responseData = new ResponseHandling<>();
         RequestData<ServiceApiDomain> requestData = new RequestData<>();
         try {
-            responseData.setPayload(serviceApiRepository.findByServiceApiActive());
+            List<ServiceApiDomain> listApi = serviceApiRepository.findByServiceApiActive();
+            responseData.setPayload(listApi);
             responseData.success();
         } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseData);
+        }
+        logService.saveLog(requestData, responseData, StatusCode.OK, this.getClass().getName(), GETALL);
+        return ResponseEntity.status(HttpStatus.OK).body(responseData);
+    }
+
+    public ResponseEntity<ResponseHandling<List<ServiceApiDomain>>> getServiceHome() {
+        ResponseHandling<List<ServiceApiDomain>> responseData = new ResponseHandling<>();
+        RequestData<ServiceApiDomain> requestData = new RequestData<>();
+        try {
+            List<ServiceApiDomain> listApi = serviceApiRepository.findByServiceApiActive();
+            List<ServiceApiDomain> listApiHome = new ArrayList<>();
+            if(listApi.size() > 6){
+                for (int i = 0; i < 6; i++) {
+                    listApiHome.add(listApi.get(i));
+                }
+            }else{
+                listApiHome = listApi;
+            }
+            responseData.setPayload(listApiHome);
+            responseData.success();
+        } catch (Exception e) {
+            e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseData);
         }
         logService.saveLog(requestData, responseData, StatusCode.OK, this.getClass().getName(), GETALL);

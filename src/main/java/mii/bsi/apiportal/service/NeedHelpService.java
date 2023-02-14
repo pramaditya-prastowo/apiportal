@@ -55,6 +55,7 @@ public class NeedHelpService {
             }
 
             needHelp.setCreateDate(new Date());
+            needHelp.setStatus("Menunggu");
             needHelpRepository.save(needHelp);
             responseData.success();
 

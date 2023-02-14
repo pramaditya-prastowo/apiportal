@@ -29,14 +29,19 @@ public class ServiceApiController {
     }
 
     @PatchMapping
-    public ResponseEntity<ResponseHandling<ServiceApiDomain>> update(@Valid @RequestBody ServiceApiDomain serviceApi,
+    public ResponseEntity<ResponseHandling<ServiceApiDomain>> update(@Valid @RequestBody ServiceApiDomain serviceApi, @RequestHeader(HttpHeaders.AUTHORIZATION) String token,
                                                                      Errors errors) {
-        return serviceApiService.update(serviceApi, errors);
+        return serviceApiService.update(serviceApi,token.substring(7), errors);
     }
 
     @GetMapping
-    public ResponseEntity<ResponseHandling<Iterable<ServiceApiDomain>>> getAll() {
+    public ResponseEntity<ResponseHandling<List<ServiceApiDomain>>> getAll() {
         return serviceApiService.getAll();
+    }
+
+    @GetMapping("/home")
+    public ResponseEntity<ResponseHandling<List<ServiceApiDomain>>> getServiceHome() {
+        return serviceApiService.getServiceHome();
     }
 
     @GetMapping("/groups")

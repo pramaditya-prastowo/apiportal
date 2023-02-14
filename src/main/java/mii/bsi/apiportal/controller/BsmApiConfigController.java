@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class BsmApiConfigController {
 
     @Autowired
-    BsmApiConfigService bsmApiConfigService;
+    private BsmApiConfigService bsmApiConfigService;
 
     @RequestMapping(method = RequestMethod.GET, value = "/readData", params = {"keyname"})
     public BsmApiConfigDTO readData(@RequestParam("keyname") String keyname) throws Exception {

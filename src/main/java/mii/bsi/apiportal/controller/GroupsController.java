@@ -32,6 +32,12 @@ public class GroupsController {
         return groupsService.getById(id,token.substring(7));
     }
 
+    @DeleteMapping("/{id}")
+    public ResponseEntity<ResponseHandling> deleteById(@PathVariable("id") Long id,
+                                                            @RequestHeader(HttpHeaders.AUTHORIZATION) String token){
+        return groupsService.deleteById(id,token.substring(7));
+    }
+
     @PostMapping
     public ResponseEntity<ResponseHandling> create(@Valid @RequestBody Groups groups, Errors errors,
                                                    @RequestHeader(HttpHeaders.AUTHORIZATION) String token){

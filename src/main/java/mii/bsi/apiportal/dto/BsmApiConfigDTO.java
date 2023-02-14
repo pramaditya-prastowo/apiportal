@@ -39,7 +39,7 @@ public class BsmApiConfigDTO {
     }
 
     public BsmApiConfigDTO(BsmApiConfig bsmApiConfig) {
-        this.keyName = bsmApiConfig.getKeyName();
+        this.keyName = bsmApiConfig.getKeyname();
         this.keygroup = bsmApiConfig.getKeygroup();
         this.value = bsmApiConfig.getValue();
         this.description = bsmApiConfig.getDescription();

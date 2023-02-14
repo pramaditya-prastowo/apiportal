@@ -1,0 +1,546 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "API Transfer SKNBI",
+    "description": "API Transfer SKNBI",
+    "version": "1.0"
+  },
+  "servers": [
+    {
+      "url": "http://qa-apiesb-app:5555/rest"
+    }
+  ],
+  "paths": {
+    "/BsmCoreApi/resources/snap/sknTransfer": {
+      "post": {
+        "operationId": "_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "required": [
+                  "beneficiaryAccountName",
+                  "beneficiaryAccountNo",
+                  "beneficiaryAddress",
+                  "beneficiaryBankCode",
+                  "beneficiaryCustomerResidence",
+                  "beneficiaryCustomerType",
+                  "kodepos",
+                  "partnerReferenceNo",
+                  "remark",
+                  "sourceAccountNo",
+                  "transactionDate"
+                ],
+                "properties": {
+                  "partnerReferenceNo": {
+                    "type": "string"
+                  },
+                  "beneficiaryAccountNo": {
+                    "type": "string"
+                  },
+                  "beneficiaryAccountName": {
+                    "type": "string"
+                  },
+                  "beneficiaryBankCode": {
+                    "type": "string"
+                  },
+                  "beneficiaryAddress": {
+                    "type": "string"
+                  },
+                  "sourceAccountNo": {
+                    "type": "string"
+                  },
+                  "transactionDate": {
+                    "type": "string"
+                  },
+                  "beneficiaryCustomerResidence": {
+                    "type": "string"
+                  },
+                  "beneficiaryCustomerType": {
+                    "type": "string"
+                  },
+                  "remark": {
+                    "type": "string"
+                  },
+                  "kodepos": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BsmCoreApi.resources.snap.sknTransfer:_post_$response"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Access Denied",
+            "content": {}
+          }
+        },
+        "x-codegen-request-body-name": "bodyParameters"
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "BsmCoreApi.resources.snap.sknTransfer:_post_bodyParameters": {
+        "required": [
+          "additionalInfo",
+          "amount"
+        ],
+        "type": "object",
+        "properties": {
+          "amount": {
+            "$ref": "#/components/schemas/BsmCoreApi.resources.snap.sknTransfer:_post.amount"
+          },
+          "additionalInfo": {
+            "$ref": "#/components/schemas/BsmCoreApi.resources.snap.sknTransfer:_post.additionalInfo"
+          }
+        }
+      },
+      "BsmCoreApi.resources.snap.sknTransfer:_post_$response": {
+        "required": [
+          "amount",
+          "beneficiaryAccountName",
+          "beneficiaryAccountNo",
+          "beneficiaryBankCode",
+          "partnerReferenceNo",
+          "referenceNo",
+          "responseCode",
+          "responseMessage",
+          "sourceAccountNo",
+          "transactionDate",
+          "transactionStatus",
+          "transactionStatusDesc"
+        ],
+        "type": "object",
+        "properties": {
+          "beneficiaryAccountNo": {
+            "type": "string"
+          },
+          "amount": {
+            "$ref": "#/components/schemas/BsmCoreApi.resources.snap.sknTransfer:_post.amount"
+          },
+          "beneficiaryAccountName": {
+            "type": "string"
+          },
+          "referenceNo": {
+            "type": "string"
+          },
+          "transactionStatus": {
+            "type": "string"
+          },
+          "partnerReferenceNo": {
+            "type": "string"
+          },
+          "transactionStatusDesc": {
+            "type": "string"
+          },
+          "beneficiaryBankCode": {
+            "type": "string"
+          },
+          "responseMessage": {
+            "type": "string"
+          },
+          "sourceAccountNo": {
+            "type": "string"
+          },
+          "transactionDate": {
+            "type": "string"
+          },
+          "responseCode": {
+            "type": "string"
+          }
+        }
+      },
+      "BsmCoreApi.resources.snap.sknTransfer:_post.additionalInfo": {
+        "required": [
+          "chargesCode",
+          "sourceAccountType"
+        ],
+        "type": "object",
+        "properties": {
+          "chargesCode": {
+            "type": "string"
+          },
+          "sourceAccountType": {
+            "type": "string"
+          }
+        }
+      },
+      "BsmCoreApi.resources.snap.sknTransfer:_post.amount": {
+        "required": [
+          "currency",
+          "value"
+        ],
+        "type": "object",
+        "properties": {
+          "currency": {
+            "type": "string"
+          },
+          "value": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  },
+  "spesification": {
+    "header": [
+      {
+        "key": "Authorization",
+        "value": "",
+        "format": "Alphanumeric",
+        "mandatory": "M",
+        "length": "",
+        "description": "Bearer <token>"
+      },
+      {
+        "key": "X-TIMESTAMP",
+        "value": "",
+        "format": "Datetime",
+        "mandatory": "M",
+        "length": "",
+        "description": "The timestamp must be presented in ISO8601 format (yyyy-MM-ddTHH:mm:ss.TZ)"
+      },
+      {
+        "key": "X-SIGNATURE",
+        "value": "",
+        "format": "Alphanumeric",
+        "mandatory": "M",
+        "length": "",
+        "description": "Transaction signature. Please refer to Transaction Signature section"
+      },
+      {
+        "key": "X-PARTNER-ID",
+        "value": "",
+        "format": "Alphanumeric",
+        "mandatory": "M",
+        "length": "",
+        "description": "Partner ID given by BSI upon onboarding process"
+      },
+      {
+        "key": "X-EXTERNAL-ID",
+        "value": "",
+        "format": "String",
+        "mandatory": "M",
+        "length": "128",
+        "description": "Numeric String. Unique ID per request generated by partner"
+      },
+      {
+        "key": "CHANNEL-ID",
+        "value": "",
+        "format": "Alpha",
+        "mandatory": "M",
+        "length": "",
+        "description": "Numeric String. Unique ID provide by Bank BSI"
+      },
+      {
+        "key": "Content-Type",
+        "value": "",
+        "format": "Alpha",
+        "mandatory": "M",
+        "length": "",
+        "description": "application/json"
+      }
+    ],
+    "request": [
+      {
+        "field": "partnerReferenceNo",
+        "data_type": "String",
+        "format": "",
+        "mandatory": "O",
+        "length": "64",
+        "description": "Transaction identifier on partner\r\nsystem\r\n",
+        "sample": "70809060"
+      },
+      {
+        "field": "amount",
+        "data_type": "Object",
+        "format": "",
+        "mandatory": "M",
+        "length": "",
+        "description": "",
+        "sample": ""
+      },
+      {
+        "field": "value",
+        "data_type": "String (ISO4217)",
+        "format": "",
+        "mandatory": "M",
+        "length": "16,2",
+        "description": "Net amount of the transaction. If it’s IDR then value includes 2 decimal digits.e.g. IDR 10.000,- will be placed with 10000.00",
+        "sample": "103000000"
+      },
+      {
+        "field": "currency",
+        "data_type": "String",
+        "format": "",
+        "mandatory": "M",
+        "length": "3",
+        "description": "Currency",
+        "sample": "IDR"
+      },
+      {
+        "field": "beneficiaryAccountNo",
+        "data_type": "String",
+        "format": "",
+        "mandatory": "M",
+        "length": "34",
+        "description": "Beneficiary Account Number",
+        "sample": "103000000"
+      },
+      {
+        "field": "beneficiaryAccountName",
+        "data_type": "String",
+        "format": "",
+        "mandatory": "M",
+        "length": "100",
+        "description": "Beneficiary Account Name",
+        "sample": "HUSNIAH DWI Y"
+      },
+      {
+        "field": "beneficiaryBankCode",
+        "data_type": "String",
+        "format": "",
+        "mandatory": "M",
+        "length": "8",
+        "description": "Beneficiary Bank Code",
+        "sample": "BMRIIDJA"
+      },
+      {
+        "field": "beneficiaryAddress",
+        "data_type": "String",
+        "format": "",
+        "mandatory": "O",
+        "length": "100",
+        "description": "Beneficiary Address",
+        "sample": "Cakung, Jakarta Timur"
+      },
+      {
+        "field": "sourceAccountNo",
+        "data_type": "String",
+        "format": "",
+        "mandatory": "M",
+        "length": "25",
+        "description": "Beneficiary Bank Code",
+        "sample": "7095601027"
+      },
+      {
+        "field": "transactionDate",
+        "data_type": "String",
+        "format": "",
+        "mandatory": "M",
+        "length": "25",
+        "description": "transaction date : ISO8601",
+        "sample": "07-10-2020T15:22:00"
+      },
+      {
+        "field": "beneficiaryCustomerResidence",
+        "data_type": "String",
+        "format": "",
+        "mandatory": "M",
+        "length": "1",
+        "description": "Beneficiary Customer Residence 1.Indonesia 2. Non Indonesia",
+        "sample": "1"
+      },
+      {
+        "field": "beneficiaryCustomerType",
+        "data_type": "String",
+        "format": "",
+        "mandatory": "M",
+        "length": "1",
+        "description": "Beneficiary Customer Type 1. Individual 2. corporation 3.Government",
+        "sample": "1"
+      },
+      {
+        "field": "feeType",
+        "data_type": "String",
+        "format": "",
+        "mandatory": "O",
+        "length": "25",
+        "description": "to whom the fee will becharged",
+        "sample": "SHR"
+      },
+      {
+        "field": "remark",
+        "data_type": "String",
+        "format": "",
+        "mandatory": "O",
+        "length": "50",
+        "description": "Remark\/trans action description",
+        "sample": "Testing Rtgs Transfer"
+      },
+      {
+        "field": "kodepos",
+        "data_type": "String",
+        "format": "",
+        "mandatory": "O",
+        "length": "10",
+        "description": "Sender City (kodepos)",
+        "sample": "0300"
+      },
+      {
+        "field": "additionalInfo",
+        "data_type": "Object",
+        "format": "",
+        "mandatory": "O",
+        "length": "",
+        "description": "Additional Information for custom use",
+        "sample": ""
+      }
+    ],
+    "response": [
+      {
+        "field": "responseCode",
+        "data_type": "String",
+        "format": "",
+        "mandatory": "M",
+        "length": "7",
+        "description": "Response Code\r\n",
+        "sample": "2004900"
+      },
+      {
+        "field": "responseMessage",
+        "data_type": "String",
+        "format": "",
+        "mandatory": "M",
+        "length": "150",
+        "description": "Response Description\r\n",
+        "sample": "Successful"
+      },
+      {
+        "field": "referenceNo",
+        "data_type": "String",
+        "format": "",
+        "mandatory": "O",
+        "length": "15",
+        "description": "From Payment Request",
+        "sample": "FT16021S0HLM"
+      },
+      {
+        "field": "amount",
+        "data_type": "Object",
+        "format": "",
+        "mandatory": "M",
+        "length": "",
+        "description": "",
+        "sample": ""
+      },
+      {
+        "field": "value",
+        "data_type": "String (ISO4217)",
+        "format": "",
+        "mandatory": "M",
+        "length": "16,2",
+        "description": "Origin net amount of the transaction. If it's IDR then value includes 2 decimal digits.e.g. IDR 10.000,- will be placed with 10000.00",
+        "sample": "103000000"
+      },
+      {
+        "field": "currency",
+        "data_type": "String (ISO4217)",
+        "format": "",
+        "mandatory": "M",
+        "length": "3",
+        "description": "Currency",
+        "sample": "IDR"
+      },
+      {
+        "field": "partnerReferenceNo",
+        "data_type": "String",
+        "format": "",
+        "mandatory": "O",
+        "length": "64",
+        "description": "Transaction identifier on service consumer system",
+        "sample": "80808020"
+      },
+      {
+        "field": "beneficiaryAccountName",
+        "data_type": "String",
+        "format": "",
+        "mandatory": "M",
+        "length": "100",
+        "description": "Beneficiary Account Name",
+        "sample": "HUSNIAH DWI Y"
+      },
+      {
+        "field": "beneficiaryAccountNo",
+        "data_type": "String",
+        "format": "",
+        "mandatory": "M",
+        "length": "34",
+        "description": "Beneficiary Account Number",
+        "sample": "7001316065"
+      },
+      {
+        "field": "sourceAccountNo",
+        "data_type": "String",
+        "format": "",
+        "mandatory": "M",
+        "length": "19",
+        "description": "Beneficiary Bank Code",
+        "sample": "7095601027"
+      },
+      {
+        "field": "beneficiaryBankCode",
+        "data_type": "String",
+        "format": "",
+        "mandatory": "O",
+        "length": "8",
+        "description": "Beneficiary Bank Code",
+        "sample": "BMRIIDJA"
+      },
+      {
+        "field": "transactionDate",
+        "data_type": "ISODateTi me ISO-8601",
+        "format": "",
+        "mandatory": "M",
+        "length": "25",
+        "description": "Timestamp of the Transaction.",
+        "sample": "07-10-2020T15:22:00"
+      },
+      {
+        "field": "transactionStatus",
+        "data_type": "String",
+        "format": "",
+        "mandatory": "M",
+        "length": "2",
+        "description": "00 - Success\r\n01 - Initiated\r\n02 - Paying\r\n03 - Pending\r\n04 - Refunded \r\n05 - Canceled \r\n06 - Failed\r\n07 - Not found\r\n",
+        "sample": "00"
+      },
+      {
+        "field": "transactionStatusDesc",
+        "data_type": "String",
+        "format": "",
+        "mandatory": "O",
+        "length": "50",
+        "description": "Description status transaction",
+        "sample": "Success"
+      }
+    ],
+    "sample_header": "\nX-\r\nSIGNATURE:50d6cf9802e8495e157340cdfbdf7ae721c1fbe64d264a08e3f21f13702dc3336752f3fb81824 75f818ae33be85f5116895a7a9aafc18edda4c9d469c52dd567\r\nX-TIMESTAMP:2022-02-12T13:07:00+07:00 X-PARTNER-ID:099\r\nX-EXTERNAL-ID:41807553358950093184162180797837 CHANNEL-ID:12345\r\n",
+    "sample_request": "\n{\r\n    \"partnerReferenceNo\": \"70809060\",\r\n    \"amount\": {\r\n        \"value\": \"100000000\",\r\n        \"currency\": \"IDR\"\r\n    },\r\n    \"beneficiaryAccountNo\": \"7127089277\",\r\n    \"beneficiaryAccountName\": \"DIKA FAHROZY\",\r\n    \"beneficiaryBankCode\": \"0119920\",\r\n    \"beneficiaryAddress\": \"Cakung, Jakarta Timur\",\r\n    \"sourceAccountNo\": \"7095601027\",\r\n    \"transactionDate\": \"07-10-2020T15:22:00\",\r\n    \"beneficiaryCustomerResidence\": \"1\",\r\n    \"beneficiaryCustomerType\": \"1\",\r\n    \"feeType\": \"OUR\",\r\n    \"remark\": \"Testing Skn Transfer\",\r\n    \"kodepos\": \"0300\",\r\n    \"additionalInfo\": {\r\n        \"sourceAccountType\": \"RG\"\r\n    }\r\n}",
+    "sample_response": "\n{\r\n    \"responseCode\": \"2005000\",\r\n    \"responseMessage\": \"Successful\",\r\n    \"referenceNo\": \"FT16021WZVM7\",\r\n    \"amount\": {\r\n        \"value\": \"100000000\",\r\n        \"currency\": \"IDR\"\r\n    },\r\n    \"partnerReferenceNo\": \"70809060\",\r\n    \"beneficiaryAccountName\": \"DIKA FAHROZY\",\r\n    \"beneficiaryAccountNo\": \"7127089277\",\r\n    \"sourceAccountNo\": \"7095601027\",\r\n    \"beneficiaryBankCode\": \"0119920\",\r\n    \"transactionDate\": \"07-10-2020T15:22:00\",\r\n    \"transactionStatus\": \"00\",\r\n    \"transactionStatusDesc\": \"Success\"\r\n}",
+    "sample_error": "",
+    "list_error": [
+      {
+        "http_status": "",
+        "service_code": "",
+        "case_code": "",
+        "status": "",
+        "response_description": "",
+        "description": ""
+      }
+    ]
+  }
+}

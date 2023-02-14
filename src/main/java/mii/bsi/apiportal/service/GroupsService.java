@@ -3,6 +3,7 @@ package mii.bsi.apiportal.service;
 import mii.bsi.apiportal.constant.StatusCode;
 import mii.bsi.apiportal.domain.Groups;
 import mii.bsi.apiportal.domain.Menu;
+import mii.bsi.apiportal.domain.User;
 import mii.bsi.apiportal.dto.AuthGuardPageRequestDTO;
 import mii.bsi.apiportal.repository.GroupsRepository;
 import mii.bsi.apiportal.repository.MenuRepository;
@@ -275,6 +276,51 @@ public class GroupsService {
         }
         logService.saveLog(requestData, responseData, StatusCode.OK, this.getClass().getName(),
                 UPDATE);
+        return ResponseEntity.ok(responseData);
+    }
+
+    public ResponseEntity<ResponseHandling> deleteById(long id, String token){
+        ResponseHandling<Groups> responseData = new ResponseHandling<>();
+        RequestData<Map<String, Object>> requestData = new RequestData<>();
+        requestData.setPayload(logService.setValueRequest("id", id));
+
+        try {
+            if(!adminValidation.isAdmin(token)){
+                responseData.failed("Access denied");
+                logService.saveLog(requestData, responseData, StatusCode.FORBIDDEN, this.getClass().getName(),
+                        GET_BY_ID);
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(responseData);
+            }
+
+            Groups group = groupsRepository.getReferenceById(id);
+            if(group == null){
+                responseData.failed("Not Found");
+                logService.saveLog(requestData, responseData, StatusCode.NOT_FOUND, this.getClass().getName(),
+                        GET_BY_ID);
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(responseData);
+            }
+
+            List<User> listUser = userRepository.findByGroupId(group.getId());
+            if(listUser.size()!=0){
+                responseData.failed("User Group masih digunakan");
+                logService.saveLog(requestData, responseData, StatusCode.BAD_REQUEST, this.getClass().getName(),
+                        GET_BY_ID);
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(responseData);
+            }
+
+            groupsRepository.deleteById(id);
+            responseData.success();
+
+
+        }catch (Exception e){
+            e.printStackTrace();
+            responseData.failed(e.getMessage());
+            logService.saveLog(requestData, responseData, StatusCode.INTERNAL_SERVER_ERROR, this.getClass().getName(),
+                    GET_BY_ID);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseData);
+        }
+        logService.saveLog(requestData, responseData, StatusCode.OK, this.getClass().getName(),
+                GET_BY_ID);
         return ResponseEntity.ok(responseData);
     }
 }

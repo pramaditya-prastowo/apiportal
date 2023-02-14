@@ -3,6 +3,7 @@ package mii.bsi.apiportal.domain;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
 import javax.transaction.Transactional;
@@ -25,6 +26,8 @@ public class Groups  {
     private String createdBy;
     private Date updatedDate;
     private String updatedBy;
+    @Lob
+    @Type(type = "org.hibernate.type.TextType")
     private String description;
     private String name;
     private String permission;

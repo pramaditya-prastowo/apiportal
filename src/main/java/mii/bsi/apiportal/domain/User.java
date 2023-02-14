@@ -80,7 +80,7 @@ public class User implements Serializable {
 //    @JoinColumn(name = "group_id")
 //    private Groups groups;
 
-    @Column(columnDefinition = "ENUM('MITRA', 'SUPER_ADMIN', 'ADMIN')", name = "auth_principal")
+//    @Column(columnDefinition = "ENUM('MITRA', 'SUPER_ADMIN', 'ADMIN')", name = "auth_principal")
     @Enumerated(EnumType.STRING)
     private Roles authPrincipal = Roles.MITRA;
 

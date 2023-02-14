@@ -15,6 +15,7 @@ import mii.bsi.apiportal.dto.UserResponseDTO;
 import mii.bsi.apiportal.dto.VerificationEmailRequest;
 import mii.bsi.apiportal.repository.BsiTokenVerificationRepository;
 import mii.bsi.apiportal.utils.*;
+import mii.bsi.apiportal.validation.EmailValidation;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -61,6 +62,8 @@ public class UserService {
 
     @Autowired
     private EncryptUtility encryptUtility;
+    @Autowired
+    private EmailValidation emailValidation;
 
     public ResponseHandling<User> create(@Valid User user, Errors errors) {
         ResponseHandling<User> responseHandling = new ResponseHandling<>();
@@ -283,6 +286,14 @@ public class UserService {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseData);
             }
 
+            if(!emailValidation.validEmail(user.getEmail())){
+                responseData.failed("Silahkan gunakan Email perusahaan anda");
+                requestData.getPayload().setPassword(passwordEncoder.encode(user.getPassword()));
+                logService.saveLog(requestData, responseData, StatusCode.BAD_REQUEST, this.getClass().getName(),
+                        REGISTER);
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseData);
+            }
+
             User userExist = userRepository.findByEmail(requestData.getPayload().getEmail());
             if (userExist != null) {
                 responseData.failed("Email is already register");
@@ -312,7 +323,7 @@ public class UserService {
         } catch (Exception e) {
             responseData.failed(e.getMessage());
             e.printStackTrace();
-            responseData.getPayload().setPassword(passwordEncoder.encode(user.getPassword()));
+            requestData.getPayload().setPassword(passwordEncoder.encode(user.getPassword()));
             logService.saveLog(requestData, responseData, StatusCode.INTERNAL_SERVER_ERROR, this.getClass().getName(),
                     REGISTER);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseData);
@@ -333,6 +344,14 @@ public class UserService {
                 requestData.getPayload().setPassword(passwordEncoder.encode(user.getPassword()));
                 logService.saveLog(requestData, responseData, StatusCode.BAD_REQUEST, this.getClass().getName(),
                         REGISTER_BY_ADMIN);
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseData);
+            }
+
+            if(!emailValidation.validEmail(user.getEmail())){
+                responseData.failed("Silahkan gunakan Email perusahaan anda");
+                requestData.getPayload().setPassword(passwordEncoder.encode(user.getPassword()));
+                logService.saveLog(requestData, responseData, StatusCode.BAD_REQUEST, this.getClass().getName(),
+                        REGISTER);
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseData);
             }
 

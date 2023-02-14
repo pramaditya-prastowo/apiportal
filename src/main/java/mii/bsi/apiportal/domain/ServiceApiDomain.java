@@ -3,17 +3,13 @@ package mii.bsi.apiportal.domain;
 import java.io.Serializable;
 import java.util.Date;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Type;
 
 @Data
 @AllArgsConstructor
@@ -27,6 +23,8 @@ public class ServiceApiDomain implements Serializable {
     private Long id;
     @NotEmpty(message = "Service name is required")
     private String serviceName;
+    @Lob
+    @Type(type = "org.hibernate.type.TextType")
     private String serviceDescription;
     private String icon;
     private String swagger;
@@ -35,6 +33,8 @@ public class ServiceApiDomain implements Serializable {
     private boolean inActive;
     private String subtitle;
     private Long groupServiceApi;
+    @Lob
+    @Type(type = "org.hibernate.type.TextType")
     private String sampleDescription;
     private Date createDate;
     private String updateBy;

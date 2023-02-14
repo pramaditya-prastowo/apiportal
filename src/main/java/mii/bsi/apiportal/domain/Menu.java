@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import mii.bsi.apiportal.domain.model.Roles;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.Date;
 
 @Data
@@ -13,7 +14,7 @@ import java.util.Date;
 @NoArgsConstructor
 @Entity
 @Table(name = "bsi_menu_api_portal")
-public class Menu {
+public class Menu implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "menu_id", updatable = false, unique = true)
@@ -28,8 +29,8 @@ public class Menu {
     private String createdBy;
     private Date updatedDate;
     private String updatedBy;
-    @Column(columnDefinition = "ENUM('MITRA', 'ADMIN')", name = "role")
+//    @Column(columnDefinition = "ENUM('MITRA', 'ADMIN')", name = "role")
     @Enumerated(EnumType.STRING)
-    private Roles role = Roles.MITRA;
+    private Roles role;
     private boolean auth;
 }

@@ -15,7 +15,7 @@ public class BsmApiConfigService {
     public BsmApiConfigDTO readData(String keyName, String cacheManager, String cacheName){
         String result = "";
 
-        BsmApiConfig bsmApiConfig = bsmApiConfigRepository.findByKeyNameAndCacheManagerAndCacheName(keyName, cacheManager, cacheName);
+        BsmApiConfig bsmApiConfig = bsmApiConfigRepository.findByKeynameAndCacheManagerAndCacheName(keyName, cacheManager, cacheName);
         BsmApiConfigDTO bsmApiConfigDTO = new BsmApiConfigDTO();
 
         try{
@@ -28,6 +28,17 @@ public class BsmApiConfigService {
         }
 
         return bsmApiConfigDTO;
+    }
+
+    public BsmApiConfig getConfig(String keyname, String keygroup){
+        try {
+            BsmApiConfig bsmApiConfig = bsmApiConfigRepository.findByKeynameAndKeygroup(keyname, keygroup);
+            System.out.println("ada value");
+            return bsmApiConfig;
+        }catch (Exception e){
+            e.printStackTrace();
+            return null;
+        }
     }
 
 }

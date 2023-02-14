@@ -3,6 +3,7 @@ package mii.bsi.apiportal.domain;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -25,7 +26,11 @@ public class BsiLogApiPortal {
     private String statusCode;
     private String statusMessage;
     private String errorCode;
+    @Lob
+    @Type(type = "org.hibernate.type.TextType")
     private String request;
+    @Lob
+    @Type(type = "org.hibernate.type.TextType")
     private String response;
     private Date createDate;
 }

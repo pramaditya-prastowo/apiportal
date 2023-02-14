@@ -9,6 +9,7 @@ import javax.validation.constraints.NotEmpty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Type;
 
 @Table(name = "bsi_promo_api_portal")
 @Entity
@@ -27,6 +28,8 @@ public class Promo implements Serializable {
     @NotEmpty(message = "Kode Promo is required")
     private String kodePromo;
     @NotEmpty(message = "Deskripsi is required")
+    @Lob
+    @Type(type = "org.hibernate.type.TextType")
     private String description;
     @NotEmpty(message = "Banner 1 is required")
     private String icon1;
