@@ -27,16 +27,6 @@ public class ApiportalApplication implements CommandLineRunner {
 		SpringApplication.run(ApiportalApplication.class, args);
 	}
 
-//	@Bean
-//	public WebMvcConfigurer corsConfigurer() {
-//		return new WebMvcConfigurerAdapter() {
-//			@Override
-//			public void addCorsMappings(CorsRegistry registry) {
-//				registry.addMapping("/**").allowedOrigins("http://10.0.116.127:9000");
-//			}
-//		};
-//	}
-
 	@GetMapping("/hello")
 	public String hello(@RequestParam(value = "name", defaultValue = "World") String name) {
 		return String.format("Hello %s!", name);
