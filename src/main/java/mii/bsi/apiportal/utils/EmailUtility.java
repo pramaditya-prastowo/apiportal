@@ -1,8 +1,11 @@
 package mii.bsi.apiportal.utils;
 
 import mii.bsi.apiportal.constant.Params;
+import mii.bsi.apiportal.domain.BsmApiConfig;
 import mii.bsi.apiportal.domain.User;
+import mii.bsi.apiportal.repository.BsmApiConfigRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Component;
@@ -15,16 +18,30 @@ import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
 @Component
 public class EmailUtility {
 
-    private static final String HOST = "smtp.gmail.com";
-    private static final int PORT = 587;
-    private static final String USERNAME = "uswa.khasanah0212@gmail.com";
-    private static final String PASSWORD = "ywfthuladfdbypoe";
+//    private static final String host = "smtp.gmail.com";
+//    private static final int port = 587;
+//    private static final String username = "uswa.khasanah0212@gmail.com";
+//    private static final String password = "ywfthuladfdbypoe";
+
+    @Value("${email.host}")
+    private String host;
+    @Value("${email.port}")
+    private String port;
+    @Value("${email.username}")
+    private String username;
+    @Value("${email.password}")
+    private String password;
+//    private static final String host = "email.host";
+//    private static final String port = "email.port";
+//    private static final String username = "email.user";
+//    private static final String password = "email.pass";
 
     @Autowired
     private FreeMarkerConfigurer freemarkerConfigurer;
@@ -32,19 +49,37 @@ public class EmailUtility {
     @Autowired
     private EncryptUtility encryptUtility;
 
+    @Autowired
+    private BsmApiConfigRepository configRepository;
+
     public String sendEmailVerification(User user, String token){
-        JavaMailSenderImpl mailSender = getMailSender();
 
         try {
+            List<BsmApiConfig> listConfig = configRepository.findByKeygroup("EMAIL");
+
+            final BsmApiConfig paramHost =  listConfig.stream()
+                    .filter(parameterConfig ->  parameterConfig.getKeyname().equals(host)).findAny().orElse(null);
+            final BsmApiConfig paramPort =  listConfig.stream()
+                    .filter(parameterConfig ->  parameterConfig.getKeyname().equals(port)).findAny().orElse(null);
+            final BsmApiConfig paramUsername =  listConfig.stream()
+                    .filter(parameterConfig ->  parameterConfig.getKeyname().equals(username)).findAny().orElse(null);
+            final BsmApiConfig paramPassword =  listConfig.stream()
+                    .filter(parameterConfig ->  parameterConfig.getKeyname().equals(password)).findAny().orElse(null);
+
+            final BsmApiConfig baseUrl = configRepository.findByKeynameAndKeygroup("base.url", "URL");
+
+            JavaMailSenderImpl mailSender = getMailSender(paramHost.getValue(), Integer.parseInt(paramPort.getValue()),
+                    paramUsername.getValue(), paramPassword.getValue());
+
             final String encUid = encryptUtility.encryptAES(user.getId(), Params.PASS_KEY);
             mailSender.setJavaMailProperties(getProperties());
 
-            String from = USERNAME;
+            String from = paramUsername.getValue();
             String subject = "Email Verification";
 
             Map<String, Object> model = new HashMap<>();
             model.put("fullName", user.getFirstName()+ " " + user.getLastName());
-            model.put("emailVerificationUrl", "http://localhost:4200/verification-email?token=" + token+"&uid=" + encUid);
+            model.put("emailVerificationUrl", baseUrl.getValue()+"/verification-email?token=" + token+"&uid=" + encUid);
             model.put("email", user.getEmail());
             String content = geContentFromTemplate(model, "id", "emailVerification.vm");
 
@@ -74,19 +109,33 @@ public class EmailUtility {
     }
 
     public String sendForgetPassword(User user, String token){
-        JavaMailSenderImpl mailSender = getMailSender();
+
 
         try {
+            List<BsmApiConfig> listConfig = configRepository.findByKeygroup("EMAIL");
 
+            final BsmApiConfig paramHost =  listConfig.stream()
+                    .filter(parameterConfig ->  parameterConfig.getKeyname().equals(host)).findAny().orElse(null);
+            final BsmApiConfig paramPort =  listConfig.stream()
+                    .filter(parameterConfig ->  parameterConfig.getKeyname().equals(port)).findAny().orElse(null);
+            final BsmApiConfig paramUsername =  listConfig.stream()
+                    .filter(parameterConfig ->  parameterConfig.getKeyname().equals(username)).findAny().orElse(null);
+            final BsmApiConfig paramPassword =  listConfig.stream()
+                    .filter(parameterConfig ->  parameterConfig.getKeyname().equals(password)).findAny().orElse(null);
+
+            final BsmApiConfig baseUrl = configRepository.findByKeynameAndKeygroup("base.url", "URL");
+
+            JavaMailSenderImpl mailSender = getMailSender(paramHost.getValue(), Integer.parseInt(paramPort.getValue()),
+                    paramUsername.getValue(), paramPassword.getValue());
             mailSender.setJavaMailProperties(getProperties());
             final String encUid = encryptUtility.encryptAES(user.getId(), Params.PASS_KEY);
 
-            String from = USERNAME;
+            String from = username;
             String subject = "Forget Password";
 
             Map<String, Object> model = new HashMap<>();
             model.put("fullName", user.getFirstName()+ " " + user.getLastName());
-            model.put("resetPasswordUrl", "http://localhost:4200/reset-password?token=" + token+"&id="+encUid);
+            model.put("resetPasswordUrl", baseUrl.getValue()+"/reset-password?token=" + token+"&id="+encUid);
             model.put("email", user.getEmail());
             String content = geContentFromTemplate(model, "id", "resetPassword.vm");
 
@@ -114,12 +163,12 @@ public class EmailUtility {
             throw new RuntimeException(e);
         }
     }
-    private JavaMailSenderImpl getMailSender(){
+    private JavaMailSenderImpl getMailSender(String host, int port, String username,String pass){
         JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
-        mailSender.setHost(HOST);
-        mailSender.setPort(PORT);
-        mailSender.setUsername(USERNAME);
-        mailSender.setPassword(PASSWORD);
+        mailSender.setHost(host);
+        mailSender.setPort(port);
+        mailSender.setUsername(username);
+        mailSender.setPassword(pass);
         return mailSender;
     }
 

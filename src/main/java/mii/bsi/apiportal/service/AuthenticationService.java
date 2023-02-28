@@ -61,7 +61,7 @@ public class AuthenticationService {
             }
 
             User user = userRepository.findByEmail(requestData.getPayload().getEmail());
-            System.out.println(user);
+//            System.out.println(user);
 
             ValidationResponse<AuthenticationResponseDTO> validBusiness = validation.validationBusiness(requestData, user);
             if(!validBusiness.isValid()){
@@ -76,6 +76,7 @@ public class AuthenticationService {
                     jwtUtility.generateToken(userDetails, generateClaim(user));
             Date expiredAt = jwtUtility.getExpirationDateFromToken(token);
             user.setLogin(true);
+            System.out.println(user);
             userRepository.save(user);
 
             responseData.success();

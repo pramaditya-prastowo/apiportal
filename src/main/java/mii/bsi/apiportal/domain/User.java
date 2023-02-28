@@ -42,6 +42,7 @@ public class User implements Serializable {
 //    @Getter(AccessLevel.NONE)
     private String password;
 
+    @NotEmpty(message = "Corporate Name is required")
     @Column(name = "corporate_name")
     private String corporateName;
 
@@ -81,6 +82,7 @@ public class User implements Serializable {
 //    private Groups groups;
 
 //    @Column(columnDefinition = "ENUM('MITRA', 'SUPER_ADMIN', 'ADMIN')", name = "auth_principal")
+
     @Enumerated(EnumType.STRING)
     private Roles authPrincipal = Roles.MITRA;
 
@@ -105,127 +107,5 @@ public class User implements Serializable {
     public Long getGroupId(){
         return groupId;
     }
-
-//    public User(String id, String firstName, String lastName, String email, String password, String coorporateName,
-//            String accountInactive, String accountLokced, Integer retryPasswordCount, String createBy,
-//            String createDate, String updateBy, String updateDate) {
-//        this.id = id;
-//        this.firstName = firstName;
-//        this.lastName = lastName;
-//        this.email = email;
-//        this.password = password;
-//        this.coorporateName = coorporateName;
-//        this.accountInactive = accountInactive;
-//        this.accountLokced = accountLokced;
-//        this.retryPasswordCount = retryPasswordCount;
-//        this.createBy = createBy;
-//        this.createDate = createDate;
-//        this.updateBy = updateBy;
-//        this.updateDate = updateDate;
-//    }
-
-//    public String getId() {
-//        return id;
-//    }
-//
-//    public void setId(String id) {
-//        this.id = id;
-//    }
-//
-//    public String getFirstName() {
-//        return firstName;
-//    }
-//
-//    public void setFirstName(String firstName) {
-//        this.firstName = firstName;
-//    }
-//
-//    public String getLastName() {
-//        return lastName;
-//    }
-//
-//    public void setLastName(String lastName) {
-//        this.lastName = lastName;
-//    }
-//
-//    public String getEmail() {
-//        return email;
-//    }
-//
-//    public void setEmail(String email) {
-//        this.email = email;
-//    }
-//
-//    public String getPassword() {
-//        return password;
-//    }
-//
-//    public void setPassword(String password) {
-//        this.password = password;
-//    }
-//
-//    public String getCoorporateName() {
-//        return coorporateName;
-//    }
-//
-//    public void setCoorporateName(String coorporateName) {
-//        this.coorporateName = coorporateName;
-//    }
-//
-//    public boolean getAccountInactive() {
-//        return accountInactive;
-//    }
-//
-//    public void setAccountInactive(boolean accountInactive) {
-//        this.accountInactive = accountInactive;
-//    }
-//
-//    public boolean getAccountLokced() {
-//        return accountLokced;
-//    }
-//
-//    public void setAccountLokced(boolean accountLokced) {
-//        this.accountLokced = accountLokced;
-//    }
-//
-//    public Integer getRetryPasswordCount() {
-//        return retryPasswordCount;
-//    }
-//
-//    public void setRetryPasswordCount(Integer retryPasswordCount) {
-//        this.retryPasswordCount = retryPasswordCount;
-//    }
-//
-//    public String getCreateBy() {
-//        return createBy;
-//    }
-//
-//    public void setCreateBy(String createBy) {
-//        this.createBy = createBy;
-//    }
-//
-//    public String getCreateDate() {
-//        return createDate;
-//    }
-//
-//    public void setCreateDate(String createDate) {
-//        this.createDate = createDate;
-//    }
-//
-//    public String getUpdateBy() {
-//        return updateBy;
-//    }
-//
-//    public void setUpdateBy(String updateBy) {
-//        this.updateBy = updateBy;
-//    }
-//
-//    public String getUpdateDate() {
-//        return updateDate;
-//    }
-//
-//    public void setUpdateDate(String updateDate) {
-//        this.updateDate = updateDate;
-//    }
 
 }

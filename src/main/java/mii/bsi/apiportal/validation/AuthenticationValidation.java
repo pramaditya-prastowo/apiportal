@@ -38,13 +38,16 @@ public class AuthenticationValidation {
             List<String> errorList = new ArrayList<>();
             if(errors.hasErrors()){
                 for (ObjectError error : errors.getAllErrors()){
+                    System.out.println(error.getDefaultMessage());
                     errorList.add(error.getDefaultMessage());
                 }
             }
+            responseData.failed("Bad Request");
             responseData.setMessageError(errorList);
             validationResponse.setResponse(ResponseEntity.badRequest().body(responseData));
             validationResponse.setValid(false);
             validationResponse.setStatusCode(StatusCode.BAD_REQUEST);
+            System.out.println(validationResponse);
             return validationResponse;
         }
 
@@ -57,7 +60,7 @@ public class AuthenticationValidation {
 
         ValidationResponse<AuthenticationResponseDTO> validationResponse = new ValidationResponse<>();
         ResponseHandling<AuthenticationResponseDTO> responseData = new ResponseHandling<>();
-
+        System.out.println(user);
 
         if(user == null){
             responseData.failed("Email or password invalid");

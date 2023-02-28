@@ -275,6 +275,7 @@ public class UserService {
         ResponseHandling<User> responseData = new ResponseHandling<>();
         RequestData<User> requestData = new RequestData<>();
         requestData.setPayload(user);
+//        System.out.println(requestData.getPayload());
 
         try {
 
@@ -337,10 +338,12 @@ public class UserService {
         RequestData<User> requestData = new RequestData<>();
         requestData.setPayload(user);
 
+        System.out.println("bad");
         try {
 
             if (errors.hasErrors()) {
                 responseData.failed(CustomError.validRequest(errors), "Bad Request");
+
                 requestData.getPayload().setPassword(passwordEncoder.encode(user.getPassword()));
                 logService.saveLog(requestData, responseData, StatusCode.BAD_REQUEST, this.getClass().getName(),
                         REGISTER_BY_ADMIN);
