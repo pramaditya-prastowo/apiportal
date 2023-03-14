@@ -7,11 +7,11 @@
   },
   "servers": [
     {
-      "url": "http://qa-apiesb-app:5555/rest"
+      "url": "http://localhost:8080"
     }
   ],
   "paths": {
-    "/BsmCoreApi/resources/snap/balanceInquirySaving": {
+    "/try-api/balance-inquiry": {
       "post": {
         "operationId": "_post",
         "requestBody": {
@@ -164,6 +164,8 @@
     }
   },
   "spesification": {
+    "endpoint": "/v1.0/balance-inquiry",
+    "endpoint_url": "/BsmCoreApi/resources/snap/balanceInquirySaving",
     "header": [
       {
         "key": "Authorization",

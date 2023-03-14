@@ -2,6 +2,8 @@ package mii.bsi.apiportal.controller;
 
 import mii.bsi.apiportal.dto.AuthenticationRequestDTO;
 import mii.bsi.apiportal.dto.AuthenticationResponseDTO;
+import mii.bsi.apiportal.dto.OTPEmailVerificationGenerateRequestDTO;
+import mii.bsi.apiportal.dto.OTPEmailVerificationRequestDTO;
 import mii.bsi.apiportal.service.AuthenticationService;
 import mii.bsi.apiportal.utils.CustomError;
 import mii.bsi.apiportal.utils.RequestData;
@@ -32,5 +34,21 @@ public class AuthenticationController {
     public ResponseEntity<ResponseHandling> signOut(@RequestHeader(HttpHeaders.AUTHORIZATION) String token){
         return authenticationService.signOut(token.substring(7));
     }
+
+    @PostMapping(value = "/generate-otp-email")
+    public ResponseEntity<ResponseHandling> generateOtpEmail(@Valid @RequestBody OTPEmailVerificationGenerateRequestDTO request,
+    @RequestHeader(HttpHeaders.AUTHORIZATION) String token, Errors errors){
+        return authenticationService.generateOTPEmail(request, token.substring(7), errors);
+    }
+
+    @PostMapping(value = "/verification-otp-email")
+    public ResponseEntity<ResponseHandling> verificationOTPEmail(@Valid @RequestBody OTPEmailVerificationRequestDTO request,
+                                                        @RequestHeader(HttpHeaders.AUTHORIZATION) String token, Errors errors){
+        return authenticationService.verifikasiOTPEmail(request, token.substring(7), errors);
+    }
+
+
+
+
 
 }

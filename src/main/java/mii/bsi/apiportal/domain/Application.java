@@ -27,6 +27,7 @@ public class Application implements Serializable {
     private String description;
     private String phone;
     private String email;
+    private String corpId;
     private String clientId;
     private String clientSecret;
     private String clientKey;
@@ -37,4 +38,5 @@ public class Application implements Serializable {
 
     @Transient
     private List<Object> listService = new ArrayList<>();
+
 }

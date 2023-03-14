@@ -41,9 +41,15 @@ public class BsiTokenVerification {
     public boolean isTokenExpired() {
         long creation = this.tokenCreateDate.getTime();
         long now = (new Date()).getTime();
-        boolean moreThanDay = (Math.abs(now - creation) > 129600000L);
-        if (moreThanDay)
+        long diffInMillis = Math.abs(now - creation);
+        boolean moreThanDay = (diffInMillis > 129600000L);
+        boolean moreThanOneMinute = (diffInMillis > 60000L);
+        if(TokenVerificationType.OTP_EMAIL_VERIFICATION.equals(tokenType) && moreThanOneMinute){
             return true;
-        return false;
+        }else{
+            if (moreThanDay)
+                return true;
+            return false;
+        }
     }
 }

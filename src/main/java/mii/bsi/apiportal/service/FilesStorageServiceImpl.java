@@ -9,6 +9,7 @@ import java.nio.file.Paths;
 import java.util.stream.Stream;
 
 import mii.bsi.apiportal.domain.model.FileGroup;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
@@ -18,11 +19,12 @@ import org.springframework.web.multipart.MultipartFile;
 @Service
 public class FilesStorageServiceImpl implements FilesStorageService {
 
-    private final Path root = Paths.get("uploads");
-    private final Path serviceApiIcon = Paths.get("uploads/service-api/icon");
-    private final Path serviceApiSwagger = Paths.get("uploads/service-api/swagger");
-    private final Path iconMyApps = Paths.get("uploads/apps/icon");
-    private final Path bannerPromo = Paths.get("uploads/promo/banner");
+    private final Path root = Paths.get("files/uploads");
+    private final Path serviceApiIcon = Paths.get("files/uploads/service-api/icon");
+    private final Path serviceApiSwagger = Paths.get("files/uploads/service-api/swagger");
+    private final Path iconMyApps = Paths.get("files/uploads/apps/icon");
+    private final Path bannerPromo = Paths.get("files/uploads/promo/banner");
+    private final Path fileDownload = Paths.get("files/download");
 
     @Override
     public void init() {
@@ -32,6 +34,7 @@ public class FilesStorageServiceImpl implements FilesStorageService {
             Files.createDirectories(serviceApiSwagger);
             Files.createDirectories(iconMyApps);
             Files.createDirectories(bannerPromo);
+            Files.createDirectories(fileDownload);
         } catch (IOException e) {
             throw new RuntimeException("Could not initialize folder for upload!");
         }

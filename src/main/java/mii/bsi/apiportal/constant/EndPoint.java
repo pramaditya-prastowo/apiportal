@@ -3,6 +3,7 @@ package mii.bsi.apiportal.constant;
 public class EndPoint {
 
     public static String[] permitAll = {
+            "/test/**",
             "/api/v1.0/auth/authentication",
             "/api/key/readData",
             "/api/v1.0/user/**",
@@ -11,7 +12,7 @@ public class EndPoint {
             "/api/v1.0/faq",
             "/oauth2/v1/authentication",
             "/api/v1.0/util/**",
-            "/api/v1.0/serviceApi",
+            "/api/v1.0/serviceApi/**",
             "/api/v1.0/serviceApi/groups",
             "/api/v1.0/serviceApi/home",
             "/api/v1.0/need-help",
@@ -21,6 +22,7 @@ public class EndPoint {
             "/api/files/service-api/**",
             "/api/files/promo/**",
             "/api/files/apps/**",
+            "/api/files/download/**",
             "/api/v1.0/serviceApi/groups"
 //            "/forget_password/**",
 //            "/session",

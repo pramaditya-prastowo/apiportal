@@ -18,12 +18,16 @@ import java.util.Set;
 @Component
 @Order(Ordered.HIGHEST_PRECEDENCE)
 public class CorsFilter extends OncePerRequestFilter {
+
+
+
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        response.setHeader("Access-Control-Allow-Origin", "http://10.0.116.127:9000");
-//        response.setHeader("Access-Control-Allow-Origin", "http://localhost:4200");
-        response.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS, PATCH");
-        response.setHeader("Access-Control-Allow-Headers", "authorization, content-type, " + "xsrf-token, Cache-Control");
+//        response.setHeader("Access-Control-Allow-Origin", "http://10.0.116.127:9000");
+        response.setHeader("Access-Control-Allow-Origin", "http://localhost:4200");
+        response.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, PATCH, OPTIONS");
+        response.setHeader("Access-Control-Allow-Headers", "authorization, content-type, " +
+                "xsrf-token, Cache-Control, X-Path, signature, access_token, endpoint_url" );
 //        response.setHeader("Access-Control-Max-Age", "300");
         response.setHeader("Access-Control-Expose-Headers", "xsrf-token");
         if("OPTIONS".equals(request.getMethod())){

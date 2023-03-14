@@ -12,9 +12,15 @@ public interface BsmApiConfigRepository extends JpaRepository<BsmApiConfig, Stri
 
     BsmApiConfig findByKeynameAndCacheManagerAndCacheName(String keyname, String cacheManager, String cacheName);
 
-    @Query(value = "SELECT * from bsm_api_config where keyname=?1 and keygroup=?2", nativeQuery = true)
+    @Query(value = "SELECT * from bsm_api_config where keyname=?1 and keygroup=?2 and enabled='true'", nativeQuery = true)
     BsmApiConfig findByKeynameAndKeygroup(String keyname, String keygroup);
 
-    @Query(value = "SELECT * from bsm_api_config where keygroup=?1", nativeQuery = true)
+//    @Query(value = "SELECT * from bsm_api_config where keyname=?1 and keygroup=?2", nativeQuery = true)
+    List<BsmApiConfig> findByEnabled(String enabled);
+
+    @Query(value = "SELECT * from bsm_api_config where keyname=?1 and enabled='true'", nativeQuery = true)
+    BsmApiConfig findByKeyname(String keyname);
+
+    @Query(value = "SELECT * from bsm_api_config where keygroup=?1 and enabled='true'", nativeQuery = true)
     List<BsmApiConfig> findByKeygroup(String keygroup);
 }

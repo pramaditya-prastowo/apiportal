@@ -1,8 +1,11 @@
 package mii.bsi.apiportal.config;
 
+import mii.bsi.apiportal.apigw.DataApiClient;
 import mii.bsi.apiportal.constant.EndPoint;
 import mii.bsi.apiportal.filter.JwtFilter;
 import mii.bsi.apiportal.service.MyUserDetailService;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -60,4 +63,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Bean
     public BCryptPasswordEncoder passwordEncoder(){ return new BCryptPasswordEncoder(); }
+
+    @Bean
+    public DataApiClient dataApiClient(){
+        CloseableHttpClient httpClient = HttpClients.createDefault();
+        return new DataApiClient(httpClient);
+    }
 }

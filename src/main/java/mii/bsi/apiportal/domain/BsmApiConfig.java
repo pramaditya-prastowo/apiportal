@@ -4,11 +4,10 @@ package mii.bsi.apiportal.domain;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Type;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
+import javax.validation.constraints.NotEmpty;
 import java.io.Serializable;
 
 @Entity
@@ -19,19 +18,18 @@ import java.io.Serializable;
 public class BsmApiConfig implements Serializable {
 
     @Id
-//    @Column(name = "KEYNAME")
+    @NotEmpty(message = "Keyname is required")
     private String keyname;
-//    @Column(name = "KEYGROUP")
+    @NotEmpty(message = "Keygroup is required")
     private String keygroup;
-//    @Column(name = "VALUE")
+    @Lob
+    @Type(type = "org.hibernate.type.TextType")
+    @NotEmpty(message = "Value is required")
     private String value;
-//    @Column(name = "DESCRIPTION")
+    @NotEmpty(message = "Description is required")
     private String description;
-//    @Column(name = "CHACHE_MANAGER")
     private String cacheManager;
-//    @Column(name = "CACHE_NAME")
     private String cacheName;
-//    @Column(name = "ENABLED")
     private String enabled;
 
 }

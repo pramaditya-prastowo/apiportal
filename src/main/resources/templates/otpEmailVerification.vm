@@ -1,0 +1,21 @@
+Kepada ${fullName},<br/>
+<br/>
+ID Pengguna: ${email}<br/>
+<br/>
+Anda telah melakukan pengajuan kerjasama untuk api portal kami, untuk bisa melanjutkan silahkan masukkan kode otp di bawah<br/>
+<br/><br/>
+<div style="margin: 0 auto; text-align: center; width: fit-content;" >
+    <h2>Your OTP is:</h2>
+    <h1 style="font-size: 4em; padding: 20px 40px; color: #ffffff; letter-spacing: 0.2em; font-family: Arial, sans-serif; background-color: #000000;">
+        ${kode}
+    </h1>
+</div>
+<br/><br/>
+Jika Kode tidak bekerja, silahkan lakukan kirim ulang kode OTP.<br/>
+Kode di atas akan kadaluwarsa dalam waktu 1 menit kedepan. Jika anda tidak merasa melakukan permintaan pengajuan kerjasama, silahkan abaikan.<br/>
+<br/>
+Hormat kami,<br/>
+PT Bank Syariah Indonesia<br/>
+<br/>
+untuk informasi lebih lanjut, silakan menghubungi:<br/>
+BSI call 14040<br/>

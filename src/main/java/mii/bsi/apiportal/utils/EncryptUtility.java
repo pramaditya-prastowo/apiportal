@@ -7,8 +7,10 @@ import javax.crypto.Cipher;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
+import java.security.*;
+import java.security.spec.InvalidKeySpecException;
+import java.security.spec.PKCS8EncodedKeySpec;
+import java.util.Base64;
 
 import static ch.qos.logback.core.encoder.ByteArrayUtil.hexStringToByteArray;
 
@@ -67,5 +69,41 @@ public class EncryptUtility {
             sb.append(hex);
         }
         return sb.toString();
+    }
+
+    public String generateSignature(String prvKey, String message){
+        //code/
+        String SHA256RSA = "";
+        byte[] keyBytes = Base64.getMimeDecoder().decode(prvKey.replaceAll("\\s","").getBytes(StandardCharsets.UTF_8));
+        PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(keyBytes);
+
+        try {
+            KeyFactory fact = KeyFactory.getInstance("RSA");
+
+            Signature privateSign = Signature.getInstance("SHA256withRSA");
+            privateSign.initSign(fact.generatePrivate(keySpec));
+            privateSign.update(message.getBytes(StandardCharsets.UTF_8));
+
+            byte[] signs = privateSign.sign();
+            SHA256RSA = Base64.getUrlEncoder().withoutPadding().encodeToString(signs);
+
+        } catch (NoSuchAlgorithmException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            SHA256RSA = "catch1";
+        } catch (SignatureException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            SHA256RSA = "catch2";
+        } catch (InvalidKeyException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            SHA256RSA = "catch3";
+        } catch (InvalidKeySpecException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            SHA256RSA = "catch4";
+        }
+        return  SHA256RSA;
     }
 }

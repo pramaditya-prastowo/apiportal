@@ -163,6 +163,62 @@ public class EmailUtility {
             throw new RuntimeException(e);
         }
     }
+
+    public String sendEmailOTPVerification(String email, String nama, String token){
+
+        try {
+            List<BsmApiConfig> listConfig = configRepository.findByKeygroup("EMAIL");
+
+            final BsmApiConfig paramHost =  listConfig.stream()
+                    .filter(parameterConfig ->  parameterConfig.getKeyname().equals(host)).findAny().orElse(null);
+            final BsmApiConfig paramPort =  listConfig.stream()
+                    .filter(parameterConfig ->  parameterConfig.getKeyname().equals(port)).findAny().orElse(null);
+            final BsmApiConfig paramUsername =  listConfig.stream()
+                    .filter(parameterConfig ->  parameterConfig.getKeyname().equals(username)).findAny().orElse(null);
+            final BsmApiConfig paramPassword =  listConfig.stream()
+                    .filter(parameterConfig ->  parameterConfig.getKeyname().equals(password)).findAny().orElse(null);
+
+            final BsmApiConfig baseUrl = configRepository.findByKeynameAndKeygroup("base.url", "URL");
+
+            JavaMailSenderImpl mailSender = getMailSender(paramHost.getValue(), Integer.parseInt(paramPort.getValue()),
+                    paramUsername.getValue(), paramPassword.getValue());
+
+//            final String encUid = encryptUtility.encryptAES(user.getId(), Params.PASS_KEY);
+            mailSender.setJavaMailProperties(getProperties());
+
+            String from = paramUsername.getValue();
+            String subject = "OTP Email Verification";
+
+            Map<String, Object> model = new HashMap<>();
+            model.put("fullName", nama);
+            model.put("kode", token);
+            model.put("email", email);
+            String content = geContentFromTemplate(model, "id", "otpEmailVerification.vm");
+
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message,true);
+
+            helper.setSubject(subject);
+            helper.setFrom(from);
+            helper.setTo(email);
+            helper.setText(content, true);
+            mailSender.send(helper.getMimeMessage());
+
+            System.out.println("Content : "+ content );
+
+            return null;
+
+        } catch (TemplateException e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        } catch (MessagingException e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
+    }
     private JavaMailSenderImpl getMailSender(String host, int port, String username,String pass){
         JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
         mailSender.setHost(host);
