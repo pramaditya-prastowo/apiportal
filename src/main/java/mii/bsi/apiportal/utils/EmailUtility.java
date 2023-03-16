@@ -2,8 +2,13 @@ package mii.bsi.apiportal.utils;
 
 import mii.bsi.apiportal.constant.Params;
 import mii.bsi.apiportal.domain.BsmApiConfig;
+import mii.bsi.apiportal.domain.SystemNotification;
 import mii.bsi.apiportal.domain.User;
+import mii.bsi.apiportal.domain.model.ConfigEmail;
+import mii.bsi.apiportal.domain.model.SendEmail;
 import mii.bsi.apiportal.repository.BsmApiConfigRepository;
+import mii.bsi.apiportal.repository.SystemNotificationRepository;
+import mii.bsi.apiportal.service.ParamsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
@@ -17,10 +22,7 @@ import org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 
 @Component
 public class EmailUtility {
@@ -38,127 +40,77 @@ public class EmailUtility {
     private String username;
     @Value("${email.password}")
     private String password;
-//    private static final String host = "email.host";
-//    private static final String port = "email.port";
-//    private static final String username = "email.user";
-//    private static final String password = "email.pass";
 
     @Autowired
     private FreeMarkerConfigurer freemarkerConfigurer;
-
     @Autowired
     private EncryptUtility encryptUtility;
-
     @Autowired
     private BsmApiConfigRepository configRepository;
+    @Autowired
+    private ParamsService paramsService;
+    @Autowired
+    private SystemNotificationRepository notificationRepository;
 
     public String sendEmailVerification(User user, String token){
-
+        SystemNotification notification;
         try {
-            List<BsmApiConfig> listConfig = configRepository.findByKeygroup("EMAIL");
-
-            final BsmApiConfig paramHost =  listConfig.stream()
-                    .filter(parameterConfig ->  parameterConfig.getKeyname().equals(host)).findAny().orElse(null);
-            final BsmApiConfig paramPort =  listConfig.stream()
-                    .filter(parameterConfig ->  parameterConfig.getKeyname().equals(port)).findAny().orElse(null);
-            final BsmApiConfig paramUsername =  listConfig.stream()
-                    .filter(parameterConfig ->  parameterConfig.getKeyname().equals(username)).findAny().orElse(null);
-            final BsmApiConfig paramPassword =  listConfig.stream()
-                    .filter(parameterConfig ->  parameterConfig.getKeyname().equals(password)).findAny().orElse(null);
-
+            ConfigEmail configEmail = getEmailConfig();
             final BsmApiConfig baseUrl = configRepository.findByKeynameAndKeygroup("base.url", "URL");
-
-            JavaMailSenderImpl mailSender = getMailSender(paramHost.getValue(), Integer.parseInt(paramPort.getValue()),
-                    paramUsername.getValue(), paramPassword.getValue());
-
             final String encUid = encryptUtility.encryptAES(user.getId(), Params.PASS_KEY);
-            mailSender.setJavaMailProperties(getProperties());
-
-            String from = paramUsername.getValue();
-            String subject = "Email Verification";
 
             Map<String, Object> model = new HashMap<>();
             model.put("fullName", user.getFirstName()+ " " + user.getLastName());
             model.put("emailVerificationUrl", baseUrl.getValue()+"/verification-email?token=" + token+"&uid=" + encUid);
             model.put("email", user.getEmail());
-            String content = geContentFromTemplate(model, "id", "emailVerification.vm");
 
-            MimeMessage message = mailSender.createMimeMessage();
-            MimeMessageHelper helper = new MimeMessageHelper(message,true);
+            String content = getContentFromTemplate(model, "id", "emailVerification.vm");
+            SendEmail sendEmail = new SendEmail("Email Verification", configEmail.getUsername().getValue(),user.getEmail(), content);
 
-            helper.setSubject(subject);
-            helper.setFrom(from);
-            helper.setTo(user.getEmail());
-            helper.setText(content, true);
-            mailSender.send(helper.getMimeMessage());
+            notification = generateNotification(sendEmail, user);
+            System.out.println(notification.getNotifMessage());
+            notification = notificationRepository.save(notification);
 
-            System.out.println("Content : "+ content );
+            sendEmailNow(configEmail, sendEmail);
+
+            notification.setSuccess(true);
+            notificationRepository.save(notification);
 
             return null;
 
-        } catch (TemplateException e) {
-            e.printStackTrace();
-            throw new RuntimeException(e);
-        } catch (MessagingException e) {
-            e.printStackTrace();
-            throw new RuntimeException(e);
-        } catch (IOException e) {
+        } catch (TemplateException | MessagingException | IOException e) {
             e.printStackTrace();
             throw new RuntimeException(e);
         }
     }
 
     public String sendForgetPassword(User user, String token){
-
-
+        SystemNotification notification;
         try {
-            List<BsmApiConfig> listConfig = configRepository.findByKeygroup("EMAIL");
-
-            final BsmApiConfig paramHost =  listConfig.stream()
-                    .filter(parameterConfig ->  parameterConfig.getKeyname().equals(host)).findAny().orElse(null);
-            final BsmApiConfig paramPort =  listConfig.stream()
-                    .filter(parameterConfig ->  parameterConfig.getKeyname().equals(port)).findAny().orElse(null);
-            final BsmApiConfig paramUsername =  listConfig.stream()
-                    .filter(parameterConfig ->  parameterConfig.getKeyname().equals(username)).findAny().orElse(null);
-            final BsmApiConfig paramPassword =  listConfig.stream()
-                    .filter(parameterConfig ->  parameterConfig.getKeyname().equals(password)).findAny().orElse(null);
-
+            ConfigEmail configEmail = getEmailConfig();
             final BsmApiConfig baseUrl = configRepository.findByKeynameAndKeygroup("base.url", "URL");
-
-            JavaMailSenderImpl mailSender = getMailSender(paramHost.getValue(), Integer.parseInt(paramPort.getValue()),
-                    paramUsername.getValue(), paramPassword.getValue());
-            mailSender.setJavaMailProperties(getProperties());
             final String encUid = encryptUtility.encryptAES(user.getId(), Params.PASS_KEY);
-
-            String from = username;
-            String subject = "Forget Password";
 
             Map<String, Object> model = new HashMap<>();
             model.put("fullName", user.getFirstName()+ " " + user.getLastName());
             model.put("resetPasswordUrl", baseUrl.getValue()+"/reset-password?token=" + token+"&id="+encUid);
             model.put("email", user.getEmail());
-            String content = geContentFromTemplate(model, "id", "resetPassword.vm");
 
-            MimeMessage message = mailSender.createMimeMessage();
-            MimeMessageHelper helper = new MimeMessageHelper(message,true);
+            String content = getContentFromTemplate(model, "id", "resetPassword.vm");
 
-            helper.setSubject(subject);
-            helper.setFrom(from);
-            helper.setTo(user.getEmail());
-            helper.setText(content, true);
-            mailSender.send(helper.getMimeMessage());
+            SendEmail sendEmail = new SendEmail("Forget Password",configEmail.getUsername().getValue(), user.getEmail(), content);
+            notification = generateNotification(sendEmail, user);
+            System.out.println(notification.getNotifMessage());
+            notification = notificationRepository.save(notification);
 
-            System.out.println("Content : "+ content );
+            sendEmailNow(configEmail, sendEmail);
+
+            notification.setSuccess(true);
+            notificationRepository.save(notification);
 
             return null;
 
-        } catch (TemplateException e) {
-            e.printStackTrace();
-            throw new RuntimeException(e);
-        } catch (MessagingException e) {
-            e.printStackTrace();
-            throw new RuntimeException(e);
-        } catch (IOException e) {
+        } catch (TemplateException | MessagingException | IOException e) {
             e.printStackTrace();
             throw new RuntimeException(e);
         }
@@ -167,57 +119,82 @@ public class EmailUtility {
     public String sendEmailOTPVerification(String email, String nama, String token){
 
         try {
-            List<BsmApiConfig> listConfig = configRepository.findByKeygroup("EMAIL");
+            ConfigEmail configEmail = getEmailConfig();
 
-            final BsmApiConfig paramHost =  listConfig.stream()
-                    .filter(parameterConfig ->  parameterConfig.getKeyname().equals(host)).findAny().orElse(null);
-            final BsmApiConfig paramPort =  listConfig.stream()
-                    .filter(parameterConfig ->  parameterConfig.getKeyname().equals(port)).findAny().orElse(null);
-            final BsmApiConfig paramUsername =  listConfig.stream()
-                    .filter(parameterConfig ->  parameterConfig.getKeyname().equals(username)).findAny().orElse(null);
-            final BsmApiConfig paramPassword =  listConfig.stream()
-                    .filter(parameterConfig ->  parameterConfig.getKeyname().equals(password)).findAny().orElse(null);
+//            JavaMailSenderImpl mailSender = getMailSender(configEmail.getHost().getValue(),
+//                    Integer.parseInt(configEmail.getPort().getValue()),
+//                    configEmail.getUsername().getValue(),  configEmail.getPassword().getValue());
+//            mailSender.setJavaMailProperties(getProperties());
 
-            final BsmApiConfig baseUrl = configRepository.findByKeynameAndKeygroup("base.url", "URL");
-
-            JavaMailSenderImpl mailSender = getMailSender(paramHost.getValue(), Integer.parseInt(paramPort.getValue()),
-                    paramUsername.getValue(), paramPassword.getValue());
-
-//            final String encUid = encryptUtility.encryptAES(user.getId(), Params.PASS_KEY);
-            mailSender.setJavaMailProperties(getProperties());
-
-            String from = paramUsername.getValue();
-            String subject = "OTP Email Verification";
+//            String from = configEmail.getUsername().getValue();
+//            String subject = "OTP Email Verification";
 
             Map<String, Object> model = new HashMap<>();
             model.put("fullName", nama);
             model.put("kode", token);
             model.put("email", email);
-            String content = geContentFromTemplate(model, "id", "otpEmailVerification.vm");
+            String content = getContentFromTemplate(model, "id", "otpEmailVerification.vm");
+
+            SendEmail sendEmail = new SendEmail("OTP Email Verification", configEmail.getUsername().getValue(), email, content);
+
+//            MimeMessage message = mailSender.createMimeMessage();
+//            MimeMessageHelper helper = new MimeMessageHelper(message,true);
+
+//            helper.setSubject(subject);
+//            helper.setFrom(from);
+//            helper.setTo(email);
+//            helper.setText(content, true);
+//            mailSender.send(helper.getMimeMessage());
+//
+//            System.out.println("Content : "+ content );
+
+            return null;
+
+        } catch (TemplateException | MessagingException | IOException e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
+    }
+
+    private void sendEmailNow(ConfigEmail configEmail, SendEmail sendEmail){
+
+        try {
+            JavaMailSenderImpl mailSender = getMailSender(configEmail.getHost().getValue(),
+                    Integer.parseInt(configEmail.getPort().getValue()),
+                    configEmail.getUsername().getValue(),  configEmail.getPassword().getValue());
+
+            mailSender.setJavaMailProperties(getProperties());
 
             MimeMessage message = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message,true);
 
-            helper.setSubject(subject);
-            helper.setFrom(from);
-            helper.setTo(email);
-            helper.setText(content, true);
+            helper.setSubject(sendEmail.getSubject());
+            helper.setFrom(sendEmail.getFrom());
+            helper.setTo(sendEmail.getTo());
+            helper.setText(sendEmail.getText(), true);
             mailSender.send(helper.getMimeMessage());
 
-            System.out.println("Content : "+ content );
-
-            return null;
-
-        } catch (TemplateException e) {
-            e.printStackTrace();
-            throw new RuntimeException(e);
         } catch (MessagingException e) {
-            e.printStackTrace();
-            throw new RuntimeException(e);
-        } catch (IOException e) {
-            e.printStackTrace();
             throw new RuntimeException(e);
         }
+
+
+
+    }
+
+    private ConfigEmail getEmailConfig(){
+        List<BsmApiConfig> listConfig = paramsService.getParamsByKeyGroup("EMAIL");
+
+        final BsmApiConfig paramHost =  listConfig.stream()
+                .filter(parameterConfig ->  parameterConfig.getKeyname().equals(host)).findAny().orElse(null);
+        final BsmApiConfig paramPort =  listConfig.stream()
+                .filter(parameterConfig ->  parameterConfig.getKeyname().equals(port)).findAny().orElse(null);
+        final BsmApiConfig paramUsername =  listConfig.stream()
+                .filter(parameterConfig ->  parameterConfig.getKeyname().equals(username)).findAny().orElse(null);
+        final BsmApiConfig paramPassword =  listConfig.stream()
+                .filter(parameterConfig ->  parameterConfig.getKeyname().equals(password)).findAny().orElse(null);
+
+        return new ConfigEmail(paramHost, paramPort, paramUsername, paramPassword);
     }
     private JavaMailSenderImpl getMailSender(String host, int port, String username,String pass){
         JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
@@ -236,7 +213,23 @@ public class EmailUtility {
         return properties;
     }
 
-    private String geContentFromTemplate(Map <String, Object>model, String lang, String template)   throws IOException, TemplateException, MessagingException {
+    private SystemNotification generateNotification(SendEmail sendEmail, User user){
+        SystemNotification notification = new SystemNotification();
+        notification.setMediaType("EMAIL");
+        notification.setNotifDate(new Date());
+        notification.setNotifSubject(sendEmail.getSubject());
+        notification.setNotifMessage(sendEmail.getText());
+        notification.setNotifType(sendEmail.getSubject());
+        notification.setRetry(0);
+        notification.setErrorCode("00");
+        notification.setMediaAddress(user.getEmail());
+        notification.setSuccess(false);
+        notification.setMitraId(user.getId());
+        notification.setMitraName(user.getFirstName()+ " "+ user.getLastName());
+        return notification;
+    }
+
+    private String getContentFromTemplate(Map <String, Object>model, String lang, String template)   throws IOException, TemplateException, MessagingException {
         Template freemarkerTemplate;
         freemarkerTemplate = freemarkerConfigurer.getConfiguration()
                 .getTemplate(template);

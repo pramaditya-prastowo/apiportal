@@ -7,11 +7,11 @@
   },
   "servers": [
     {
-      "url": "http://qa-apiesb-app:5555/rest"
+      "url": "http://localhost:8080"
     }
   ],
   "paths": {
-    "/BsmCoreApi/resources/snap/inquiryOnlineTransfer": {
+    "/try-api/external-account-inquiry": {
       "post": {
         "operationId": "_post",
         "requestBody": {
@@ -114,6 +114,8 @@
     }
   },
   "spesification": {
+    "endpoint": "/v1.0/account-inquiry-external",
+    "endpoint_url": "/BsmCoreApi/resources/snap/inquiryOnlineTransfer",
     "header": [
       {
         "key": "Authorization",

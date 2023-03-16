@@ -7,11 +7,11 @@
   },
   "servers": [
     {
-      "url": "http://qa-apiesb-app:5555/rest"
+      "url": "http://localhost:8080"
     }
   ],
   "paths": {
-    "/BsmCoreApi/resources/snap/accountStatements": {
+    "/try-api/bank-statement": {
       "post": {
         "operationId": "_post",
         "requestBody": {
@@ -203,6 +203,8 @@
     }
   },
   "spesification": {
+    "endpoint": "/v1.0/bank-statement",
+    "endpoint_url": "/BsmCoreApi/resources/snap/accountStatements",
     "header": [
       {
         "key": "Authorization",

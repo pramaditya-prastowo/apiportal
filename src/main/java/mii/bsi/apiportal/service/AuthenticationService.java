@@ -159,11 +159,11 @@ public class AuthenticationService {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseData);
             }
 
-            if(!emailValidation.validFormatEmail(request.getEmail())){
-                responseData.failed("Format Email tidak valid");
-                logService.saveLog(requestData, responseData, StatusCode.BAD_REQUEST ,this.getClass().getName(), GENERATE_OTP);
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseData);
-            }
+//            if(!emailValidation.validFormatEmail(request.getEmail())){
+//                responseData.failed("Format Email tidak valid");
+//                logService.saveLog(requestData, responseData, StatusCode.BAD_REQUEST ,this.getClass().getName(), GENERATE_OTP);
+//                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseData);
+//            }
 
             if(!emailValidation.validEmail(request.getEmail())){
                 responseData.failed("Silahkan gunakan Email perusahaan anda");

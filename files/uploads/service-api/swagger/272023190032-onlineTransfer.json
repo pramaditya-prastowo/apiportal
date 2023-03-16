@@ -7,11 +7,11 @@
   },
   "servers": [
     {
-      "url": "http://qa-apiesb-app:5555/rest"
+      "url": "http://localhost:8080"
     }
   ],
   "paths": {
-    "/BsmCoreApi/resources/snap/onlineTransfer": {
+    "/try-api/interbank-transfer": {
       "post": {
         "operationId": "_post",
         "requestBody": {
@@ -160,6 +160,8 @@
     }
   },
   "spesification": {
+    "endpoint": "/v1.0/transfer-interbank",
+    "endpoint_url": "/BsmCoreApi/resources/snap/onlineTransfer",
     "header": [
       {
         "key": "Authorization",

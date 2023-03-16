@@ -9,6 +9,7 @@ import io.jsonwebtoken.Claims;
 import mii.bsi.apiportal.constant.Params;
 import mii.bsi.apiportal.constant.StatusCode;
 import mii.bsi.apiportal.domain.BsiTokenVerification;
+import mii.bsi.apiportal.domain.SystemNotification;
 import mii.bsi.apiportal.domain.model.Roles;
 import mii.bsi.apiportal.domain.model.TokenVerificationType;
 import mii.bsi.apiportal.dto.UserResponseDTO;
@@ -275,7 +276,6 @@ public class UserService {
         ResponseHandling<User> responseData = new ResponseHandling<>();
         RequestData<User> requestData = new RequestData<>();
         requestData.setPayload(user);
-//        System.out.println(requestData.getPayload());
 
         try {
 
@@ -287,13 +287,13 @@ public class UserService {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseData);
             }
 
-            if(!emailValidation.validEmail(user.getEmail())){
-                responseData.failed("Silahkan gunakan Email perusahaan anda");
-                requestData.getPayload().setPassword(passwordEncoder.encode(user.getPassword()));
-                logService.saveLog(requestData, responseData, StatusCode.BAD_REQUEST, this.getClass().getName(),
-                        REGISTER);
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseData);
-            }
+//            if(!emailValidation.validEmail(user.getEmail())){
+//                responseData.failed("Silahkan gunakan Email perusahaan anda");
+//                requestData.getPayload().setPassword(passwordEncoder.encode(user.getPassword()));
+//                logService.saveLog(requestData, responseData, StatusCode.BAD_REQUEST, this.getClass().getName(),
+//                        REGISTER);
+//                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseData);
+//            }
 
             User userExist = userRepository.findByEmail(requestData.getPayload().getEmail());
             if (userExist != null) {
@@ -314,6 +314,9 @@ public class UserService {
             tokenVerification.setTokenType(TokenVerificationType.EMAIL_VERIFICATION);
 
             final String encToken = encryptUtility.encryptAES(tokenVerification.getToken(), Params.PASS_KEY);
+
+            SystemNotification notification = new SystemNotification();
+//            notification.set
             emailUtility.sendEmailVerification(user, encToken);
 
             userRepository.save(user);
@@ -475,7 +478,7 @@ public class UserService {
             user.setEmailVerified(true);
             user.setEmailVerifiedDate(new Date());
             userRepository.save(user);
-            responseData.success("Email verified successfully");
+            responseData.success("Verifikasi Email Berhasil");
         } catch (Exception e) {
             responseData.failed(e.getMessage());
             e.printStackTrace();

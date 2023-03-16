@@ -7,11 +7,11 @@
   },
   "servers": [
     {
-      "url": "http://qa-apiesb-app:5555/rest"
+      "url": "http://localhost:8080"
     }
   ],
   "paths": {
-    "/BsmCoreApi/resources/snap/overbookingTransaction": {
+    "/try-api/intrabank-transfer": {
       "post": {
         "operationId": "_post",
         "requestBody": {
@@ -122,6 +122,8 @@
     }
   },
   "spesification": {
+    "endpoint": "/v1.0/transfer-intrabank",
+    "endpoint_url": "/BsmCoreApi/resources/snap/overbookingTransaction",
     "header": [
       {
         "key": "Authorization",

@@ -23,7 +23,8 @@ public class EndPoint {
             "/api/files/promo/**",
             "/api/files/apps/**",
             "/api/files/download/**",
-            "/api/v1.0/serviceApi/groups"
+            "/api/v1.0/serviceApi/groups",
+            "/api/v1.0/params/**"
 //            "/forget_password/**",
 //            "/session",
 //            "/session/user",

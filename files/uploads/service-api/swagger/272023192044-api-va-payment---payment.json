@@ -7,11 +7,11 @@
   },
   "servers": [
     {
-      "url": "http://qa-apiesb-app:5555/rest"
+      "url": "http://localhost:8080"
     }
   ],
   "paths": {
-    "/ApiVaPaymentSnap/resources/snap/payment": {
+    "/try-api/va-payment-payment": {
       "post": {
         "operationId": "_post",
         "requestBody": {
@@ -312,6 +312,8 @@
     }
   },
   "spesification": {
+    "endpoint": "/v1.0/transfer-va/payment",
+    "endpoint_url": "/ApiVaPaymentSnap/resources/snap/payment",
     "header": [
       {
         "key": "Authorization",

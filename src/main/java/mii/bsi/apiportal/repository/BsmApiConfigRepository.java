@@ -1,10 +1,12 @@
 package mii.bsi.apiportal.repository;
 
 import mii.bsi.apiportal.domain.BsmApiConfig;
+import mii.bsi.apiportal.domain.Menu;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.util.Collection;
 import java.util.List;
 
 @Repository
@@ -23,4 +25,6 @@ public interface BsmApiConfigRepository extends JpaRepository<BsmApiConfig, Stri
 
     @Query(value = "SELECT * from bsm_api_config where keygroup=?1 and enabled='true'", nativeQuery = true)
     List<BsmApiConfig> findByKeygroup(String keygroup);
+
+    List<BsmApiConfig> findByKeynameIn(Collection<String> keynames);
 }

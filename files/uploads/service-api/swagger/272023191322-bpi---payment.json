@@ -7,11 +7,11 @@
   },
   "servers": [
     {
-      "url": "http://qa-apiesb-app:5555/rest"
+      "url": "http://localhost:8080"
     }
   ],
   "paths": {
-    "/BpiApiSnap/resources/snap/payment": {
+    "//try-api/payment-bpi": {
       "post": {
         "operationId": "_post",
         "requestBody": {
@@ -182,6 +182,8 @@
     }
   },
   "spesification": {
+    "endpoint": "/v1.0/transfer-va/payment-intrabank",
+    "endpoint_url": "/BpiApiSnap/resources/snap/payment",
     "header": [
       {
         "key": "Authorization",

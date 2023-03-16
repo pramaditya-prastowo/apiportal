@@ -7,11 +7,11 @@
   },
   "servers": [
     {
-      "url": "http://qa-apiesb-app:5555/rest"
+      "url": "http://localhost:8080"
     }
   ],
   "paths": {
-    "/BsmDirectDebitApiSnap/resources/snap/validateOTP": {
+    "/try-api/validate-otp": {
       "post": {
         "operationId": "_post",
         "requestBody": {
@@ -98,6 +98,8 @@
     }
   },
   "spesification": {
+    "endpoint": "/v1.0/otp-verification",
+    "endpoint_url": "/BsmDirectDebitApiSnap/resources/snap/validateOTP",
     "header": [
       {
         "key": "Authorization",

@@ -7,11 +7,11 @@
   },
   "servers": [
     {
-      "url": "http://qa-apiesb-app:5555/rest"
+      "url": "http://localhost:8080"
     }
   ],
   "paths": {
-    "/BsmDirectDebitApiSnap/resources/snap/registration": {
+    "/try-api/registration": {
       "post": {
         "operationId": "_post",
         "requestBody": {
@@ -114,6 +114,8 @@
     }
   },
   "spesification": {
+    "endpoint": "/v1.0/registration-card-bind",
+    "endpoint_url": "/BsmDirectDebitApiSnap/resources/snap/registration",
     "header": [
       {
         "key": "Authorization",

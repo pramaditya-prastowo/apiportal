@@ -7,11 +7,11 @@
   },
   "servers": [
     {
-      "url": "http://qa-apiesb-app:5555/rest"
+      "url": "http://localhost:8080"
     }
   ],
   "paths": {
-    "/BsmDirectDebitApiSnap/resources/snap/payment": {
+    "/try-api/payment": {
       "post": {
         "operationId": "_post",
         "requestBody": {
@@ -147,6 +147,8 @@
     }
   },
   "spesification": {
+    "endpoint": "/v1.0/payment-host-to-host",
+    "endpoint_url": "/BsmDirectDebitApiSnap/resources/snap/payment",
     "header": [
       {
         "key": "Authorization",

@@ -51,8 +51,8 @@ public class TryApiController {
         requestHeader.setBearerToken(access_token);
         requestHeader.setSignature(signature);
         requestHeader.setTimestamp(timeStamp);
-        requestHeader.setPartnerId("889");
-        requestHeader.setExternalId("41807553358950093184162180797504");
+        requestHeader.setPartnerId("DDBSI00002 ");
+        requestHeader.setExternalId("41807553358950093184162180797837");
         requestHeader.setChannelId("12345");
 
         return requestHeader;

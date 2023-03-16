@@ -10,7 +10,7 @@ import javax.validation.constraints.NotEmpty;
 @Data
 public class OTPEmailVerificationGenerateRequestDTO {
     @NotEmpty(message = "Email is required")
-//    @Email(message = "Email is invalid")
+    @Email(message = "Email is invalid")
     private String email;
     @NotEmpty(message = "Name is required")
     private String name;

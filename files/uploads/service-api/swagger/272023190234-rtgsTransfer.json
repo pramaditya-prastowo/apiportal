@@ -7,11 +7,11 @@
   },
   "servers": [
     {
-      "url": "http://qa-apiesb-app:5555/rest"
+      "url": "http://localhost:8080"
     }
   ],
   "paths": {
-    "/BsmCoreApi/resources/snap/rtgsTransfer": {
+    "/try-api/transfer-rtgs": {
       "post": {
         "operationId": "_post",
         "requestBody": {
@@ -180,6 +180,8 @@
     }
   },
   "spesification": {
+    "endpoint": "/v1.0/transfer-rtgs",
+    "endpoint_url": "/BsmCoreApi/resources/snap/rtgsTransfer",
     "header": [
       {
         "key": "Authorization",
