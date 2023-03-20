@@ -62,7 +62,7 @@ public class CreateAppRequestDTO {
     @JsonProperty("CORP_NAME")
     private String corpName;
 
-    public CreateAppRequestDTO(String corpId, String appName, String corpName) {
+    public CreateAppRequestDTO(String corpId, String appName, String corpName, String secretKey) {
         this.corpId = corpId;
         this.kodeBiaya = "1";
         this.jenisBiaya = "1";
@@ -83,7 +83,7 @@ public class CreateAppRequestDTO {
         this.dataIdInputter =  "1";
         this.dataIdChecker =  "1";
         this.dataIdApproval =  "1";
-        this.secretKey =  "1";
+        this.secretKey =  secretKey;
         this.privateKey =  "1";
         this.publicKey =  "1";
         this.apiKey =  "1";

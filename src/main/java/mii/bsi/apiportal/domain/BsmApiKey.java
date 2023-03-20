@@ -18,15 +18,19 @@ import java.io.Serializable;
 @Table(name = "bsm_api_key")
 public class BsmApiKey implements Serializable {
     @Id
-    private String apiKey;
     private String corpId;
+    private String apiKey;
     private String appName;
     private String corpName;
+    private String secretKey;
+    private String clientKey;
 
-    public BsmApiKey(CreateAppRequestDTO appRequestDTO) {
+    public BsmApiKey(CreateAppRequestDTO appRequestDTO, String clientKey) {
         this.apiKey = appRequestDTO.getApiKey();
         this.corpId = appRequestDTO.getCorpId();
         this.appName = appRequestDTO.getAppName();
         this.corpName = appRequestDTO.getCorpName();
+        this.secretKey = appRequestDTO.getSecretKey();
+        this.clientKey = clientKey;
     }
 }

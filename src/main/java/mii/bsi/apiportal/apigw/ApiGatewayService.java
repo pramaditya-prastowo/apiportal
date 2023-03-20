@@ -51,6 +51,7 @@ public class ApiGatewayService {
     public String createApplication(CreateAppRequestDTO request) {
         BsmApiConfig hostApiGw = configService.getConfigByKeyName("base.url.apigw");
         String url = hostApiGw.getValue() + insertApplicationPath;
+        System.out.println("URL : " + url);
         String responseData2 = null;
         try {
             responseData2 = dataApiClient.postData(url, request);

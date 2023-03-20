@@ -156,6 +156,38 @@ public class EmailUtility {
         }
     }
 
+    public String sendCredentialApplication(User user, String secretKey, String clientKey, String corpId){
+        SystemNotification notification;
+        try {
+            ConfigEmail configEmail = getEmailConfig();
+
+            Map<String, Object> model = new HashMap<>();
+            model.put("fullName", user.getFirstName()+ " " + user.getLastName());
+            model.put("email", user.getEmail());
+            model.put("corpId", corpId);
+            model.put("secretKey", secretKey);
+            model.put("clientKey", clientKey);
+
+            String content = getContentFromTemplate(model, "id", "credentialApplication.vm");
+
+            SendEmail sendEmail = new SendEmail("Pembuatan Aplikasi Berhasil",configEmail.getUsername().getValue(), user.getEmail(), content);
+            notification = generateNotification(sendEmail, user);
+            System.out.println(notification.getNotifMessage());
+            notification = notificationRepository.save(notification);
+
+            sendEmailNow(configEmail, sendEmail);
+
+            notification.setSuccess(true);
+            notificationRepository.save(notification);
+
+            return null;
+
+        } catch (TemplateException | MessagingException | IOException e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
+    }
+
     private void sendEmailNow(ConfigEmail configEmail, SendEmail sendEmail){
 
         try {
@@ -207,9 +239,10 @@ public class EmailUtility {
 
     private Properties getProperties(){
         Properties properties = new Properties();
-        properties.setProperty("mail.smtp.starttls.enable", "true");
         properties.setProperty("mail.smtp.auth", "true");
-        properties.setProperty("mail.smtp.ssl.trust", "smtp.gmail.com");
+//        properties.setProperty("mail.smtp.starttls.enable", "true");
+//        properties.setProperty("mail.smtp.ssl.protocols", "TLSv1.2");
+//        properties.setProperty("mail.smtp.ssl.trust", "*");
         return properties;
     }
 

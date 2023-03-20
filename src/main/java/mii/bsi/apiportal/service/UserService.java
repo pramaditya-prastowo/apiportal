@@ -115,13 +115,18 @@ public class UserService {
                 logService.saveLog(requestData, responseData, StatusCode.FORBIDDEN, this.getClass().getName(), UPDATE_BY_ADMIN);
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).body(responseData);
             }
+            System.out.println(newUser.getId());
+            System.out.println(newUser.getFirstName());
+            System.out.println(newUser.getLastName());
+            System.out.println(newUser.getAuthPrincipal());
+            System.out.println(user.getId());
 
             newUser.setFirstName(user.getFirstName());
             newUser.setLastName(user.getLastName());
-            newUser.setCorporateName(user.getCorporateName());
-            newUser.setAuthPrincipal(user.getAuthPrincipal());
+//            newUser.setCorporateName(user.getCorporateName());
+//            newUser.setAuthPrincipal(user.getAuthPrincipal());
             newUser.setUpdateDate(new Date());
-            newUser.setUpdateBy(userUpdate.getId());
+            newUser.setUpdateBy(user.getId());
             newUser.setMobilePhone(user.getMobilePhone());
             userRepository.save(newUser);
 
@@ -287,13 +292,13 @@ public class UserService {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseData);
             }
 
-//            if(!emailValidation.validEmail(user.getEmail())){
-//                responseData.failed("Silahkan gunakan Email perusahaan anda");
-//                requestData.getPayload().setPassword(passwordEncoder.encode(user.getPassword()));
-//                logService.saveLog(requestData, responseData, StatusCode.BAD_REQUEST, this.getClass().getName(),
-//                        REGISTER);
-//                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseData);
-//            }
+            if(!emailValidation.validEmail(user.getEmail())){
+                responseData.failed("Silahkan gunakan Email perusahaan anda");
+                requestData.getPayload().setPassword(passwordEncoder.encode(user.getPassword()));
+                logService.saveLog(requestData, responseData, StatusCode.BAD_REQUEST, this.getClass().getName(),
+                        REGISTER);
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseData);
+            }
 
             User userExist = userRepository.findByEmail(requestData.getPayload().getEmail());
             if (userExist != null) {

@@ -165,8 +165,8 @@ public class GroupsService {
             if(!adminValidation.isAdmin(token)){
                 responseData.failed("Access denied");
                 responseData.setPayload(false);
-                logService.saveLog(requestData, responseData, StatusCode.OK, this.getClass().getName(),
-                        VALIDATE_PAGE);
+//                logService.saveLog(requestData, responseData, StatusCode.OK, this.getClass().getName(),
+//                        VALIDATE_PAGE);
                 return ResponseEntity.status(HttpStatus.OK).body(responseData);
             }
 
@@ -176,8 +176,8 @@ public class GroupsService {
             if(!group.getPermission().contains(menu.getPermissionName())){
                 responseData.failed("Access denied");
                 responseData.setPayload(false);
-                logService.saveLog(requestData, responseData, StatusCode.OK, this.getClass().getName(),
-                        VALIDATE_PAGE);
+//                logService.saveLog(requestData, responseData, StatusCode.OK, this.getClass().getName(),
+//                        VALIDATE_PAGE);
                 return ResponseEntity.status(HttpStatus.OK).body(responseData);
             }
             responseData.setPayload(true);
@@ -187,12 +187,12 @@ public class GroupsService {
             e.printStackTrace();
             responseData.failed(e.getMessage());
             responseData.setPayload(false);
-            logService.saveLog(requestData, responseData, StatusCode.INTERNAL_SERVER_ERROR, this.getClass().getName(),
-                    VALIDATE_PAGE);
+//            logService.saveLog(requestData, responseData, StatusCode.INTERNAL_SERVER_ERROR, this.getClass().getName(),
+//                    VALIDATE_PAGE);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseData);
         }
-        logService.saveLog(requestData, responseData, StatusCode.OK, this.getClass().getName(),
-                VALIDATE_PAGE);
+//        logService.saveLog(requestData, responseData, StatusCode.OK, this.getClass().getName(),
+//                VALIDATE_PAGE);
         return ResponseEntity.ok(responseData);
     }
 

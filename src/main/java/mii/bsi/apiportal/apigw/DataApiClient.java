@@ -10,6 +10,7 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 import java.io.IOException;
@@ -56,15 +57,18 @@ public class DataApiClient {
     public static final String SIGNATURE_SERVICE = "Signature Service";
     public static final String SERVICE_API = "Service API";
 
+    @Value("${apigw.username}")
+    private String apiGwUsername;
+    @Value("${apigw.password}")
+    private String apiGwPassword;
+
     public DataApiClient(CloseableHttpClient httpClient) {
         this.httpClient = httpClient;
         this.objectMapper = new ObjectMapper();
     }
 
     private String getAuthorization(){
-        String username = "Administrator";
-        String password = "manage";
-        String auth = username + ":" + password;
+        String auth = apiGwUsername + ":" + apiGwPassword;
         byte[] encodedAuth = Base64.getEncoder().encode(auth.getBytes());
         String authHeader = "Basic " + new String(encodedAuth);
         return authHeader;

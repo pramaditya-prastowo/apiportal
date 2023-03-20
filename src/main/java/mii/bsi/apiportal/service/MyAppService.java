@@ -14,9 +14,11 @@ import mii.bsi.apiportal.repository.BsmApiKeyRepository;
 import mii.bsi.apiportal.repository.MyAppsRepository;
 import mii.bsi.apiportal.repository.dao.impl.AppServiceApiDao;
 import mii.bsi.apiportal.utils.CustomError;
+import mii.bsi.apiportal.utils.EmailUtility;
 import mii.bsi.apiportal.utils.RequestData;
 import mii.bsi.apiportal.utils.ResponseHandling;
 import mii.bsi.apiportal.validation.UserValidation;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -45,6 +47,8 @@ public class MyAppService {
     private AppServiceApiDao serviceApiDao;
     @Autowired
     private BsmApiKeyRepository bsmApiKeyRepository;
+    @Autowired
+    private EmailUtility emailUtility;
 
     @Autowired
     private ApiGatewayService apiGatewayService;
@@ -109,10 +113,13 @@ public class MyAppService {
             }
 
             String corpId = generateCorpId(apps.getCompanyName());
-            CreateAppRequestDTO requestBody = new CreateAppRequestDTO(corpId, apps.getApplicationName(), apps.getCompanyName());
+            String secretKey = RandomStringUtils.randomAlphanumeric(32);;
+            String clientKey = RandomStringUtils.randomAlphanumeric(20);;
+            CreateAppRequestDTO requestBody = new CreateAppRequestDTO(corpId, apps.getApplicationName(), apps.getCompanyName(),secretKey);
 
             String response = apiGatewayService.createApplication(requestBody);
             JSONObject resInsert = new JSONObject(response);
+            System.out.println("print "+ response);
 
 
             if(!"success".equals(resInsert.getString("status"))){
@@ -122,8 +129,7 @@ public class MyAppService {
                 return ResponseEntity.status(HttpStatus.OK).body(responseData);
             }
 
-            BsmApiKey bsmApiKey = new BsmApiKey(requestBody);
-            bsmApiKeyRepository.save(bsmApiKey);
+            BsmApiKey bsmApiKey = new BsmApiKey(requestBody, clientKey);
 
             System.out.println(apps.getListService());
 
@@ -132,8 +138,10 @@ public class MyAppService {
             apps.setUserId(user.getId());
             apps.setUserId(user.getId());
             apps.setCorpId(corpId);
+            emailUtility.sendCredentialApplication(user, secretKey, clientKey, corpId);
 
             Application application = myAppsRepository.save(apps);
+            bsmApiKeyRepository.save(bsmApiKey);
 
             for (Object data : apps.getListService()) {
                 ApplicationServiceApi appService = new ApplicationServiceApi();

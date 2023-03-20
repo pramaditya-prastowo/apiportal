@@ -44,4 +44,10 @@ public class PromoController {
     public ResponseEntity<ResponseHandling<Promo>> getById(@PathVariable("id") String id) {
         return promoService.getById(id);
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<ResponseHandling> deleteById(@PathVariable("id") Long id,
+                                                       @RequestHeader(HttpHeaders.AUTHORIZATION) String token){
+        return promoService.deleteById(id, token.substring(7));
+    }
 }

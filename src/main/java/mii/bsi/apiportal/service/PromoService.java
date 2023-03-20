@@ -28,8 +28,9 @@ public class PromoService {
 
     public static final String CREATE = "Create";
     public static final String UPDATE = "Update";
-    public static final String GETALL = "Get All";
+    public static final String GET_ALL = "Get All";
     public static final String GETBYID = "Get By Id";
+    public static final String DELETE = "DELETE By Id";
 
     public ResponseEntity<ResponseHandling> create(String token, Promo promo, Errors errors) {
         ResponseHandling<Promo> responseData = new ResponseHandling<>();
@@ -107,7 +108,7 @@ public class PromoService {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseData);
         }
 
-        logService.saveLog(requestData, responseData, StatusCode.CREATED, this.getClass().getName(), UPDATE);
+        logService.saveLog(requestData, responseData, StatusCode.OK, this.getClass().getName(), UPDATE);
         return ResponseEntity.status(HttpStatus.OK).body(responseData);
     }
 
@@ -121,7 +122,7 @@ public class PromoService {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseData);
         }
-        logService.saveLog(requestData, responseData, StatusCode.OK, this.getClass().getName(), GETALL);
+        logService.saveLog(requestData, responseData, StatusCode.OK, this.getClass().getName(), GET_ALL);
         return ResponseEntity.status(HttpStatus.OK).body(responseData);
     }
 
@@ -136,6 +137,38 @@ public class PromoService {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseData);
         }
         logService.saveLog(requestData, responseData, StatusCode.OK, this.getClass().getName(), GETBYID);
+        return ResponseEntity.status(HttpStatus.OK).body(responseData);
+    }
+
+    public ResponseEntity<ResponseHandling> deleteById(Long id, String token){
+        ResponseHandling<Promo> responseData = new ResponseHandling<>();
+        RequestData<Promo> requestData = new RequestData<>();
+
+        try {
+            if(!adminValidation.isAdmin(token)){
+                responseData.failed("Access denied");
+                logService.saveLog(requestData, responseData, StatusCode.FORBIDDEN, this.getClass().getName(),
+                        DELETE);
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(responseData);
+            }
+
+            Promo promoDb = promoRepository.findByIdPromo(id);
+            if(promoDb == null){
+                responseData.failed("Not Found");
+                logService.saveLog(requestData, responseData, StatusCode.NOT_FOUND, this.getClass().getName(),
+                        DELETE);
+            }
+
+            promoRepository.deleteById(id);
+            responseData.success();
+        } catch (Exception e) {
+            responseData.failed(e.getMessage());
+            logService.saveLog(requestData, responseData, StatusCode.INTERNAL_SERVER_ERROR, this.getClass().getName(),
+                    DELETE);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseData);
+        }
+
+        logService.saveLog(requestData, responseData, StatusCode.OK, this.getClass().getName(), DELETE);
         return ResponseEntity.status(HttpStatus.OK).body(responseData);
     }
 }

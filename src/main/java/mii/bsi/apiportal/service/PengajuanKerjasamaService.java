@@ -37,4 +37,6 @@ public class PengajuanKerjasamaService {
     public void deletePengajuanKerjasama(Long id) {
         pengajuanKerjasamaRepository.deleteById(id);
     }
+
+
 }
