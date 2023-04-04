@@ -29,18 +29,40 @@ public class TryApiController {
     @Autowired
     private LogService logService;
 
-    @PostMapping("/{serviceName}")
+    @PostMapping("/old/{serviceName}")
     public String tryApi(@PathVariable String serviceName, @RequestHeader("X-PATH") String path,
                              @RequestHeader("access_token") String access_token,
                              @RequestHeader("signature") String signature,
                              @RequestHeader("endpoint_url") String endpointUrl,
-                             @RequestBody Map<String, String> requestBody){
+                             @RequestBody String requestBody){
 
         RequestHeaderApi headerService = generateRequestHeaderService(path, access_token, signature);
         RequestHeaderApi headerSignature = generateRequestHeaderSignature(endpointUrl, access_token);
 
-        ResponseApiGw response = tryApiService.tryServiceApi(requestBody,headerSignature,headerService);
+        ResponseApiGw response = tryApiService.tryServiceApi(requestBody,headerSignature,headerService, serviceName);
         return response.getResponseBody();
+//        return  requestBody;
+    }
+
+    @PostMapping("/{serviceName}")
+    public String tryOutServiceApi(@PathVariable String serviceName,
+                                   @RequestHeader("access_token") String token,
+                                   @RequestHeader("X-SIGNATURE") String signature,
+                                   @RequestHeader("X-TIMESTAMP") String timestamp,
+                                   @RequestHeader("X-PARTNER-ID") String partnerId,
+                                   @RequestHeader("X-EXTERNAL-ID") String externalId,
+                                   @RequestHeader("CHANNEL-ID") String channelId,
+                                   @RequestBody String requestBody){
+        RequestHeaderApi requestHeader = new RequestHeaderApi();
+        requestHeader.setSignature(signature);
+        requestHeader.setTimestamp(timestamp);
+        requestHeader.setPartnerId(partnerId);
+        requestHeader.setExternalId(externalId);
+        requestHeader.setChannelId(channelId);
+        requestHeader.setAccessToken(token);
+        requestHeader.setEndPointUrl(serviceName);
+        ResponseApiGw responseApiGw =  tryApiService.tryOutServiceApi(requestHeader, requestBody);
+        return responseApiGw.getResponseBody();
     }
 
     RequestHeaderApi generateRequestHeaderService(String path, String access_token, String signature){

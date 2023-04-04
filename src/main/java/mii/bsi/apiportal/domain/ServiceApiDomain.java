@@ -33,6 +33,7 @@ public class ServiceApiDomain implements Serializable {
     private boolean inActive;
     private String subtitle;
     private Long groupServiceApi;
+    private String serviceType;
     @Lob
     @Type(type = "org.hibernate.type.TextType")
     private String sampleDescription;

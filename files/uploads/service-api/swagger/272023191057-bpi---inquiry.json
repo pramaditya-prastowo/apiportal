@@ -14,6 +14,60 @@
     "/try-api/inquiry-bpi": {
       "post": {
         "operationId": "_post",
+        "parameters": [
+          {
+            "name": "access_token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-SIGNATURE",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-TIMESTAMP",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "default": "2024-03-13T20:50:11+00:00"
+            }
+          },
+          {
+            "name": "X-PARTNER-ID",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "default": "889"
+            }
+          },
+          {
+            "name": "X-EXTERNAL-ID",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "CHANNEL-ID",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "default":"12345"
+            }
+          }
+
+        ],
         "requestBody": {
           "content": {
             "application/json": {

@@ -18,5 +18,8 @@ public class RequestHeaderApi {
     private String clientSecret;
     private String path;
     private String signaturePath;
+    private String privateKey;
+    private String accessToken;
+    private String endPointUrl;
 
 }

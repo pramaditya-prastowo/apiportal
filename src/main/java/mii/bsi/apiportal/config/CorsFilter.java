@@ -12,9 +12,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 @Component
 @Order(Ordered.HIGHEST_PRECEDENCE)
@@ -22,13 +20,32 @@ public class CorsFilter extends OncePerRequestFilter {
 
     @Value("${header.cors}")
     private String CORS;
+    private String[] allowHeaders ={
+            "authorization",
+            "content-type",
+            "xsrf-token",
+            "Cache-Control",
+            "X-Path",
+            "signature",
+            "access_token",
+            "endpoint_url",
+            "Private_Key",
+            "X-TIMESTAMP",
+            "X-CLIENT-KEY",
+            "X-CLIENT-SECRET",
+            "EndpointUrl",
+            "AccesToken",
+            "X-SIGNATURE",
+            "X-PARTNER-ID",
+            "X-EXTERNAL-ID",
+            "CHANNEL-ID"
+    };
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         response.setHeader("Access-Control-Allow-Origin", CORS);
         response.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, PATCH, OPTIONS");
-        response.setHeader("Access-Control-Allow-Headers", "authorization, content-type, " +
-                "xsrf-token, Cache-Control, X-Path, signature, access_token, endpoint_url" );
+        response.setHeader("Access-Control-Allow-Headers", String.join(",",allowHeaders));
 //        response.setHeader("Access-Control-Max-Age", "300");
         response.setHeader("Access-Control-Expose-Headers", "xsrf-token");
         if("OPTIONS".equals(request.getMethod())){

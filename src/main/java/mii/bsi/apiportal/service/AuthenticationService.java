@@ -165,11 +165,12 @@ public class AuthenticationService {
 //                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseData);
 //            }
 
-            if(!emailValidation.validEmail(request.getEmail())){
-                responseData.failed("Silahkan gunakan Email perusahaan anda");
-                logService.saveLog(requestData, responseData, StatusCode.BAD_REQUEST ,this.getClass().getName(), GENERATE_OTP);
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseData);
-            }
+//            if(!emailValidation.validEmail(request.getEmail())){
+//                responseData.failed("Silahkan gunakan Email perusahaan anda");
+//                logService.saveLog(requestData, responseData, StatusCode.BAD_REQUEST ,this.getClass().getName(), GENERATE_OTP);
+//                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseData);
+//            }
+
             User user = userValidation.getUserFromToken(token);
             if(!user.getAuthPrincipal().equals(Roles.MITRA)){
                 responseData.failed();
@@ -185,7 +186,7 @@ public class AuthenticationService {
             tokenVerification.setIdToken(null);
             tokenVerification.setTokenType(TokenVerificationType.OTP_EMAIL_VERIFICATION);
 
-            emailUtility.sendEmailOTPVerification(request.getEmail(), request.getName(), kodeOTP);
+            emailUtility.sendEmailOTPVerification(request.getEmail(), request.getName(), kodeOTP, user);
             tokenVerification.setTokenCreateDate(new Date());
             tokenRepository.save(tokenVerification);
             responseData.success();

@@ -1,0 +1,178 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "Signature Service Snap",
+    "description": "Signature For SNAP",
+    "version": "1.0"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:8080/security"
+    }
+  ],
+  "paths": {
+    "/signature-service-snap": {
+      "post": {
+        "operationId": "create_POST_1",
+        "parameters": [
+          {
+            "name": "X-CLIENT-SECRET",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "default": "m4nd1r1sy4r14hku"
+            }
+          },
+          {
+            "name": "AccesToken",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-TIMESTAMP",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "default": "2024-03-13T20:50:11+00:00"
+            }
+          },
+          {
+            "name": "EndpointUrl",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "required": [
+                  "requestBody"
+                ],
+                "properties": {
+                  "requestBody": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/create_POST_response"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Access Denied",
+            "content": {}
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "create_POST_response": {
+        "required": [
+          "signature"
+        ],
+        "type": "object",
+        "properties": {
+          "signature": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  },
+  "spesification":{
+    "endpoint": "",
+    "endpoint_url": "",
+    "header":[
+      {
+        "key": "X-CLIENT-SECRET",
+        "value": "",
+        "format": "String",
+        "mandatory": "M",
+        "length": "",
+        "description": ""
+      },
+      {
+        "key": "AccesToken",
+        "value": "",
+        "format": "String",
+        "mandatory": "M",
+        "length": "",
+        "description": ""
+      },
+      {
+        "key": "X-TIMESTAMP",
+        "value": "",
+        "format": "String",
+        "mandatory": "M",
+        "length": "",
+        "description": ""
+      },
+      {
+        "key": "EndpointUrl",
+        "value": "",
+        "format": "String",
+        "mandatory": "M",
+        "length": "",
+        "description": ""
+      }
+    ],
+    "request":[
+      {
+        "field": "requestBody",
+        "data_type": "String",
+        "format": "",
+        "mandatory": "M",
+        "length": "",
+        "description": "",
+        "sample": ""
+      }
+    ],
+    "response":[
+      {
+        "field": "Signature",
+        "data_type": "String",
+        "format": "",
+        "mandatory": "M",
+        "length": "",
+        "description": "",
+        "sample": ""
+      }
+    ],
+    "sample_header": "\nX-CLIENT-SECRET:m4nd1r1sy4r14hku\r\nAccesToken:eyJraWQiOiJzc29zIiwiYWxnIjoiUlM1MTIifQ.eyJhdWQiOiJldmVyeW9uZSIsImlzcyI6IkJJU05BUCIsIkNsaWVudF9JZCI6ImQ2NzQzMmY0LWY3ODAtNDY1ZC1hMmFmLWJjZDI1NjMwMGY1OSIsImV4cCI6MTcxMDM2Mzg1MSwiaWF0IjoxNzEwMzYyOTUxLCJzdWIiOiJlZjdmNGQzMC1mMGYyLTQ0MDQtYTUzNC0xZjY0YjM1YzU0MTQifQ.MOGHg6Spn-MSeXSP54ITzhRs0Za4mtRGN8jBATGe6j9muliyuCmHDeHUTkT3ojGYsGC3iJMlwlNpDYW8mhWISao4AtLzNtrINbqZIJ3RR6deAuYCZJJM1BJkXtyku_ZKyuyCHWYdWhSsaq0gKVUeJibK51ljoxj0hk8m4Kxcvwy6iWkfY5s5WyLZqs-izbTApS-yTxeeBuE_9wAFqrxk9dEH8xiXCIoXhl7svUx156pOxDEyj62uDR034D3ACs1soL60g64AaBG34ndQOtTjfigR9EgwcQ4NDSfarH3ZSZT9_z2Opw18UCYB-jBeVf5JBwcUoC9QCLTKR-aUEoc5rQ\r\nX-TIMESTAMP:2022-02-12T13:07:00+07:00\r\nEndpointUrl:/BsmCoreApi/resources/snap/balanceInquirySaving",
+    "sample_request": "\n{\r\n    \"requestBody\" :\"{\\\"accountNo\\\":\\\"2110199457\\\"}\"\r\n\r\n}",
+    "sample_response": "\n{\r\n    \"Signature\": \"zOLGX34U437nfxWo9E6hsgbO4uPW9AKl67zeDbwMxmU2LEY01R+kUCXsI8mynUwGNJWU1ssx5G21jh4LoThV6Q==\"\r\n}",
+    "sample_error": "",
+    "list_error": [
+      {
+        "http_status": "",
+        "service_code": "",
+        "case_code": "",
+        "status": "",
+        "response_description": "",
+        "description": ""
+      }
+    ]
+  }
+}

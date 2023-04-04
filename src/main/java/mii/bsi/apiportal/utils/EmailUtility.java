@@ -116,8 +116,8 @@ public class EmailUtility {
         }
     }
 
-    public String sendEmailOTPVerification(String email, String nama, String token){
-
+    public String sendEmailOTPVerification(String email, String nama, String token, User user){
+        SystemNotification notification;
         try {
             ConfigEmail configEmail = getEmailConfig();
 
@@ -136,6 +136,14 @@ public class EmailUtility {
             String content = getContentFromTemplate(model, "id", "otpEmailVerification.vm");
 
             SendEmail sendEmail = new SendEmail("OTP Email Verification", configEmail.getUsername().getValue(), email, content);
+            notification = generateNotification(sendEmail, email, user.getId(), user.getFirstName()+ " "+ user.getLastName());
+            System.out.println(notification.getNotifMessage());
+            notification = notificationRepository.save(notification);
+//
+            sendEmailNow(configEmail, sendEmail);
+//
+            notification.setSuccess(true);
+            notificationRepository.save(notification);
 
 //            MimeMessage message = mailSender.createMimeMessage();
 //            MimeMessageHelper helper = new MimeMessageHelper(message,true);
@@ -241,8 +249,7 @@ public class EmailUtility {
         Properties properties = new Properties();
         properties.setProperty("mail.smtp.auth", "true");
 //        properties.setProperty("mail.smtp.starttls.enable", "true");
-//        properties.setProperty("mail.smtp.ssl.protocols", "TLSv1.2");
-//        properties.setProperty("mail.smtp.ssl.trust", "*");
+//        properties.setProperty("mail.smtp.ssl.trust", "smtp.gmail.com");
         return properties;
     }
 
@@ -259,6 +266,21 @@ public class EmailUtility {
         notification.setSuccess(false);
         notification.setMitraId(user.getId());
         notification.setMitraName(user.getFirstName()+ " "+ user.getLastName());
+        return notification;
+    }
+    private SystemNotification generateNotification(SendEmail sendEmail, String email, String mitraId, String mitraName){
+        SystemNotification notification = new SystemNotification();
+        notification.setMediaType("EMAIL");
+        notification.setNotifDate(new Date());
+        notification.setNotifSubject(sendEmail.getSubject());
+        notification.setNotifMessage(sendEmail.getText());
+        notification.setNotifType(sendEmail.getSubject());
+        notification.setRetry(0);
+        notification.setErrorCode("00");
+        notification.setMediaAddress(email);
+        notification.setSuccess(false);
+        notification.setMitraId(mitraId);
+        notification.setMitraName(mitraName);
         return notification;
     }
 

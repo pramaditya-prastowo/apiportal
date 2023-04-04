@@ -1,5 +1,6 @@
 package mii.bsi.apiportal.apigw;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import mii.bsi.apiportal.apigw.dto.CreateAppRequestDTO;
 import mii.bsi.apiportal.apigw.dto.RequestTokenResponseDTO;
 import mii.bsi.apiportal.apigw.model.RequestHeaderApi;
@@ -26,6 +27,7 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Map;
 
 @Service
 public class ApiGatewayService {
@@ -48,29 +50,19 @@ public class ApiGatewayService {
     private String requestTokenPath;
     public static final String GENERATE_TOKEN = "Generate Token";
 
-    public String createApplication(CreateAppRequestDTO request) {
+
+    public ResponseApiGw createApplication(CreateAppRequestDTO request) {
+
         BsmApiConfig hostApiGw = configService.getConfigByKeyName("base.url.apigw");
         String url = hostApiGw.getValue() + insertApplicationPath;
         System.out.println("URL : " + url);
-        String responseData2 = null;
+        ResponseApiGw responseApiGw;
         try {
-            responseData2 = dataApiClient.postData(url, request);
-//            System.out.println(responseData2);
-            return responseData2;
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
+            ObjectMapper oMapper = new ObjectMapper();
+            Map<String, String> reqMap = oMapper.convertValue(request, Map.class);
+            responseApiGw = dataApiClient.insertApplication(url, new RequestHeaderApi(), logService.jsonToString(reqMap));
 
-    public String signatureAuth(){
-        String url = "http://10.0.116.127:5555/api/v1.0/utilities/signature-auth";
-        CloseableHttpClient httpClient = HttpClients.createDefault();
-        DataApiClient dataApiClient2 = new DataApiClient(httpClient);
-        String responseData2 = null;
-        try {
-            responseData2 = dataApiClient2.signatureAuth(url);
-            System.out.println(responseData2);
-            return responseData2;
+            return responseApiGw;
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -113,15 +105,15 @@ public class ApiGatewayService {
 
             if(responseToken.getStatusCode() == 408){
                 responseData.failed("Request Timeout");
-                logService.saveLog(requestData, responseData, StatusCode.REQUEST_TIMEOUT, this.getClass().getName(),
+                logService.saveLog(requestData, responseData, StatusCode.OK, this.getClass().getName(),
                         GENERATE_TOKEN);
-                return ResponseEntity.status(HttpStatus.REQUEST_TIMEOUT).body(responseData);
+                return ResponseEntity.status(HttpStatus.OK).body(responseData);
             }
-            if(responseToken.getStatusCode() == 500){
-                responseData.failed("Internal Server Error");
-                logService.saveLog(requestData, responseData, StatusCode.INTERNAL_SERVER_ERROR, this.getClass().getName(),
+            if(responseToken.getStatusCode() != 200){
+                responseData.failed(responseToken.getResponseBody() + " - Failed");
+                logService.saveLog(requestData, responseData, StatusCode.OK, this.getClass().getName(),
                         GENERATE_TOKEN);
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseData);
+                return ResponseEntity.status(HttpStatus.OK).body(responseData);
             }
 
             JSONObject jsonObject = new JSONObject(responseToken.getResponseBody());
@@ -155,6 +147,20 @@ public class ApiGatewayService {
 //        try {
 //            responseData2 = dataApiClient2.balanceInquiry(url, signature, timestamp, token);
 ////            System.out.println(responseData2);
+//            return responseData2;
+//        } catch (Exception e) {
+//            throw new RuntimeException(e);
+//        }
+//    }
+
+    //    public String signatureAuth(){
+//        String url = "http://10.0.116.127:5555/api/v1.0/utilities/signature-auth";
+//        CloseableHttpClient httpClient = HttpClients.createDefault();
+//        DataApiClient dataApiClient2 = new DataApiClient(httpClient);
+//        String responseData2 = null;
+//        try {
+//            responseData2 = dataApiClient2.signatureAuth(url);
+//            System.out.println(responseData2);
 //            return responseData2;
 //        } catch (Exception e) {
 //            throw new RuntimeException(e);

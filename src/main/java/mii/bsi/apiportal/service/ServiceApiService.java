@@ -125,11 +125,16 @@ public class ServiceApiService {
         return ResponseEntity.status(HttpStatus.OK).body(responseData);
     }
 
-    public ResponseEntity<ResponseHandling<List<ServiceApiDomain>>> getAll() {
+    public ResponseEntity<ResponseHandling<List<ServiceApiDomain>>> getAll(String serviceType) {
         ResponseHandling<List<ServiceApiDomain>> responseData = new ResponseHandling<>();
         RequestData<ServiceApiDomain> requestData = new RequestData<>();
         try {
-            List<ServiceApiDomain> listApi = serviceApiRepository.findByServiceApiActive();
+            List<ServiceApiDomain> listApi;
+            if("".equals(serviceType)){
+                listApi = serviceApiRepository.findByServiceApiActive();
+            }else{
+                listApi = serviceApiRepository.findByServiceApiActiveAndServiceType(serviceType);
+            }
             responseData.setPayload(listApi);
             responseData.success();
         } catch (Exception e) {
@@ -144,7 +149,7 @@ public class ServiceApiService {
         ResponseHandling<List<ServiceApiDomain>> responseData = new ResponseHandling<>();
         RequestData<ServiceApiDomain> requestData = new RequestData<>();
         try {
-            List<ServiceApiDomain> listApi = serviceApiRepository.findByServiceApiActive();
+            List<ServiceApiDomain> listApi = serviceApiRepository.findByServiceApiActiveAndServiceType("SNAP");
             List<ServiceApiDomain> listApiHome = new ArrayList<>();
             if(listApi.size() > 6){
                 for (int i = 0; i < 6; i++) {
@@ -163,13 +168,21 @@ public class ServiceApiService {
         return ResponseEntity.status(HttpStatus.OK).body(responseData);
     }
 
-    public ResponseEntity<ResponseHandling<List<GroupsServiceEntity>>> getAllGroupApi(){
+    public ResponseEntity<ResponseHandling<List<GroupsServiceEntity>>> getAllGroupApi(String groupType){
         ResponseHandling<List<GroupsServiceEntity>> responseData = new ResponseHandling<>();
         RequestData requestData = new RequestData();
 
         try {
+            List<GroupsServiceEntity> listGroup;
+            if("".equals(groupType)){
+                listGroup= groupServiceRepository.findAll();
+            }else{
+                listGroup= groupServiceRepository.findByGroupType(groupType);
+            }
+            for (GroupsServiceEntity data: listGroup) {
 
-            List<GroupsServiceEntity> listGroup = groupServiceRepository.findAll();
+            }
+
             responseData.success();
             responseData.setPayload(listGroup);
 

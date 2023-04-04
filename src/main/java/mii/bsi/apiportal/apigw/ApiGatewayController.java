@@ -15,10 +15,10 @@ public class ApiGatewayController {
     @Autowired
     private ApiGatewayService apiGatewayService;
 
-    @PostMapping("/application")
-    public String createApplication(@RequestBody CreateAppRequestDTO request){
-        return apiGatewayService.createApplication(request);
-    }
+//    @PostMapping("/application")
+//    public String createApplication(@RequestBody CreateAppRequestDTO request){
+//        return apiGatewayService.createApplication(request);
+//    }
 
     @PostMapping("/request-token")
     public ResponseEntity<ResponseHandling<RequestTokenResponseDTO>> requestToken(@RequestHeader(HttpHeaders.AUTHORIZATION) String token){

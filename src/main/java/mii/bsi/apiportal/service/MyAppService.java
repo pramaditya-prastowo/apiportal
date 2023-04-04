@@ -3,6 +3,7 @@ package mii.bsi.apiportal.service;
 import com.google.gson.Gson;
 import mii.bsi.apiportal.apigw.ApiGatewayService;
 import mii.bsi.apiportal.apigw.dto.CreateAppRequestDTO;
+import mii.bsi.apiportal.apigw.model.ResponseApiGw;
 import mii.bsi.apiportal.constant.StatusCode;
 import mii.bsi.apiportal.domain.Application;
 import mii.bsi.apiportal.domain.ApplicationServiceApi;
@@ -49,6 +50,8 @@ public class MyAppService {
     private BsmApiKeyRepository bsmApiKeyRepository;
     @Autowired
     private EmailUtility emailUtility;
+    @Autowired
+    private BsmApiKeyService apiKeyService;
 
     @Autowired
     private ApiGatewayService apiGatewayService;
@@ -117,16 +120,19 @@ public class MyAppService {
             String clientKey = RandomStringUtils.randomAlphanumeric(20);;
             CreateAppRequestDTO requestBody = new CreateAppRequestDTO(corpId, apps.getApplicationName(), apps.getCompanyName(),secretKey);
 
-            String response = apiGatewayService.createApplication(requestBody);
-            JSONObject resInsert = new JSONObject(response);
-            System.out.println("print "+ response);
+            ResponseApiGw responseApiGw = apiGatewayService.createApplication(requestBody);
 
 
-            if(!"success".equals(resInsert.getString("status"))){
-                responseData.failed(resInsert.getString("status"));
+            if(responseApiGw.getStatusCode() != 200){
+                if(responseApiGw.getStatusCode() == 408){
+                    responseData.failed("Request Timeout from API Gateway");
+                }else{
+                    responseData.failed(responseApiGw.getStatusCode() + " - Failed");
+                }
+
                 logService.saveLog(requestData, responseData, StatusCode.OK, this.getClass().getName(),
                         CREATE);
-                return ResponseEntity.status(HttpStatus.OK).body(responseData);
+                return  ResponseEntity.status(HttpStatus.OK).body(responseData);
             }
 
             BsmApiKey bsmApiKey = new BsmApiKey(requestBody, clientKey);
@@ -194,9 +200,12 @@ public class MyAppService {
             }
 
             List<ApplicationServiceApi> listApi = serviceApiDao.getServiceApiByAppId(appId);
+            BsmApiKey bsmApiKey = apiKeyService.getByCorpId(application.getCorpId());
             ApplicationDetailResponseDTO responseDTO = new ApplicationDetailResponseDTO();
             responseDTO.setApplication(application);
             responseDTO.setListService(listApi);
+            responseDTO.setApiKey(bsmApiKey);
+
 
             responseData.setPayload(responseDTO);
             responseData.success();

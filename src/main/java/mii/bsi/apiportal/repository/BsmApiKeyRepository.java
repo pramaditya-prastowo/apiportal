@@ -7,5 +7,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface BsmApiKeyRepository extends JpaRepository<BsmApiKey, String> {
     BsmApiKey findByApiKey(String apiKey);
+    BsmApiKey findByCorpId(String corpId);
 
 }

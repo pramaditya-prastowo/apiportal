@@ -50,4 +50,8 @@ public class BsmApiKeyService {
         }
         return null;
     }
+
+    public BsmApiKey getByCorpId(String corpId){
+        return bsmApiKeyConfigRepository.findByCorpId(corpId);
+    }
 }

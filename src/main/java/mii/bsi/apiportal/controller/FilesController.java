@@ -160,4 +160,36 @@ public class FilesController {
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
                 .body(resource);
     }
+
+
+    @PostMapping("/kerjasama")
+    public ResponseEntity<ResponseHandling> uploadDocKerjasama(@RequestParam("file") MultipartFile file){
+        ResponseHandling responseData = new ResponseHandling();
+        String message = "";
+        try {
+            storageService.save(file, FileGroup.KERJASAMA);
+
+            message = "Uploaded the file successfully: " + file.getOriginalFilename();
+            responseData.success(message);
+            return ResponseEntity.status(HttpStatus.OK).body(responseData);
+        } catch (Exception e) {
+            message = "Could not upload the file: " + file.getOriginalFilename() + ". Error: " + e.getMessage();
+            responseData.failed(message);
+            return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(responseData);
+        }
+    }
+    @PostMapping("/kerjasama/all")
+    public ResponseEntity<String> uploadAllFilesKerjasama(@RequestParam("files") List<MultipartFile> files) {
+        for (MultipartFile file : files) {
+            if (file.getSize() > 20 * 1024 * 1024) {
+                return ResponseEntity.badRequest().body("Ukuran file terlalu besar");
+            }
+        }
+
+        for (MultipartFile file : files) {
+            storageService.save(file, FileGroup.KERJASAMA);
+        }
+
+        return ResponseEntity.ok("File berhasil diupload");
+    }
 }

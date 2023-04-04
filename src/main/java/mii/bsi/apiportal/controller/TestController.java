@@ -55,10 +55,10 @@ public class TestController {
         return initialName.substring(0,3) + String.format("%05d", seq);
     }
 
-    @GetMapping("/sign-auth")
-    public String testApiGw(){
-        return apiGatewayService.signatureAuth();
-    }
+//    @GetMapping("/sign-auth")
+//    public String testApiGw(){
+//        return apiGatewayService.signatureAuth();
+//    }
 
 //    @GetMapping("/request-token")
 //    public String testReqToken(){

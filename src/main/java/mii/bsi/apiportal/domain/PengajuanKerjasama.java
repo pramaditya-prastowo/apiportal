@@ -1,5 +1,6 @@
 package mii.bsi.apiportal.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -8,7 +9,7 @@ import mii.bsi.apiportal.domain.model.StatusKerjasama;
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
-import java.util.ArrayList;
+import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -49,12 +50,13 @@ public class PengajuanKerjasama {
     @Enumerated(EnumType.STRING)
     private StatusKerjasama status = StatusKerjasama.MENUNGGU_PERSETUJUAN;
 
-    //    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "group_id")
-//    private Groups groups;
+    //    private Long docId;
+//    @Transient
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "doc_id")
-    private DocPengajuan docPengajuan;
-    @OneToMany(mappedBy = "id", fetch = FetchType.LAZY, orphanRemoval = false)
-    private Set<ServiceApiDomain> services;
+    private DocKerjasama docPengajuan;
+    @Transient
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+//    @OneToMany(mappedBy = "id", fetch = FetchType.LAZY, orphanRemoval = false)
+    private List<KerjasamaServiceApi> services;
 }

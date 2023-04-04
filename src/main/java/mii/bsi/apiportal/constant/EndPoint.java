@@ -24,7 +24,9 @@ public class EndPoint {
             "/api/files/apps/**",
             "/api/files/download/**",
             "/api/v1.0/serviceApi/groups",
-            "/api/v1.0/params/**"
+            "/api/v1.0/params/**",
+            "/security/**",
+            "/try-api/**"
 //            "/forget_password/**",
 //            "/session",
 //            "/session/user",

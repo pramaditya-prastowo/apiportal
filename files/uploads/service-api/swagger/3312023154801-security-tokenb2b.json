@@ -1,0 +1,194 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "generateTokenJWT",
+    "description": "Create Token for authentication BISNAP",
+    "version": "1.0"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:8080/security"
+    }
+  ],
+  "paths": {
+    "/generate-token-b2b": {
+      "post": {
+        "operationId": "create_POST_1",
+        "parameters": [
+          {
+            "name": "X-CLIENT-KEY",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "default": "d67432f4-f780-465d-a2af-bcd256300f59"
+            }
+          },
+          {
+            "name": "X-TIMESTAMP",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "default": "2024-03-13T20:49:11+00:00"
+            }
+          },
+          {
+            "name": "X-SIGNATURE",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HTTPRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/create_POST_response"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Access Denied",
+            "content": {}
+          }
+        },
+        "x-codegen-request-body-name": "$httpRequest"
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "headers": {
+        "type": "object"
+      },
+      "create_POST_response": {
+        "required": [
+          "jsonString",
+          "tes"
+        ],
+        "type": "object",
+        "properties": {
+          "tes": {
+            "type": "string"
+          },
+          "jsonString": {
+            "type": "string"
+          }
+        }
+      },
+      "HTTPRequest": {
+        "required": [
+          "grant_type"
+        ],
+        "type": "object",
+        "properties": {
+          "grant_type": {
+            "type": "string",
+            "default": "client_credentials"
+          }
+        }
+      }
+    }
+  },
+  "spesification":{
+    "endpoint": "",
+    "endpoint_url": "",
+    "header":[
+      {
+        "key": "X-SiGNATURE ",
+        "value": "",
+        "format": "String",
+        "mandatory": "M",
+        "length": "",
+        "description": ""
+      },
+      {
+        "key": "X-CLIENT-KEY",
+        "value": "",
+        "format": "String",
+        "mandatory": "M",
+        "length": "",
+        "description": ""
+      },
+      {
+        "key": "X-TIMESTAMP",
+        "value": "",
+        "format": "String",
+        "mandatory": "M",
+        "length": "",
+        "description": "The timestamp must be presented in ISO8601 format (yyyy-MM-ddTHH:mm:ss.TZ)"
+      }
+      
+    ],
+    "request":[
+      {
+        "field": "grant_type",
+        "data_type": "Object",
+        "format": "",
+        "mandatory": "M",
+        "length": "",
+        "description": "",
+        "sample": ""
+      }
+    ],
+    "response":[
+      {
+        "field": "accessToken",
+        "data_type": "String",
+        "format": "",
+        "mandatory": "M",
+        "length": "",
+        "description": "",
+        "sample": ""
+      },
+      {
+        "field": "tokenType",
+        "data_type": "String",
+        "format": "",
+        "mandatory": "M",
+        "length": "",
+        "description": "",
+        "sample": ""
+      },
+      {
+        "field": "expiresIn",
+        "data_type": "String",
+        "format": "",
+        "mandatory": "M",
+        "length": "",
+        "description": "",
+        "sample": ""
+      }
+    ],
+    "sample_header": "\nX-CLIENT-KEY:d67432f4-f780-465d-a2af-bcd256300f59\r\nX-SIGNATURE:MZxLmwEka7kEcmG0GiS-mcJI2zzJT-dtqHZq3NAfp_ozStZEWLe70MY8F759E4WUTFko9YQmjyXt6hLx4MV-b6zNTJGKnhPsKbo4Y7v1SNicyA3pldJ8xZ5Z4pOGIQCNctWwTs4_6CUoZP45I9yUszMvo60LaCU4vGg_72NRCgHiH-6heNFNcSEGDAXYY2V_LF1vqM42e_38Nr_cPxVpq7OwpeR5zCApJrE_FPy6mmoFnsMpXmuSejwgF3cOQX3bVo2I9aNkmPy4auUIGwFUfTaWdXrjRYFE0peYO6FYxBjweasgONYuWeGHnEhPFD1s8Jc9KG-MaOXlp-2fSXCdxg\r\nX-TIMESTAMP:2024-03-13T20:49:11+00:00",
+    "sample_request": "\n{\"grant_type\": \"client_credentials\"}",
+    "sample_response": "\n{\r\n    \"accessToken\": \"eyJraWQiOiJzc29zIiwiYWxnIjoiUlM1MTIifQ.eyJhdWQiOiJldmVyeW9uZSIsImlzcyI6IkJJU05BUCIsIkNsaWVudF9JZCI6ImQ2NzQzMmY0LWY3ODAtNDY1ZC1hMmFmLWJjZDI1NjMwMGY1OSIsImV4cCI6MTcxMDM2Mzg1MSwiaWF0IjoxNzEwMzYyOTUxLCJzdWIiOiJlZjdmNGQzMC1mMGYyLTQ0MDQtYTUzNC0xZjY0YjM1YzU0MTQifQ.MOGHg6Spn-MSeXSP54ITzhRs0Za4mtRGN8jBATGe6j9muliyuCmHDeHUTkT3ojGYsGC3iJMlwlNpDYW8mhWISao4AtLzNtrINbqZIJ3RR6deAuYCZJJM1BJkXtyku_ZKyuyCHWYdWhSsaq0gKVUeJibK51ljoxj0hk8m4Kxcvwy6iWkfY5s5WyLZqs-izbTApS-yTxeeBuE_9wAFqrxk9dEH8xiXCIoXhl7svUx156pOxDEyj62uDR034D3ACs1soL60g64AaBG34ndQOtTjfigR9EgwcQ4NDSfarH3ZSZT9_z2Opw18UCYB-jBeVf5JBwcUoC9QCLTKR-aUEoc5rQ\",\r\n    \"tokenType\": \"Bearer\",\r\n    \"expiresIn\": \"900\"\r\n}",
+    "sample_error": "",
+    "list_error": [
+      {
+        "http_status": "",
+        "service_code": "",
+        "case_code": "",
+        "status": "",
+        "response_description": "",
+        "description": ""
+      }
+    ]
+  }
+}

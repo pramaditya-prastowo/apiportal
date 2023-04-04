@@ -21,6 +21,7 @@ public class GroupsServiceEntity {
     @Column(name = "id_group", updatable = false, unique = true)
     private Long id;
     private String groupName;
+    private String groupType;
     @OneToMany(mappedBy = "groupServiceApi", fetch = FetchType.LAZY, orphanRemoval = false)
     private List<ServiceApiDomain> services = new ArrayList<>();
 }

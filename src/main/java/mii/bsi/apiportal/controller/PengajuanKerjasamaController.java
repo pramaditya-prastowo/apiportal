@@ -2,32 +2,39 @@ package mii.bsi.apiportal.controller;
 
 import mii.bsi.apiportal.domain.PengajuanKerjasama;
 import mii.bsi.apiportal.service.PengajuanKerjasamaService;
+import mii.bsi.apiportal.utils.ResponseHandling;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/api/v1.0/pengajuan-kerjasama")
+@RequestMapping("/api/v1.0/kerjasama")
 public class PengajuanKerjasamaController {
 
     @Autowired
     private PengajuanKerjasamaService pengajuanKerjasamaService;
 
     @GetMapping
-    public List<PengajuanKerjasama> getAllPengajuanKerjasama() {
-        return pengajuanKerjasamaService.getAllPengajuanKerjasama();
+    public ResponseEntity<ResponseHandling<List<PengajuanKerjasama>>> getAllPengajuanKerjasama(@RequestHeader(HttpHeaders.AUTHORIZATION) String token,
+                                                                                               @RequestParam String userId) {
+        return pengajuanKerjasamaService.getAllPengajuanKerjasama(token.substring(7), userId);
     }
 
     @GetMapping("/{id}")
-    public Optional<PengajuanKerjasama> getPengajuanKerjasamaById(@PathVariable Long id) {
-        return pengajuanKerjasamaService.getPengajuanKerjasamaById(id);
+    public ResponseEntity<ResponseHandling<PengajuanKerjasama>> getPengajuanKerjasamaById(@RequestHeader(HttpHeaders.AUTHORIZATION) String token, @PathVariable Long id) {
+        return pengajuanKerjasamaService.getPengajuanKerjasamaById(token.substring(7), id);
     }
 
     @PostMapping
-    public void addPengajuanKerjasama(@RequestBody PengajuanKerjasama pengajuanKerjasama) {
-        pengajuanKerjasamaService.addPengajuanKerjasama(pengajuanKerjasama);
+    public ResponseEntity<ResponseHandling> addPengajuanKerjasama(@Valid @RequestBody PengajuanKerjasama pengajuanKerjasama,
+                                                                  @RequestHeader(HttpHeaders.AUTHORIZATION) String token, Errors errors) {
+        return pengajuanKerjasamaService.addPengajuanKerjasama(pengajuanKerjasama, token.substring(7), errors);
     }
 
     @PutMapping("/{id}")

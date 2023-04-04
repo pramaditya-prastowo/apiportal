@@ -31,11 +31,11 @@ public class TryApiService {
     @Autowired
     private DateUtils dateUtils;
 
-    public ResponseApiGw tryServiceApi(Map<String, String> request, RequestHeaderApi signatureHeader,
-                                       RequestHeaderApi serviceHeader){
+    public ResponseApiGw tryServiceApi(String request, RequestHeaderApi signatureHeader,
+                                       RequestHeaderApi serviceHeader, String serviceName){
         try {
 
-            ResponseApiGw signatureResponse = signatureService(signatureHeader, logService.jsonToString(request));
+            ResponseApiGw signatureResponse = signatureService(signatureHeader, request, serviceName);
             if(signatureResponse.getStatusCode() != 200){
 
             }
@@ -43,7 +43,7 @@ public class TryApiService {
             serviceHeader.setSignature(responseBody.getString("Signature"));
             serviceHeader.setTimestamp(dateUtils.dateIsoString(new Date()));
 //            System.out.println(serviceHeader);
-            ResponseApiGw serviceResponse = serviceApi(serviceHeader, logService.jsonToString(request));
+            ResponseApiGw serviceResponse = serviceApi(serviceHeader, request);
             System.out.println("Service API Status Code: "+ serviceResponse.getStatusCode());
             if(serviceResponse.getStatusCode() != 200){
 
@@ -51,6 +51,20 @@ public class TryApiService {
             return serviceResponse;
 
         }catch (Exception e){
+            throw new RuntimeException(e);
+        }
+    }
+
+    public ResponseApiGw tryOutServiceApi(RequestHeaderApi requestHeader, String requestBody){
+        BsmApiConfig hostApiGw = configService.getConfigByKeyName("base.url.apigw");
+        BsmApiConfig endPoint = configService.getConfigByKeyName("apigw.serviceapi");
+
+        String url = hostApiGw.getValue() + endPoint.getValue()+"/"+requestHeader.getEndPointUrl();
+        ResponseApiGw responseApiGw = null;
+        try {
+            responseApiGw = dataApiClient.balanceInquiry(url, requestHeader, requestBody);
+            return responseApiGw;
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
@@ -67,7 +81,7 @@ public class TryApiService {
         }
     }
 
-    public ResponseApiGw signatureService(RequestHeaderApi requestHeader, String requestBody){
+    public ResponseApiGw signatureService(RequestHeaderApi requestHeader, String requestBody, String serviceName){
         BsmApiConfig hostApiGw = configService.getConfigByKeyName("base.url.apigw");
         BsmApiConfig signaturePath = configService.getConfigByKeyName("apigw.signature.service.path");
         String url = hostApiGw.getValue() + signaturePath.getValue();

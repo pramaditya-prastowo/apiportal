@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import mii.bsi.apiportal.domain.Application;
 import mii.bsi.apiportal.domain.ApplicationServiceApi;
+import mii.bsi.apiportal.domain.BsmApiKey;
 
 import java.util.List;
 
@@ -15,4 +16,5 @@ public class ApplicationDetailResponseDTO {
 
     private Application application;
     private List<ApplicationServiceApi> listService;
+    private BsmApiKey apiKey;
 }

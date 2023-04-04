@@ -43,8 +43,8 @@ public class BsiTokenVerification {
         long now = (new Date()).getTime();
         long diffInMillis = Math.abs(now - creation);
         boolean moreThanDay = (diffInMillis > 129600000L);
-        boolean moreThanOneMinute = (diffInMillis > 60000L);
-        if(TokenVerificationType.OTP_EMAIL_VERIFICATION.equals(tokenType) && moreThanOneMinute){
+        boolean moreThanThreeMinute = (diffInMillis > 180000L);
+        if(TokenVerificationType.OTP_EMAIL_VERIFICATION.equals(tokenType) && moreThanThreeMinute){
             return true;
         }else{
             if (moreThanDay)

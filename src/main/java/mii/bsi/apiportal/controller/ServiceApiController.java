@@ -35,8 +35,8 @@ public class ServiceApiController {
     }
 
     @GetMapping
-    public ResponseEntity<ResponseHandling<List<ServiceApiDomain>>> getAll() {
-        return serviceApiService.getAll();
+    public ResponseEntity<ResponseHandling<List<ServiceApiDomain>>> getAll(@RequestParam String serviceType) {
+        return serviceApiService.getAll(serviceType);
     }
 
     @GetMapping("/home")
@@ -45,8 +45,8 @@ public class ServiceApiController {
     }
 
     @GetMapping("/groups")
-    public ResponseEntity<ResponseHandling<List<GroupsServiceEntity>>> getAllGroupApi() {
-        return serviceApiService.getAllGroupApi();
+    public ResponseEntity<ResponseHandling<List<GroupsServiceEntity>>> getAllGroupApi(@RequestParam String groupType) {
+        return serviceApiService.getAllGroupApi(groupType);
     }
 
     @GetMapping("/{id}")

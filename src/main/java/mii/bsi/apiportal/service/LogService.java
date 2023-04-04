@@ -73,7 +73,7 @@ public class LogService {
         log.info("Status Code : " + statusCode);
         log.info("Request Header : " + gson.toJson(headersToJson(requestHeader)));
         log.info("Request Body : " + gson.toJson(requestBody));
-        log.info("Response Body : " + gson.toJson(responseBody));
+        log.info("Response Body : " + toJsonString(responseBody));
         log.info("Log Data : "+gson.toJson(logData));
         log.info("==================================================================");
         logApiGwRepository.save(logData);
@@ -96,6 +96,15 @@ public class LogService {
         Map<String, Object> request = new HashMap<>();
         request.put(key, value);
         return request;
+    }
+
+    public String toJsonString(Object object){
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            return  mapper.writeValueAsString(object);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public Map<String, String> stringToJson(String value){

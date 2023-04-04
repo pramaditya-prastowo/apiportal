@@ -1,0 +1,161 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "Signature Auth",
+    "version": "1.0"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:8080/security"
+    }
+  ],
+  "paths": {
+    "/signature-auth": {
+      "post": {
+        "operationId": "create_POST_1",
+        "parameters": [
+          {
+            "name": "X-CLIENT-KEY",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "default": "d67432f4-f780-465d-a2af-bcd256300f59"
+            }
+          },
+          {
+            "name": "X-TIMESTAMP",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "default":"2024-03-13T20:49:11+00:00"
+            }
+          },
+          {
+            "name": "Private_Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "default": "MIIEvwIBADANBgkqhkiG9w0BAQEFAASCBKkwggSlAgEAAoIBAQCggUTfA0dsY0Vg5f8Fzhenfxq3E6gbLp19lGLKSoFZYVflRncLJv/WzG8fJdS7AKq8vjzaAHymJoDJjVRUtmAIH1brBSYc1H9kAMkVdyGH+vnVHIVN/tEbbZg9BKgdpXR6LQDkD2rxwLsJ+OpYf10Z8nTWQ0lpew0aWvJIyBrbevo3AQ1shrytSYq5J8+Llek6ZxcpxtmE2uB0yy7/REhuMyTTBE61JXptkcLHpJkAG90DJvPZnAGaA/rK5M1Zb/AgIHI/VxmctcJgL6xGQ35wNXvG1WI6tvIEojVJ8V4QBU+/DEeeAFCbU0LNFpHA8nsKE7HU850FbnBCxiO+GNMVAgMBAAECggEAWrTTZCkpOxLbCYjRV8mByrHlOiOMtFfivy6VqfbzJL0DfFoXOqE+oniEMBkkIM6eru3f29+8kfVegQky6HDs0opLh6QwRsi8eZqMCWp686sdd5eXql1gdVy5VXqFO8PekJFQWJJyAM/HpDoczgikZ96Csvfxy/+zhvpwxDr6GqB+7SYXGY5ff9EgPwRsap7utDxnuJm5pv/Npiq5GUHN84QyNIKa3rXeZb0cZrvEkjKvAdBZ6TaZAN3Mc3m3aXHfgDwm0ZhlBAr2V8+oauepPamO15Phy4xSV5xMdBmsZJ2lMb44ZUrOmTxNkjo9gZ6l+crFUERg1+FK9hstZpKlYQKBgQDTBU6C4oMnR7WD3kbPEGT1UrjCNwD0ODPsUmaSFcVb3+lPBINQ5BQF2z4pHU4AEJA4MyoMPthGv6XlFvgoSLtfEbq2O+G1+ErsWbSnG9qTnGoox70S4BhjVZt016oY+nIjg7LJXojo0qNvT62inRzvoNzFMFTfoQO8+Df3AOXkzQKBgQDCt3xyMo2YYaeg+JUD43ad2zQ9Cic8WeR1iMOhZetkigQKJz+Z7BNAcaZl8aQwgmVuzHCH2T7fahAGeUnnATMh/IhCcKHZlfGYxc4NcwNUnQSZu6ZF6obLbUgnGAcGuN7sOxrT9AjHjKuo1tFpNP0a0z8Zvl6TLAONtv1vD73naQKBgQCq0ufsomtjl/RD7ONLak0gHzf72MUH7ptx2n64EbGznz5iPhgDmq7u0r2uUM+806u8IwcN5K32D9y+6Go5Si+MVXDdZvpf8cDNNg09HhpCVmPF4XOY3RpBB6MR4igLkmplf45y3vlb6HBvgoPgWOl8vq8ZXffHFLRO/G1poit4nQKBgQCEQiOKYeIhpfs5cH+vQ3qXYIRMDbB24sw2NW5EG7lW8hQqXVxrDZpKBKg0yHxw4rFJIB4zeBGnqSA3dX0IJp13sVNQZbbZ12piDcGXCw8xEvJEBdy70sA6PwFqZHypSTtKFB915mVsPZV/umJFZtOgu+o5b0BIEPZc9PWR0Yx5OQKBgQCZG2h96il0o9LTAVlyQEzmncMoQgJsSPbY3HB0NHopl+zIdYVmZeBLzGvG1PIr57AbCjZXqwexhdJ1E2b6HmaKMZ2xvOR+rnjTW4pEYLZ++xwMJUmLHXqQHT2sTOa3JHEY+qnCAzSfEyxzBHqLC3nqfjKoNZUOzN7RbCT6LZzmww=="
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HTTPRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/create_POST_response"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Access Denied",
+            "content": {}
+          }
+        },
+        "x-codegen-request-body-name": "$httpRequest"
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "headers": {
+        "type": "object"
+      },
+      "create_POST_response": {
+        "required": [
+          "X-SIGNATURE"
+        ],
+        "type": "object",
+        "properties": {
+          "X-SIGNATURE": {
+            "type": "string"
+          }
+        }
+      },
+      "HTTPRequest": {
+        "required": [
+          
+        ],
+        "type": "object",
+        "properties": {
+          
+        }
+      }
+    }
+  },
+  "spesification":{
+    "endpoint": "",
+    "endpoint_url": "",
+    "header":[
+      {
+        "key": "X-CLIENT-KEY",
+        "value": "",
+        "format": "String",
+        "mandatory": "M",
+        "length": "",
+        "description": ""
+      },
+      {
+        "key": "X-TIMESTAMP",
+        "value": "",
+        "format": "String",
+        "mandatory": "M",
+        "length": "",
+        "description": "The timestamp must be presented in ISO8601 format (yyyy-MM-ddTHH:mm:ss.TZ)"
+      },
+      {
+        "key": "Private_Key",
+        "value": "",
+        "format": "String",
+        "mandatory": "M",
+        "length": "",
+        "description": ""
+      }
+      
+    ],
+    "request":[
+      
+    ],
+    "response":[
+      {
+        "field": "X-SIGNATURE",
+        "data_type": "String",
+        "format": "",
+        "mandatory": "M",
+        "length": "",
+        "description": "",
+        "sample": ""
+      }
+    ],
+    "sample_header": "\nX-TIMESTAMP:2024-03-13T20:49:11+00:00\r\nX-CLIENT-KEY:d67432f4-f780-465d-a2af-bcd256300f59\r\nPrivate_Key:MIIEvwIBADANBgkqhkiG9w0BAQEFAASCBKkwggSlAgEAAoIBAQCggUTfA0dsY0Vg5f8Fzhenfxq3E6gbLp19lGLKSoFZYVflRncLJv/WzG8fJdS7AKq8vjzaAHymJoDJjVRUtmAIH1brBSYc1H9kAMkVdyGH+vnVHIVN/tEbbZg9BKgdpXR6LQDkD2rxwLsJ+OpYf10Z8nTWQ0lpew0aWvJIyBrbevo3AQ1shrytSYq5J8+Llek6ZxcpxtmE2uB0yy7/REhuMyTTBE61JXptkcLHpJkAG90DJvPZnAGaA/rK5M1Zb/AgIHI/VxmctcJgL6xGQ35wNXvG1WI6tvIEojVJ8V4QBU+/DEeeAFCbU0LNFpHA8nsKE7HU850FbnBCxiO+GNMVAgMBAAECggEAWrTTZCkpOxLbCYjRV8mByrHlOiOMtFfivy6VqfbzJL0DfFoXOqE+oniEMBkkIM6eru3f29+8kfVegQky6HDs0opLh6QwRsi8eZqMCWp686sdd5eXql1gdVy5VXqFO8PekJFQWJJyAM/HpDoczgikZ96Csvfxy/+zhvpwxDr6GqB+7SYXGY5ff9EgPwRsap7utDxnuJm5pv/Npiq5GUHN84QyNIKa3rXeZb0cZrvEkjKvAdBZ6TaZAN3Mc3m3aXHfgDwm0ZhlBAr2V8+oauepPamO15Phy4xSV5xMdBmsZJ2lMb44ZUrOmTxNkjo9gZ6l+crFUERg1+FK9hstZpKlYQKBgQDTBU6C4oMnR7WD3kbPEGT1UrjCNwD0ODPsUmaSFcVb3+lPBINQ5BQF2z4pHU4AEJA4MyoMPthGv6XlFvgoSLtfEbq2O+G1+ErsWbSnG9qTnGoox70S4BhjVZt016oY+nIjg7LJXojo0qNvT62inRzvoNzFMFTfoQO8+Df3AOXkzQKBgQDCt3xyMo2YYaeg+JUD43ad2zQ9Cic8WeR1iMOhZetkigQKJz+Z7BNAcaZl8aQwgmVuzHCH2T7fahAGeUnnATMh/IhCcKHZlfGYxc4NcwNUnQSZu6ZF6obLbUgnGAcGuN7sOxrT9AjHjKuo1tFpNP0a0z8Zvl6TLAONtv1vD73naQKBgQCq0ufsomtjl/RD7ONLak0gHzf72MUH7ptx2n64EbGznz5iPhgDmq7u0r2uUM+806u8IwcN5K32D9y+6Go5Si+MVXDdZvpf8cDNNg09HhpCVmPF4XOY3RpBB6MR4igLkmplf45y3vlb6HBvgoPgWOl8vq8ZXffHFLRO/G1poit4nQKBgQCEQiOKYeIhpfs5cH+vQ3qXYIRMDbB24sw2NW5EG7lW8hQqXVxrDZpKBKg0yHxw4rFJIB4zeBGnqSA3dX0IJp13sVNQZbbZ12piDcGXCw8xEvJEBdy70sA6PwFqZHypSTtKFB915mVsPZV/umJFZtOgu+o5b0BIEPZc9PWR0Yx5OQKBgQCZG2h96il0o9LTAVlyQEzmncMoQgJsSPbY3HB0NHopl+zIdYVmZeBLzGvG1PIr57AbCjZXqwexhdJ1E2b6HmaKMZ2xvOR+rnjTW4pEYLZ++xwMJUmLHXqQHT2sTOa3JHEY+qnCAzSfEyxzBHqLC3nqfjKoNZUOzN7RbCT6LZzmww==",
+    "sample_request": "\n{}",
+    "sample_response": "\n{\n    \"X-SIGNATURE\": \"MZxLmwEka7kEcmG0GiS-mcJI2zzJT-dtqHZq3NAfp_ozStZEWLe70MY8F759E4WUTFko9YQmjyXt6hLx4MV-b6zNTJGKnhPsKbo4Y7v1SNicyA3pldJ8xZ5Z4pOGIQCNctWwTs4_6CUoZP45I9yUszMvo60LaCU4vGg_72NRCgHiH-6heNFNcSEGDAXYY2V_LF1vqM42e_38Nr_cPxVpq7OwpeR5zCApJrE_FPy6mmoFnsMpXmuSejwgF3cOQX3bVo2I9aNkmPy4auUIGwFUfTaWdXrjRYFE0peYO6FYxBjweasgONYuWeGHnEhPFD1s8Jc9KG-MaOXlp-2fSXCdxg\"\n}",
+    "sample_error": "",
+    "list_error": [
+      {
+        "http_status": "",
+        "service_code": "",
+        "case_code": "",
+        "status": "",
+        "response_description": "",
+        "description": ""
+      }
+    ]
+  }
+}
