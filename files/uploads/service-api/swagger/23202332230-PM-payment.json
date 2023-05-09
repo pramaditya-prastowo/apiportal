@@ -7,22 +7,15 @@
   },
   "servers": [
     {
-      "url": "http://localhost:8080"
+      "url": "http://10.0.118.110:5555"
     }
   ],
   "paths": {
-    "/try-api/payment": {
+    "/v1.0/payment-host-to-host": {
       "post": {
         "operationId": "_post",
         "parameters": [
-          {
-            "name": "access_token",
-            "in": "header",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
+          
           {
             "name": "X-SIGNATURE",
             "in": "header",
@@ -63,10 +56,18 @@
             "required": true,
             "schema": {
               "type": "string",
-              "default":"12345"
+              "default": "12345"
+            }
+          },
+          {
+            "name": "Content-Type",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "default":"application/json"
             }
           }
-
         ],
         "requestBody": {
           "content": {
@@ -105,11 +106,26 @@
             "content": {}
           }
         },
-        "x-codegen-request-body-name": "bodyParameters"
+        "x-codegen-request-body-name": "bodyParameters",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
       }
     }
   },
   "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "apiKey",
+        "schema": "bearer",
+        "bearerFormat": "JWT",
+        "description": "Enter the token with the `Bearer: ` prefix, e.g. \"Bearer abcde12345\".",
+        "name": "Authorization",
+        "in": "header"
+      }
+    },
     "schemas": {
       "BsmDirectDebitApiSnap.resources.snap.payment:_post.urlParam": {
         "required": [

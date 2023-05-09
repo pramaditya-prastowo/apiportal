@@ -22,6 +22,7 @@ public class EndPoint {
             "/api/files/service-api/**",
             "/api/files/promo/**",
             "/api/files/apps/**",
+            "/api/files/kerjasama/**",
             "/api/files/download/**",
             "/api/v1.0/serviceApi/groups",
             "/api/v1.0/params/**",

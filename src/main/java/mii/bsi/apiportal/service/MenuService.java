@@ -27,6 +27,7 @@ public class MenuService {
     public static final String GET_BY_ID = "Get By ID";
 
     public static final String CREATE = "Create";
+    public static final String GET_ALL_SHOW_APPROVAL = "Get All Show Approval";
 
 
     public ResponseEntity<ResponseHandling<List<Menu>>> getAll(String token){
@@ -68,7 +69,7 @@ public class MenuService {
             if(!adminValidation.isAdmin(token)){
                 responseData.failed("Access denied");
                 logService.saveLog(requestData, responseData, StatusCode.FORBIDDEN, this.getClass().getName(),
-                        GET_ALL);
+                        GET_BY_ID);
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).body(responseData);
             }
 
@@ -92,6 +93,42 @@ public class MenuService {
         }
         logService.saveLog(requestData, responseData, StatusCode.OK, this.getClass().getName(),
                 GET_BY_ID);
+        return ResponseEntity.ok(responseData);
+    }
+
+    public ResponseEntity<ResponseHandling<List<Menu>>> getAllShowApproval(String token){
+        ResponseHandling<List<Menu>> responseData = new ResponseHandling<>();
+        RequestData requestData = new RequestData();
+
+        try {
+
+            if(!adminValidation.isAdmin(token)){
+                responseData.failed("Access denied");
+                logService.saveLog(requestData, responseData, StatusCode.FORBIDDEN, this.getClass().getName(),
+                        GET_ALL_SHOW_APPROVAL);
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(responseData);
+            }
+
+            List<Menu> menuList = menuRepository.findByShowOnApproval(true);
+            if(menuList.size() == 0){
+                responseData.failed("Not Found");
+                logService.saveLog(requestData, responseData, StatusCode.NOT_FOUND, this.getClass().getName(),
+                        GET_ALL_SHOW_APPROVAL);
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(responseData);
+            }
+
+            responseData.success();
+            responseData.setPayload(menuList);
+
+        }catch (Exception e){
+            e.printStackTrace();
+            responseData.failed(e.getMessage());
+            logService.saveLog(requestData, responseData, StatusCode.INTERNAL_SERVER_ERROR, this.getClass().getName(),
+                    GET_ALL_SHOW_APPROVAL);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseData);
+        }
+//        logService.saveLog(requestData, responseData, StatusCode.OK, this.getClass().getName(),
+//                GET_ALL_SHOW_APPROVAL);
         return ResponseEntity.ok(responseData);
     }
 }

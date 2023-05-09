@@ -21,4 +21,6 @@ public interface MenuRepository extends JpaRepository<Menu, Long> {
     List<Menu> findByPermissionList(String permissionList);
 
     List<Menu> findByPermissionNameIn(Collection<String> permission);
+
+    List<Menu> findByShowOnApproval(boolean showApproval);
 }

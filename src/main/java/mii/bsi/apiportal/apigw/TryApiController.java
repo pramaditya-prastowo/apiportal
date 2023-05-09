@@ -46,7 +46,7 @@ public class TryApiController {
 
     @PostMapping("/{serviceName}")
     public String tryOutServiceApi(@PathVariable String serviceName,
-                                   @RequestHeader("access_token") String token,
+                                   @RequestHeader(HttpHeaders.AUTHORIZATION) String token,
                                    @RequestHeader("X-SIGNATURE") String signature,
                                    @RequestHeader("X-TIMESTAMP") String timestamp,
                                    @RequestHeader("X-PARTNER-ID") String partnerId,

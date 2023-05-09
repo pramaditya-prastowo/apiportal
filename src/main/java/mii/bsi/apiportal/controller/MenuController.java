@@ -29,4 +29,9 @@ public class MenuController {
                                                             @RequestHeader(HttpHeaders.AUTHORIZATION) String token){
         return menuService.getById(id,token.substring(7));
     }
+
+    @GetMapping("/show-approval")
+    public ResponseEntity<ResponseHandling<List<Menu>>> getMenuShowApprovalMatrix(@RequestHeader(HttpHeaders.AUTHORIZATION) String token){
+        return menuService.getAllShowApproval(token.substring(7));
+    }
 }

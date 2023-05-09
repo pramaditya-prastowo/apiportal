@@ -10,7 +10,7 @@ import java.util.List;
 @Repository
 public interface PengajuanKerjasamaRepository extends JpaRepository<PengajuanKerjasama, Long> {
 
-    @Query(value="select * from bsi_pengajuan_kerjasama_api_portal where created_by = ?", nativeQuery = true)
+//    @Query(value="select * from bsi_pengajuan_kerjasama_api_portal where created_by = ?", nativeQuery = true)
     List<PengajuanKerjasama> findByCreatedBy(String userId);
 
     @Query(value="select * from bsi_pengajuan_kerjasama_api_portal where peker_id = ?", nativeQuery = true)

@@ -1,6 +1,8 @@
 package mii.bsi.apiportal.controller;
 
 import mii.bsi.apiportal.domain.PengajuanKerjasama;
+import mii.bsi.apiportal.dto.LogPengajuanKerjasamaDTO;
+import mii.bsi.apiportal.service.LogPengajuanKerjasamaService;
 import mii.bsi.apiportal.service.PengajuanKerjasamaService;
 import mii.bsi.apiportal.utils.ResponseHandling;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +21,8 @@ public class PengajuanKerjasamaController {
 
     @Autowired
     private PengajuanKerjasamaService pengajuanKerjasamaService;
+    @Autowired
+    private LogPengajuanKerjasamaService logPKSService;
 
     @GetMapping
     public ResponseEntity<ResponseHandling<List<PengajuanKerjasama>>> getAllPengajuanKerjasama(@RequestHeader(HttpHeaders.AUTHORIZATION) String token,
@@ -45,6 +49,17 @@ public class PengajuanKerjasamaController {
     @DeleteMapping("/{id}")
     public void deletePengajuanKerjasama(@PathVariable Long id) {
         pengajuanKerjasamaService.deletePengajuanKerjasama(id);
+    }
+
+    @PatchMapping("/status/{id}")
+    public ResponseEntity<ResponseHandling> updateStatusPengajuan(@PathVariable Long id, @RequestHeader(HttpHeaders.AUTHORIZATION) String token, @RequestParam String status){
+        return pengajuanKerjasamaService.updateStatusPengajuan(id, token.substring(7), status );
+    }
+
+    @GetMapping("/log")
+    public ResponseEntity<ResponseHandling<List<LogPengajuanKerjasamaDTO>>> getAlLog(
+            @RequestHeader(HttpHeaders.AUTHORIZATION) String token, @RequestParam Long id){
+        return logPKSService.getAllLogById(token.substring(7),id);
     }
 
 }

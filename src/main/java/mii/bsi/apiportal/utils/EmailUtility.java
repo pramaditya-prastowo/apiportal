@@ -248,8 +248,8 @@ public class EmailUtility {
     private Properties getProperties(){
         Properties properties = new Properties();
         properties.setProperty("mail.smtp.auth", "true");
-//        properties.setProperty("mail.smtp.starttls.enable", "true");
-//        properties.setProperty("mail.smtp.ssl.trust", "smtp.gmail.com");
+        properties.setProperty("mail.smtp.starttls.enable", "true");
+        properties.setProperty("mail.smtp.ssl.trust", "smtp.gmail.com");
         return properties;
     }
 

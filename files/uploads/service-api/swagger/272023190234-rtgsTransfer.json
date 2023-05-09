@@ -7,22 +7,14 @@
   },
   "servers": [
     {
-      "url": "http://localhost:8080"
+      "url": "http://10.0.118.110:5555"
     }
   ],
   "paths": {
-    "/try-api/transfer-rtgs": {
+    "/v1.0/transfer-rtgs": {
       "post": {
         "operationId": "_post",
         "parameters": [
-          {
-            "name": "access_token",
-            "in": "header",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
           {
             "name": "X-SIGNATURE",
             "in": "header",
@@ -64,6 +56,15 @@
             "schema": {
               "type": "string",
               "default":"12345"
+            }
+          },
+          {
+            "name": "Content-Type",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "default":"application/json"
             }
           }
 
@@ -141,11 +142,26 @@
             "content": {}
           }
         },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "x-codegen-request-body-name": "bodyParameters"
       }
     }
   },
   "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "apiKey",
+        "schema": "bearer",
+        "bearerFormat": "JWT",
+        "description": "Enter the token with the `Bearer: ` prefix, e.g. \"Bearer abcde12345\".",
+        "name": "Authorization",
+        "in": "header"
+      }
+    },
     "schemas": {
       "BsmCoreApi.resources.snap.rtgsTransfer:_post.amount": {
         "required": [

@@ -7,11 +7,11 @@
   },
   "servers": [
     {
-      "url": "http://localhost:8080/security"
+      "url": "http://10.0.116.127:5555/api"
     }
   ],
   "paths": {
-    "/signature-service-snap": {
+    "/v1.0/utilities/signature-service": {
       "post": {
         "operationId": "create_POST_1",
         "parameters": [
@@ -28,6 +28,7 @@
             "name": "AccesToken",
             "in": "header",
             "required": true,
+            "description": "Access Token from service Generate Token B2B",
             "schema": {
               "type": "string"
             }
@@ -45,8 +46,18 @@
             "name": "EndpointUrl",
             "in": "header",
             "required": true,
+            "description": "Path service on detail service api",
             "schema": {
               "type": "string"
+            }
+          },
+          {
+            "name": "Content-Type",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "default":"application/json"
             }
           }
         ],

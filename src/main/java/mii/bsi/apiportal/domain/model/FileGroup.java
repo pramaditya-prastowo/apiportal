@@ -6,7 +6,7 @@ public enum FileGroup {
     MITRA("MITRA"),
     MY_APPLICATION("My Application"),
     PROMO("Promo"),
-    KERJASAMA("Promo");
+    KERJASAMA("Kerjasama");
 
     private final String text;
 

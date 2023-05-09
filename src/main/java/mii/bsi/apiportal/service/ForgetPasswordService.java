@@ -109,6 +109,7 @@ public class ForgetPasswordService {
             }
 
             final String decUid = encryptUtility.decryptAES(request.getId(), Params.PASS_KEY);
+            
             final String decToken = encryptUtility.decryptAES(request.getToken(), Params.PASS_KEY);
 
             BsiTokenVerification resultToken = tokenRepository.findByToken(decToken);
@@ -142,6 +143,8 @@ public class ForgetPasswordService {
             user.setPassword(passwordEncoder.encode(request.getPassword()));
             user.setUpdateBy(user.getId());
             user.setUpdateDate(new Date());
+            user.setRetryPasswordCount(0);
+            user.setAccountLocked(false);
             userRepository.save(user);
             responseData.success("Password has been changed");
 

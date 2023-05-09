@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Set;
 
 @Table(name = "bsi_pengajuan_kerjasama_api_portal")
-@Entity
+@Entity(name = "PengajuanKerjasama")
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
@@ -52,6 +52,7 @@ public class PengajuanKerjasama {
 
     //    private Long docId;
 //    @Transient
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "doc_id")
     private DocKerjasama docPengajuan;

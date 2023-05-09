@@ -14,7 +14,7 @@ import java.util.Date;
 @NoArgsConstructor
 @Entity
 @Table(name = "bsi_menu_api_portal")
-public class Menu implements Serializable {
+public class Menu  {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "menu_id", updatable = false, unique = true)

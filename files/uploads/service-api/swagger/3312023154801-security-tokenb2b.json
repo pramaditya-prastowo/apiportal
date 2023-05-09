@@ -1,17 +1,17 @@
 {
   "openapi": "3.0.1",
   "info": {
-    "title": "generateTokenJWT",
+    "title": "Generate Token B2B",
     "description": "Create Token for authentication BISNAP",
     "version": "1.0"
   },
   "servers": [
     {
-      "url": "http://localhost:8080/security"
+      "url": "http://10.0.118.110:5555/api"
     }
   ],
   "paths": {
-    "/generate-token-b2b": {
+    "/v1.0/access-token/b2b": {
       "post": {
         "operationId": "create_POST_1",
         "parameters": [
@@ -37,8 +37,18 @@
             "name": "X-SIGNATURE",
             "in": "header",
             "required": true,
+            "description": "Signature from service Signature Auth",
             "schema": {
               "type": "string"
+            }
+          },
+          {
+            "name": "Content-Type",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "default":"application/json"
             }
           }
         ],

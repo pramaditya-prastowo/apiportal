@@ -7,6 +7,7 @@ public enum StatusKerjasama {
     DISETUJUI("DISETUJUI"),
     SELESAI("SELESAI"),
     DITAHAN("DITAHAN"),
+    PENGAJUAN_ULANG("PENGAJUAN_ULANG"),
     DIBATALKAN("DIBATALKAN");
 
     private final String text;

@@ -10,7 +10,7 @@ import java.io.Serializable;
 import java.util.Date;
 
 @Table(name = "bsi_doc_pengajuan_kerjasama_api_portal")
-@Entity
+@Entity(name = "DocKerjasama")
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
