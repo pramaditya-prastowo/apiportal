@@ -4,22 +4,23 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import mii.bsi.apiportal.domain.model.StatusKerjasama;
+import mii.bsi.apiportal.domain.model.ApprovalStatus;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
-import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
 
-@Table(name = "bsi_pengajuan_kerjasama_api_portal")
-@Entity(name = "PengajuanKerjasama")
+@Table(name = PengajuanKerjasama.TABLE_NAME)
+@Entity(name = PengajuanKerjasama.ENTITY_NAME)
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
 public class PengajuanKerjasama {
+
+    public static final String TABLE_NAME= "bsi_pengajuan_kerjasama_api_portal";
+    public static final String ENTITY_NAME= "PengajuanKerjasama";
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -48,7 +49,7 @@ public class PengajuanKerjasama {
     private Date updatedDate;
     private String updatedBy;
     @Enumerated(EnumType.STRING)
-    private StatusKerjasama status = StatusKerjasama.MENUNGGU_PERSETUJUAN;
+    private ApprovalStatus status = ApprovalStatus.MENUNGGU_PERSETUJUAN;
 
     //    private Long docId;
 //    @Transient

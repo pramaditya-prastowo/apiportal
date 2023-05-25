@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -15,9 +16,16 @@ import java.util.Set;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ApprovalMatrix {
+public class ApprovalMatrix implements Serializable {
 
     private static final long serialVersionUID = -8775040500515248078L;
+
+    public ApprovalMatrix(Menu menu, boolean needApproval, String createdBy){
+        this.menu = menu;
+        this.needApproval = needApproval;
+        this.createdBy = createdBy;
+        this.createdDate = new Date();
+    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

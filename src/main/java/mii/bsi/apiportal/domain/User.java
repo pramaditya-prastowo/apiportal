@@ -107,5 +107,9 @@ public class User implements Serializable {
     public Long getGroupId(){
         return groupId;
     }
+    @Transient
+    public String getFullName(){
+        return this.firstName + " "+ this. lastName;
+    }
 
 }

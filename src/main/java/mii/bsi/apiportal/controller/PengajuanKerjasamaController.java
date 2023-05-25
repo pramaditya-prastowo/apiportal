@@ -1,12 +1,17 @@
 package mii.bsi.apiportal.controller;
 
-import mii.bsi.apiportal.domain.PengajuanKerjasama;
+import mii.bsi.apiportal.domain.*;
 import mii.bsi.apiportal.dto.LogPengajuanKerjasamaDTO;
+import mii.bsi.apiportal.repository.ApprovalGroupRepository;
+import mii.bsi.apiportal.repository.ApprovalMatrixDetailRepository;
+import mii.bsi.apiportal.repository.ApprovalMatrixRepository;
+import mii.bsi.apiportal.repository.MenuRepository;
 import mii.bsi.apiportal.service.LogPengajuanKerjasamaService;
 import mii.bsi.apiportal.service.PengajuanKerjasamaService;
 import mii.bsi.apiportal.utils.ResponseHandling;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
@@ -61,5 +66,12 @@ public class PengajuanKerjasamaController {
             @RequestHeader(HttpHeaders.AUTHORIZATION) String token, @RequestParam Long id){
         return logPKSService.getAllLogById(token.substring(7),id);
     }
+
+    @GetMapping("/available")
+    public ResponseEntity<ResponseHandling<Integer>> checkAvailableCreate(@RequestHeader(HttpHeaders.AUTHORIZATION) String token){
+        return pengajuanKerjasamaService.checkAvailableCreate(token.substring(7));
+    }
+
+
 
 }

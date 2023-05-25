@@ -1,5 +1,6 @@
 package mii.bsi.apiportal.repository;
 
+import mii.bsi.apiportal.domain.Groups;
 import mii.bsi.apiportal.domain.Menu;
 import mii.bsi.apiportal.domain.model.Roles;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -20,7 +21,8 @@ public interface MenuRepository extends JpaRepository<Menu, Long> {
     @Query(value="select * from bsi_menu_api_portal where permission_name IN ( ? )", nativeQuery = true)
     List<Menu> findByPermissionList(String permissionList);
 
-    List<Menu> findByPermissionNameIn(Collection<String> permission);
+    List<Menu> findByPermissionNameInOrderBySequenceMenuAsc(Collection<String> permission);
 
     List<Menu> findByShowOnApproval(boolean showApproval);
+    Menu findByPermissionName(String permission);
 }

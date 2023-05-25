@@ -1,8 +1,10 @@
 package mii.bsi.apiportal.service;
 
 import mii.bsi.apiportal.constant.StatusCode;
+import mii.bsi.apiportal.domain.ApprovalMatrix;
 import mii.bsi.apiportal.domain.Menu;
 import mii.bsi.apiportal.domain.model.Roles;
+import mii.bsi.apiportal.repository.ApprovalMatrixRepository;
 import mii.bsi.apiportal.repository.MenuRepository;
 import mii.bsi.apiportal.utils.RequestData;
 import mii.bsi.apiportal.utils.ResponseHandling;
@@ -21,6 +23,9 @@ public class MenuService {
     private MenuRepository menuRepository;
     @Autowired
     private UserValidation adminValidation;
+
+    @Autowired
+    private ApprovalMatrixRepository matrixRepository;
     @Autowired
     private LogService logService;
     public static final String GET_ALL = "Get All";
@@ -115,6 +120,12 @@ public class MenuService {
                 logService.saveLog(requestData, responseData, StatusCode.NOT_FOUND, this.getClass().getName(),
                         GET_ALL_SHOW_APPROVAL);
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(responseData);
+            }
+
+            List<ApprovalMatrix> matrixList = matrixRepository.findAll();
+            List<Menu> responseMenuList =  menuList;
+            for (ApprovalMatrix matrix :matrixList) {
+                responseMenuList.removeIf(menu1 -> menu1.getId().equals(matrix.getMenu().getId()));
             }
 
             responseData.success();

@@ -227,7 +227,7 @@ public class GroupsService {
             List<String> list = Arrays.asList(permissionList.split(","));
             Collection<String> collection = new ArrayList<String>(list);
 
-            List<Menu> listMenu = menuRepository.findByPermissionNameIn(collection);
+            List<Menu> listMenu = menuRepository.findByPermissionNameInOrderBySequenceMenuAsc(collection);
             responseData.success();
             responseData.setPayload(listMenu);
 

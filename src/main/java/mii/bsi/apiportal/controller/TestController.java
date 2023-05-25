@@ -1,16 +1,26 @@
 package mii.bsi.apiportal.controller;
 
 import mii.bsi.apiportal.apigw.ApiGatewayService;
+import mii.bsi.apiportal.domain.*;
+import mii.bsi.apiportal.domain.task.TaskApprover;
+import mii.bsi.apiportal.domain.task.TaskMaker;
+import mii.bsi.apiportal.dto.task.TaskApproverResponse;
+import mii.bsi.apiportal.repository.*;
+import mii.bsi.apiportal.service.TaskService;
 import mii.bsi.apiportal.utils.DateUtils;
 import mii.bsi.apiportal.utils.EncryptUtility;
+import mii.bsi.apiportal.utils.ResponseHandling;
+import org.apache.commons.lang3.StringUtils;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 @RestController
 @RequestMapping("/test")
@@ -89,5 +99,64 @@ public class TestController {
         return encryptUtility.generateSignature(privateKey, clientKey+"|"+timeStamp);
 
 
+    }
+
+    @Autowired
+    private ApprovalMatrixRepository approvalMatrixRepository;
+    @Autowired
+    private MenuRepository menuRepository;
+    @Autowired
+    private ApprovalMatrixDetailRepository approvalMatrixDetailRepository;
+    @Autowired
+    private ApprovalGroupRepository approvalGroupRepository;
+    @Autowired
+    private UserRepository userRepository;
+    @Autowired
+    private TaskMakerRepository taskMakerRepository;
+    @Autowired
+    private TaskService taskService;
+
+    @PostMapping("/kerjasama")
+    public ResponseEntity<ResponseHandling<Object>> testingKerjasama(){
+        ResponseHandling<Object> responseData = new ResponseHandling<>();
+
+        try {
+            List<TaskMaker> maker = taskMakerRepository.findByActivityIdContaining("PK");
+//            List<TaskMaker> maker = new ArrayList<>();
+            int sequence = 1;
+            String activityId = "";
+            if(maker.size() > 0){
+                String last = maker.get(0).getActivityId().substring(2);
+                sequence = Integer.parseInt(last) + 1;
+            }
+            activityId = "PK"+ StringUtils.leftPad(String.valueOf(sequence), 10, "0");
+
+//            Menu menu = menuRepository.findByPermissionName("MAINTAIN_KERJASAMA");
+//            ApprovalMatrix approvalMatrix = approvalMatrixRepository.findByMenuId(menu.getId());
+//            List<ApprovalMatrixDetail> approvalMatrixDetails = approvalMatrixDetailRepository.findByMatrixId(approvalMatrix.getId());
+//            for (ApprovalMatrixDetail detail: approvalMatrixDetails) {
+//                List<ApprovalGroup> groups = approvalGroupRepository.findByMatrixDetailId(detail.getId());
+//                detail.setSelectedGroup(groups);
+//                for (ApprovalGroup group: groups) {
+//                    List<User> userList = userRepository.findByGroupId(group.getGroup().getId());
+//                    for (User user: userList) {
+//                        System.out.println(user.getId()+" : " + user.getFirstName() + " "+ user.getLastName() );
+//                    }
+//                }
+//            }
+//            approvalMatrix.setDetails(approvalMatrixDetails);
+            responseData.setPayload(activityId);
+            return ResponseEntity.ok(responseData);
+        }catch (Exception e){
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+
+
+    }
+
+    @GetMapping("/task")
+    public ResponseEntity<ResponseHandling<List<TaskApproverResponse>>> getTask(@RequestHeader(HttpHeaders.AUTHORIZATION) String token, @RequestParam String entityId, @RequestParam String entityName){
+        return taskService.getAllByEntityIdAndName(token.substring(7), entityId, entityName);
     }
 }

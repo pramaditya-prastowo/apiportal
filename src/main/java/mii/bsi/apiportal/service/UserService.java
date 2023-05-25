@@ -190,6 +190,7 @@ public class UserService {
             newUser.setAuthPrincipal(user.getAuthPrincipal());
             newUser.setUpdateDate(new Date());
             newUser.setUpdateBy(admin.getId());
+            newUser.setGroupId(user.getGroupId());
             userRepository.save(newUser);
 
             responseData.success();

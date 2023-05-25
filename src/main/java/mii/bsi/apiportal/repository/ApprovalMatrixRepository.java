@@ -11,5 +11,5 @@ import java.util.List;
 @Repository
 public interface ApprovalMatrixRepository extends JpaRepository<ApprovalMatrix, Long> {
 
-
+    ApprovalMatrix findByMenuId(Long menuId);
 }
