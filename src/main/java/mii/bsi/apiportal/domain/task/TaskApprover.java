@@ -51,7 +51,7 @@ public class TaskApprover extends Task implements Serializable {
 
 //    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "task_maker_id")
+    @JoinColumn(name = "activity_id")
     private TaskMaker taskMaker;
 
     private Integer levelApprover;

@@ -170,7 +170,7 @@ public class GroupsService {
                 return ResponseEntity.status(HttpStatus.OK).body(responseData);
             }
 
-            Menu menu = menuRepository.findOneByPermissionNameAndMenuId(authGuard.getPermissionName(), authGuard.getMenuId());
+            Menu menu = menuRepository.findOneByPermissionName(authGuard.getPermissionName());
             Groups group = groupsRepository.getReferenceById(authGuard.getGroupId());
 
             if(!group.getPermission().contains(menu.getPermissionName())){

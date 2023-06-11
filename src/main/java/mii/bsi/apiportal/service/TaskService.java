@@ -1,16 +1,12 @@
 package mii.bsi.apiportal.service;
 
 import mii.bsi.apiportal.constant.StatusCode;
-import mii.bsi.apiportal.domain.ApprovalMatrix;
-import mii.bsi.apiportal.domain.Menu;
-import mii.bsi.apiportal.domain.User;
+import mii.bsi.apiportal.domain.*;
 import mii.bsi.apiportal.domain.model.ApprovalStatus;
 import mii.bsi.apiportal.domain.task.TaskApprover;
 import mii.bsi.apiportal.domain.task.TaskMaker;
 import mii.bsi.apiportal.domain.task.TaskType;
-import mii.bsi.apiportal.dto.task.MyTaskResponseDTO;
-import mii.bsi.apiportal.dto.task.TaskApproverResponse;
-import mii.bsi.apiportal.dto.task.TaskMakerResponse;
+import mii.bsi.apiportal.dto.task.*;
 import mii.bsi.apiportal.repository.TaskApproverRepository;
 import mii.bsi.apiportal.repository.TaskMakerRepository;
 import mii.bsi.apiportal.utils.RequestData;
@@ -36,6 +32,8 @@ public class TaskService {
     private UserValidation userValidation;
     @Autowired
     private LogService logService;
+    @Autowired
+    private ApprovalMatrixService matrixService;
 
     public static final String GET_ALL_TASK = "Get All Task";
     public static final String GET_ALL_TASK_APPROVER = "Get All Task Approver";
@@ -86,8 +84,8 @@ public class TaskService {
         return ResponseEntity.ok(responseData);
     }
 
-    public ResponseEntity<ResponseHandling<List<TaskApproverResponse>>> getAllByEntityIdAndName(String token, String entityId, String entityName){
-        ResponseHandling<List<TaskApproverResponse>> responseData = new ResponseHandling<>();
+    public ResponseEntity<ResponseHandling<DetailTaskResponseDTO>> getAllByEntityIdAndName(String token, String entityId, String entityName){
+        ResponseHandling<DetailTaskResponseDTO> responseData = new ResponseHandling<>();
         RequestData<Map<String, Object>> requestData = new RequestData<>();
         Map<String, Object> request = logService.setValueRequest("entityId", entityId);
         request.put("entityName", entityName);
@@ -111,12 +109,32 @@ public class TaskService {
 
 
             List<TaskApprover> taskApprovers = getTaskApproverEntityIdAndName(entityId, entityName);
-            List<TaskApproverResponse> taskApproverResponses = new ArrayList<>();
-            for (TaskApprover task2: taskApprovers) {
-                taskApproverResponses.add(new TaskApproverResponse(task2));
+            List<TaskApproverSequenceResponse> taskApproverSequenceResponses = new ArrayList<>();
+            TaskMaker taskMaker = new TaskMaker();
+
+
+            if(taskApprovers.size() > 0){
+                taskMaker =  taskMakerRepository.findById(taskApprovers.get(0).getActivityId()).get();
+                int sequence = matrixService.getSequenceApprovalMatrix(taskMaker.getApprovalMatrix().getId());
+                for (int i = 1; i <= sequence; i++) {
+                    List<TaskApproverResponse> taskApproverResponses = new ArrayList<>();
+                    for (TaskApprover task2: taskApprovers) {
+                        if(task2.getSequence() == i){
+                            taskApproverResponses.add(new TaskApproverResponse(task2));
+                        }
+                    }
+                    taskApproverSequenceResponses.add(new TaskApproverSequenceResponse(i, taskApproverResponses));
+                }
             }
+
+            ApprovalMatrix data = matrixService.getApprovalMatrixDetailWithOutGroupById(taskMaker.getApprovalMatrix().getId());
+            data.setMenu(null);
+            TaskMakerResponse taskMakerResponse = new TaskMakerResponse(taskMaker);
+            taskMakerResponse.setApprovalMatrix(data);
+            DetailTaskResponseDTO detailResponse = new DetailTaskResponseDTO(taskMakerResponse, taskApproverSequenceResponses);
+
             responseData.success();
-            responseData.setPayload(taskApproverResponses);
+            responseData.setPayload(detailResponse);
         }catch (Exception e){
             e.printStackTrace();
             responseData.failed(e.getMessage());

@@ -295,4 +295,32 @@ public class ApprovalMatrixService {
     List<Groups> getListGroupBySequence(int sequence, DetailApprovalMatrixRequest detailRequest){
         return detailRequest.getGroup();
     }
+
+    public int getSequenceApprovalMatrix(Long matrixId){
+        List<ApprovalMatrixDetail> list = detailRepository.findByMatrixId(matrixId);
+        return list.get(list.size()-1).getSequence();
+    }
+
+    public ApprovalMatrix getApprovalMatrixById(Long id){
+        ApprovalMatrix matrix =  matrixRepository.getReferenceById(id);
+        return matrix;
+    }
+
+    public ApprovalMatrix getApprovalMatrixWithDetailById(Long id){
+        ApprovalMatrix data = getApprovalMatrixById(id);
+        List<ApprovalMatrixDetail> listDetail = detailRepository.findByMatrixId(data.getId());
+        for (ApprovalMatrixDetail detail: listDetail) {
+            System.out.println(detail.getId());
+            List<ApprovalGroup> listGroup = approvalGroupRepository.findByMatrixDetailId(detail.getId());
+            detail.setSelectedGroup(listGroup);
+        }
+        data.setDetails(listDetail);
+        return data;
+    }
+    public ApprovalMatrix getApprovalMatrixDetailWithOutGroupById(Long id){
+        ApprovalMatrix data = getApprovalMatrixById(id);
+        List<ApprovalMatrixDetail> listDetail = detailRepository.findByMatrixId(data.getId());
+        data.setDetails(listDetail);
+        return data;
+    }
 }

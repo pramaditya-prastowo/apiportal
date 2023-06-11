@@ -13,8 +13,6 @@ import javax.validation.constraints.NotNull;
 public class AuthGuardPageRequestDTO {
     @NotNull(message = "groupId is required")
     private Long groupId;
-    @NotNull(message = "menuId is required")
-    private Long menuId;
     @NotEmpty(message = "permissionName is required")
     private String permissionName;
 }

@@ -21,8 +21,8 @@ public class SystemNotification {
     private Long id;
 
     private Date notifDate;
-    private String mitraId;
-    private String mitraName;
+    private String userId;
+    private String name;
     private String mediaType;
     private String mediaAddress;
     @Lob
@@ -30,8 +30,8 @@ public class SystemNotification {
     private String notifMessage;
     private String notifSubject;
     private String notifType;
-    private boolean success;
+    private boolean success = false;
     private String errorCode;
-    private int retry;
+    private int retry = 0;
 
 }

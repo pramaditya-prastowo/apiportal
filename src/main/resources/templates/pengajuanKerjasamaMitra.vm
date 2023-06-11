@@ -1,0 +1,17 @@
+Kepada ${fullName},<br/>
+<br/>
+ID Pengguna: ${userId}<br/>
+<br/>
+<p>${content}</p>
+
+<p>&nbsp;</p>
+
+<br />
+<br />
+
+Terima kasih.<br />
+Hormat kami,<br/>
+PT Bank Syariah Indonesia<br/>
+<br/>
+untuk informasi lebih lanjut, silakan menghubungi:<br/>
+BSI call 14040<br/>

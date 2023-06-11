@@ -264,8 +264,8 @@ public class EmailUtility {
         notification.setErrorCode("00");
         notification.setMediaAddress(user.getEmail());
         notification.setSuccess(false);
-        notification.setMitraId(user.getId());
-        notification.setMitraName(user.getFirstName()+ " "+ user.getLastName());
+        notification.setUserId(user.getId());
+        notification.setName(user.getFirstName()+ " "+ user.getLastName());
         return notification;
     }
     private SystemNotification generateNotification(SendEmail sendEmail, String email, String mitraId, String mitraName){
@@ -279,12 +279,12 @@ public class EmailUtility {
         notification.setErrorCode("00");
         notification.setMediaAddress(email);
         notification.setSuccess(false);
-        notification.setMitraId(mitraId);
-        notification.setMitraName(mitraName);
+        notification.setUserId(mitraId);
+        notification.setName(mitraName);
         return notification;
     }
 
-    private String getContentFromTemplate(Map <String, Object>model, String lang, String template)   throws IOException, TemplateException, MessagingException {
+    public String getContentFromTemplate(Map <String, Object>model, String lang, String template)   throws IOException, TemplateException, MessagingException {
         Template freemarkerTemplate;
         freemarkerTemplate = freemarkerConfigurer.getConfiguration()
                 .getTemplate(template);

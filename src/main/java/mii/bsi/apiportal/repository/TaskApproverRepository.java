@@ -14,4 +14,6 @@ public interface TaskApproverRepository extends JpaRepository<TaskApprover, Long
     List<TaskApprover> findByApprover(User approver);
 
     List<TaskApprover> findByEntityIdAndEntityName(String entityId, String entityName);
+    @Query(value = "select * from bsi_task_approver where activity_id = ?1 order by level_approver", nativeQuery = true)
+    List<TaskApprover> findByActivityId(String activityId);
 }

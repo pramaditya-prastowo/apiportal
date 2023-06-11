@@ -4,7 +4,9 @@ import mii.bsi.apiportal.apigw.ApiGatewayService;
 import mii.bsi.apiportal.domain.*;
 import mii.bsi.apiportal.domain.task.TaskApprover;
 import mii.bsi.apiportal.domain.task.TaskMaker;
+import mii.bsi.apiportal.dto.task.DetailTaskResponseDTO;
 import mii.bsi.apiportal.dto.task.TaskApproverResponse;
+import mii.bsi.apiportal.dto.task.TaskApproverSequenceResponse;
 import mii.bsi.apiportal.repository.*;
 import mii.bsi.apiportal.service.TaskService;
 import mii.bsi.apiportal.utils.DateUtils;
@@ -156,7 +158,7 @@ public class TestController {
     }
 
     @GetMapping("/task")
-    public ResponseEntity<ResponseHandling<List<TaskApproverResponse>>> getTask(@RequestHeader(HttpHeaders.AUTHORIZATION) String token, @RequestParam String entityId, @RequestParam String entityName){
+    public ResponseEntity<ResponseHandling<DetailTaskResponseDTO>> getTask(@RequestHeader(HttpHeaders.AUTHORIZATION) String token, @RequestParam String entityId, @RequestParam String entityName){
         return taskService.getAllByEntityIdAndName(token.substring(7), entityId, entityName);
     }
 }

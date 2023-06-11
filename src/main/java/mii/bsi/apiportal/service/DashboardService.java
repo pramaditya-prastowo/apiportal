@@ -50,7 +50,7 @@ public class DashboardService {
             Long countService = serviceApiRepository.countServiceApi();
             listCount.add(new CountDashboard("Total Service API", countService.intValue(),"setting/service-api"));
             listCount.add(new CountDashboard("Total Request API Hari ini", 0,""));
-            listCount.add(new CountDashboard("Total Mitra Terdaftar", 0,""));
+            listCount.add(new CountDashboard("Total Mitra Terdaftar", 0,"dashboard-main/mitra"));
             listCount.add(new CountDashboard("Total Pengguna", countUser.intValue(),"dashboard-admin"));
             responseData.setPayload(listCount);
             responseData.success();

@@ -18,6 +18,9 @@ public interface MenuRepository extends JpaRepository<Menu, Long> {
     @Query(value="select * from bsi_menu_api_portal where permission_name = ? and menu_id = ?", nativeQuery = true)
     Menu findOneByPermissionNameAndMenuId(String stringParam, Long longParam);
 
+    @Query(value="select * from bsi_menu_api_portal where permission_name = ? ", nativeQuery = true)
+    Menu findOneByPermissionName(String stringParam);
+
     @Query(value="select * from bsi_menu_api_portal where permission_name IN ( ? )", nativeQuery = true)
     List<Menu> findByPermissionList(String permissionList);
 

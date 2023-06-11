@@ -11,7 +11,7 @@ import java.util.List;
 
 public interface ApprovalMatrixDetailRepository extends JpaRepository<ApprovalMatrixDetail, Long> {
 
-//    @Query(value="select * from bsi_approval_matrix_details where matrix_id = ?", nativeQuery = true)
+    @Query(value="select * from bsi_approval_matrix_details where matrix_id = ? order by sequence asc", nativeQuery = true)
     List<ApprovalMatrixDetail> findByMatrixId(Long id);
 
     @Modifying

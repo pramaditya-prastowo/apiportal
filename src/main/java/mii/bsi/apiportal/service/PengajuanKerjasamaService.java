@@ -1,16 +1,20 @@
 package mii.bsi.apiportal.service;
 
+import mii.bsi.apiportal.constant.NofiticationType;
 import mii.bsi.apiportal.constant.StatusCode;
 import mii.bsi.apiportal.domain.*;
 import mii.bsi.apiportal.domain.model.ApprovalGroupType;
 import mii.bsi.apiportal.domain.model.Roles;
 import mii.bsi.apiportal.domain.model.ApprovalStatus;
+import mii.bsi.apiportal.domain.task.TaskApprover;
 import mii.bsi.apiportal.domain.task.TaskMaker;
 import mii.bsi.apiportal.domain.task.TaskType;
+import mii.bsi.apiportal.dto.ApprovalKerjasamaRequest;
 import mii.bsi.apiportal.repository.*;
 import mii.bsi.apiportal.utils.CustomError;
 import mii.bsi.apiportal.utils.RequestData;
 import mii.bsi.apiportal.utils.ResponseHandling;
+import mii.bsi.apiportal.utils.TemplateNotification;
 import mii.bsi.apiportal.validation.UserValidation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -47,11 +51,21 @@ public class PengajuanKerjasamaService {
     private UserRepository userRepository;
     @Autowired
     private ApprovalGroupRepository approvalGroupRepository;
-
+    @Autowired
+    private TaskMakerRepository taskMakerRepository;
+    @Autowired
+    private TaskApproverRepository taskApproverRepository;
     @Autowired
     private TaskService taskService;
+    @Autowired
+    private PortalNotificationRepository portalNotificationRepository;
+    @Autowired
+    private TemplateNotification templateNotification;
+    @Autowired
+    private SystemNotificationRepository systemNotificationRepository;
 
     public static final String CREATE = "Create";
+    public static final String APPROVE = "Approve";
     public static final String GET_ALL = "Get All";
     public static final String GET_BY_ID = "Get By ID";
     public static final String UPDATE_STATUS = "Update Status";
@@ -168,8 +182,6 @@ public class PengajuanKerjasamaService {
                 kerjasamaServiceApiRepository.save(data);
             }
 
-
-
             Menu menu = menuRepository.findByPermissionName("MAINTAIN_KERJASAMA");
             ApprovalMatrix approvalMatrix = approvalMatrixRepository.findByMenuId(menu.getId());
 
@@ -191,14 +203,29 @@ public class PengajuanKerjasamaService {
                 for (ApprovalGroup group: groups) {
                     List<User> userList = userRepository.findByGroupId(group.getGroup().getId());
                     for (User userGroup: userList) {
-                        System.out.println(userGroup.getId()+" : " + userGroup.getFirstName() + " "+ userGroup.getLastName() );
                         taskService.createTaskApprover(taskmaker,userGroup, detail.getSequence(), "APPROVED", detail.getSequence(), menu);
+
+                        //Admin Notification
+                        PortalNotification portalNotificationMitra = templateNotification.notificationKerjasama(userGroup,
+                                "Permintaan Pengajuan Kerjasama oleh Mitra dari "+ pengajuanKerjasama.getCompanyName()+"" +
+                                        " Mohon untuk segera diproses", NofiticationType.INFO, taskmaker.getMenu(),"");
+                        portalNotificationRepository.save(portalNotificationMitra);
+                        SystemNotification systemNotification = templateNotification.systemNotificationKerjasama(userGroup,
+                                "Permintaan Approve Kerjasama", "Permintaan Pengajuan Kerjasama oleh Mitra dari "+ pengajuanKerjasama.getCompanyName()+"" +
+                                        " Mohon untuk segera diproses", "Pengajuan Kerjasama");
+                        systemNotificationRepository.save(systemNotification);
+
                     }
                 }
             }
-
-
-
+            String bodyMitra = "Pengajuan kerjasama anda berhasil terkirim, Mohon untuk menunggu proses pengajuan setidaknya 2x24 jam";
+            //Mitra Notification
+            PortalNotification portalNotificationMitra = templateNotification.notificationKerjasama(user,
+                    bodyMitra, NofiticationType.INFO, taskmaker.getMenu(),"/"+pengajuanKerjasama.getId());
+            portalNotificationRepository.save(portalNotificationMitra);
+            SystemNotification systemNotificationMitra = templateNotification.systemNotificationKerjasama(user,
+                    "Pengajuan Kerjasama", bodyMitra,"Pengajuan Kerjasama" );
+            systemNotificationRepository.save(systemNotificationMitra);
             responseData.success();
 
         }catch (Exception e){
@@ -214,6 +241,86 @@ public class PengajuanKerjasamaService {
         return ResponseEntity.status(HttpStatus.CREATED).body(responseData);
 
     }
+
+    public ResponseEntity<ResponseHandling> approveKerjasama(String token, ApprovalKerjasamaRequest request){
+        ResponseHandling responseData = new ResponseHandling<>();
+        RequestData<ApprovalKerjasamaRequest> requestData = new RequestData<>();
+
+        try {
+            User user = userValidation.getUserFromToken(token);
+            if(user == null){
+                responseData.failed("User Not Found");
+                logService.saveLog(requestData, responseData, StatusCode.NOT_FOUND, this.getClass().getName(),
+                        APPROVE);
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(responseData);
+            }
+
+            if(!userValidation.isAdmin(token)){
+                responseData.failed("Access denied");
+                logService.saveLog(requestData, responseData, StatusCode.FORBIDDEN, this.getClass().getName(),
+                        APPROVE);
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(responseData);
+            }
+
+            PengajuanKerjasama pengajuanKerjasama = pengajuanKerjasamaRepository.findById(request.getPekerId()).orElse(null);
+            if(pengajuanKerjasama == null){
+                responseData.failed("Pengajuan tidak ditemukan");
+                logService.saveLog(requestData, responseData, StatusCode.NOT_FOUND, this.getClass().getName(),
+                        APPROVE);
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(responseData);
+            }
+            TaskMaker taskMaker = taskMakerRepository.findById(request.getActivityId()).orElse(null);
+            if(taskMaker == null){
+                responseData.failed("Tugas tidak ditemukan");
+                logService.saveLog(requestData, responseData, StatusCode.NOT_FOUND, this.getClass().getName(),
+                        APPROVE);
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(responseData);
+            }
+
+            ApprovalMatrix approvalMatrix = approvalMatrixRepository.findByMenuId(taskMaker.getMenu().getId());
+            if(approvalMatrix == null){
+                responseData.failed("Matrix tidak ditemukan");
+                logService.saveLog(requestData, responseData, StatusCode.NOT_FOUND, this.getClass().getName(),
+                        APPROVE);
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(responseData);
+            }
+            List<TaskApprover> taskApprovers = taskApproverRepository.findByActivityId(taskMaker.getActivityId());
+            int countApprove = 0;
+            for (TaskApprover approver: taskApprovers) {
+                if(approver.getApprovalStatus().equals(ApprovalStatus.DISETUJUI)){
+                    countApprove++;
+                }
+                if(approver.getApprover().getId().equals(user.getId())){
+                    if(approver.getApprovalStatus().equals(ApprovalStatus.MENUNGGU_PERSETUJUAN)){
+                        approver.setApprovalStatus(request.getApprovalStatus());
+                        if(request.getApprovalStatus().equals(ApprovalStatus.DISETUJUI)){
+                            approver.setApproveDate(new Date());
+                            countApprove++;
+                        }
+                        taskApproverRepository.save(approver);
+                    }
+                }
+            }
+            if(countApprove == taskApprovers.size()){
+                taskMaker.setApprovalStatus(ApprovalStatus.DISETUJUI);
+                taskMakerRepository.save(taskMaker);
+            }
+
+            responseData.success();
+
+        }catch (Exception e){
+            e.printStackTrace();
+            responseData.failed(e.getMessage());
+            logService.saveLog(requestData, responseData, StatusCode.INTERNAL_SERVER_ERROR, this.getClass().getName(),
+                    APPROVE);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseData);
+        }
+        logService.saveLog(requestData, responseData, StatusCode.OK, this.getClass().getName(),
+                APPROVE);
+        return ResponseEntity.ok(responseData);
+    }
+
+    
 
     public void updatePengajuanKerjasama(Long id, PengajuanKerjasama pengajuanKerjasama) {
         Optional<PengajuanKerjasama> existingPengajuanKerjasama = pengajuanKerjasamaRepository.findById(id);

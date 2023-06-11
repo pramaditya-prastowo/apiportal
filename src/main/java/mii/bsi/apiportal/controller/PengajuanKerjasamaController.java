@@ -72,6 +72,9 @@ public class PengajuanKerjasamaController {
         return pengajuanKerjasamaService.checkAvailableCreate(token.substring(7));
     }
 
+    @PostMapping("/task/approve")
+    public void approveKerjasama(){
 
+    }
 
 }
