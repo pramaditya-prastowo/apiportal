@@ -18,4 +18,6 @@ public interface ApprovalMatrixDetailRepository extends JpaRepository<ApprovalMa
     @Transactional
     @Query(value = "delete from bsi_approval_matrix_details u  where u.matrix_id = :id ", nativeQuery = true)
     void deleteByMatrixId(@Param("id") Long id);
+
+
 }

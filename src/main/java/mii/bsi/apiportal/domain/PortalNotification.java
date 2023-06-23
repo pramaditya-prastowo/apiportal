@@ -42,7 +42,7 @@ public class PortalNotification {
     @Lob
     @Type(type = "org.hibernate.type.TextType")
     private String endPoint;
-    private boolean isRead;
+    private boolean isRead = false;
     @Enumerated(EnumType.STRING)
     private NofiticationType notificationType;
     private Date createdDate;

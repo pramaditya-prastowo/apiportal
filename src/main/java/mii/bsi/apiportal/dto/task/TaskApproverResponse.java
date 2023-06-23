@@ -8,6 +8,8 @@ import mii.bsi.apiportal.domain.model.Roles;
 import mii.bsi.apiportal.domain.task.TaskApprover;
 import mii.bsi.apiportal.domain.task.TaskType;
 
+import java.util.Date;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -31,6 +33,7 @@ public class TaskApproverResponse {
     private String newData;
     private String oldData;
     private String entityId;
+    private Date createdDate;
 
     public TaskApproverResponse(TaskApprover taskApprover){
         this.id = taskApprover.getId();
@@ -51,5 +54,6 @@ public class TaskApproverResponse {
         this.entityId = taskApprover.getEntityId();
         this.makerId = taskApprover.getTaskMaker().getMaker().getId();
         this.approverId = taskApprover.getApprover().getId();
+        this.createdDate = taskApprover.getCreatedDate();
     }
 }

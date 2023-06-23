@@ -12,5 +12,6 @@ public class ApprovalKerjasamaRequest {
     private ApprovalStatus approvalStatus;
     private Long pekerId;
     private String activityId;
+    private String message;
 
 }

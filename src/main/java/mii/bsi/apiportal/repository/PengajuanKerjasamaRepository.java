@@ -15,6 +15,8 @@ public interface PengajuanKerjasamaRepository extends JpaRepository<PengajuanKer
 
     @Query(value="select * from bsi_pengajuan_kerjasama_api_portal where peker_id = ?", nativeQuery = true)
     PengajuanKerjasama findById(String id);
+    @Query(value="select * from bsi_pengajuan_kerjasama_api_portal where doc_id = ? limit 1", nativeQuery = true)
+    PengajuanKerjasama findByDocId(Long id);
 
 //    @Query(value="select * from bsi_pengajuan_kerjasama_api_portal where created_by = ?", nativeQuery = true)
 //    List<PengajuanKerjasama> findByCreated(String userId);

@@ -6,7 +6,9 @@ import mii.bsi.apiportal.domain.Menu;
 import mii.bsi.apiportal.domain.PortalNotification;
 import mii.bsi.apiportal.domain.SystemNotification;
 import mii.bsi.apiportal.domain.User;
+import mii.bsi.apiportal.domain.model.ApprovalStatus;
 import mii.bsi.apiportal.domain.model.Roles;
+import mii.bsi.apiportal.domain.task.TaskMaker;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -22,19 +24,42 @@ public class TemplateNotification {
     @Autowired
     private EmailUtility emailUtility;
 
-    public PortalNotification notificationKerjasama(User user,String body, NofiticationType nofiticationType, Menu menu, String entityId){
+    public PortalNotification notificationKerjasama(User user, String body, NofiticationType nofiticationType, TaskMaker taskMaker, String entityId){
         PortalNotification portalNotification = new PortalNotification();
         portalNotification.setUser(user);
         portalNotification.setCreatedDate(new Date());
-        portalNotification.setMenu(menu);
+        portalNotification.setMenu(taskMaker.getMenu());
         portalNotification.setCreatedBy(user.getId());
         portalNotification.setModuleName("PengajuanKerjasamaMitra");
         if(user.getAuthPrincipal().equals(Roles.MITRA)){
             portalNotification.setTitle("Pengajuan Kerjasama");
             portalNotification.setEndPoint("/kerjasama");
         }else{
-            portalNotification.setTitle("Permintaan Approve Kerjasama");
-            portalNotification.setEndPoint("/my-task");
+            portalNotification.setTitle("Permintaan Persetujuan Kerjasama");
+            portalNotification.setEndPoint("/my-task?id="+taskMaker.getActivityId());
+        }
+        portalNotification.setNotificationType(nofiticationType);
+        portalNotification.setBody(body);
+
+        return portalNotification;
+    }
+
+    public PortalNotification actionKerjasama(User user, String body, NofiticationType nofiticationType, ApprovalStatus status, TaskMaker taskMaker, String entityId){
+        PortalNotification portalNotification = new PortalNotification();
+        portalNotification.setUser(user);
+        portalNotification.setCreatedDate(new Date());
+        portalNotification.setMenu(taskMaker.getMenu());
+        portalNotification.setCreatedBy(user.getId());
+        portalNotification.setModuleName("PengajuanKerjasamaMitra");
+        if(user.getAuthPrincipal().equals(Roles.MITRA)){
+            String title = "Pengajuan Kerjasama ";
+            portalNotification.setTitle(title + status.toString().replace("_",""));
+            portalNotification.setEndPoint("/kerjasama?id="+taskMaker.getEntityId());
+        }else{
+            String title = getTitleNotif(status);
+
+            portalNotification.setTitle(title);
+            portalNotification.setEndPoint("/my-task?id="+taskMaker.getActivityId());
         }
         portalNotification.setNotificationType(nofiticationType);
         portalNotification.setBody(body);
@@ -61,5 +86,22 @@ public class TemplateNotification {
         return systemNotification;
     }
 
-
+    private String getTitleNotif(ApprovalStatus status){
+        String title = "";
+        switch (status){
+            case DISETUJUI:
+                title = "Persetujuan Pengajuan Kerjasama";
+                break;
+            case DITAHAN:
+                title = "Persetujuan Pengajuan Kerjasama";
+                break;
+            case DITOLAK:
+                title = "Penolakan Pengajuan Kerjasama";
+                break;
+            default:
+                title = "Pengajuan Kerjasama";
+                break;
+        }
+        return title;
+    }
 }

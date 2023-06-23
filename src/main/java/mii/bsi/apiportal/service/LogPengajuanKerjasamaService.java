@@ -49,7 +49,7 @@ public class LogPengajuanKerjasamaService {
             for (LogPengajuanKerjasama log: listLog) {
                 listResponse.add(new LogPengajuanKerjasamaDTO(log.getId(), log.getCreatedDate(),
                         log.getUser().getId(), log.getUser().getFirstName()+ " "+log.getUser().getLastName(),
-                        log.getPekerId(), log.getMessage(), log.getDescription()));
+                        log.getPekerId(), log.getMessage(), log.getDescription(), log.getStatus()));
             }
             responseData.success();
             responseData.setPayload(listResponse);

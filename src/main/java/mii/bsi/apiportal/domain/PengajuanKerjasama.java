@@ -61,4 +61,11 @@ public class PengajuanKerjasama {
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 //    @OneToMany(mappedBy = "id", fetch = FetchType.LAZY, orphanRemoval = false)
     private List<KerjasamaServiceApi> services;
+
+    @Transient
+    public void updateStatus(ApprovalStatus status, String updatedBy){
+        this.status = status;
+        this.updatedDate = new Date();
+        this.updatedBy = updatedBy;
+    }
 }

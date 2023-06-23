@@ -2,6 +2,7 @@ package mii.bsi.apiportal.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import mii.bsi.apiportal.domain.model.ApprovalStatus;
 
 import java.util.Date;
 
@@ -18,4 +19,5 @@ public class LogPengajuanKerjasamaDTO {
     private Long pekerId;
     private String message;
     private String description;
+    private ApprovalStatus status;
 }

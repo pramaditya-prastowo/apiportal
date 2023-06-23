@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import mii.bsi.apiportal.domain.model.ApprovalStatus;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -27,4 +28,16 @@ public class LogPengajuanKerjasama {
     private Long pekerId;
     private String message;
     private String description;
+    @Enumerated(EnumType.STRING)
+    private ApprovalStatus status;
+
+    public LogPengajuanKerjasama (Long pekerId, User user, String message, String description, ApprovalStatus status){
+//        LogPengajuanKerjasama logPengajuanKerjasama = new LogPengajuanKerjasama();
+        this.pekerId = pekerId;
+        this.user = user;
+        this.createdDate = new Date();
+        this.message = message;
+        this.description = description;
+        this.status = status;
+    }
 }

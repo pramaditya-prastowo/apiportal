@@ -1,7 +1,9 @@
 package mii.bsi.apiportal.controller;
 
 import mii.bsi.apiportal.domain.*;
+import mii.bsi.apiportal.dto.ApprovalKerjasamaRequest;
 import mii.bsi.apiportal.dto.LogPengajuanKerjasamaDTO;
+import mii.bsi.apiportal.dto.kerjasama.ReUploadDocumentRequestDTO;
 import mii.bsi.apiportal.repository.ApprovalGroupRepository;
 import mii.bsi.apiportal.repository.ApprovalMatrixDetailRepository;
 import mii.bsi.apiportal.repository.ApprovalMatrixRepository;
@@ -46,6 +48,18 @@ public class PengajuanKerjasamaController {
         return pengajuanKerjasamaService.addPengajuanKerjasama(pengajuanKerjasama, token.substring(7), errors);
     }
 
+    @PatchMapping("/reupload/data")
+    public ResponseEntity<ResponseHandling> reUploadPengajuanKerjasama(@Valid @RequestBody PengajuanKerjasama pengajuanKerjasama,
+                                                                       @RequestHeader(HttpHeaders.AUTHORIZATION) String token, Errors errors){
+        return pengajuanKerjasamaService.reUploadPengajuanKerjasama(pengajuanKerjasama, token.substring(7), errors);
+    }
+    @PostMapping("/reupload/document")
+    public ResponseEntity<ResponseHandling> reUploadDocPengajuan(@RequestHeader(HttpHeaders.AUTHORIZATION) String token,
+                                                                 @RequestBody ReUploadDocumentRequestDTO request, Errors errors){
+        return pengajuanKerjasamaService.reUploadDocumentKerjasama(request, token.substring(7), errors);
+    }
+    
+
     @PutMapping("/{id}")
     public void updatePengajunKerjasama(@PathVariable Long id, @RequestBody PengajuanKerjasama pengajuanKerjasama) {
         pengajuanKerjasamaService.updatePengajuanKerjasama(id, pengajuanKerjasama);
@@ -73,7 +87,22 @@ public class PengajuanKerjasamaController {
     }
 
     @PostMapping("/task/approve")
-    public void approveKerjasama(){
+    public ResponseEntity<ResponseHandling> approveKerjasama(@RequestHeader(HttpHeaders.AUTHORIZATION) String token,
+                                                             @RequestBody ApprovalKerjasamaRequest request){
+        return pengajuanKerjasamaService.approveKerjasama(token.substring(7), request);
+    }
+
+    @PostMapping("/task/reject")
+    public ResponseEntity<ResponseHandling> rejectKerjasama(@RequestHeader(HttpHeaders.AUTHORIZATION) String token,
+                                                            @RequestBody ApprovalKerjasamaRequest request){
+        return pengajuanKerjasamaService.rejectKerjasama(token.substring(7), request);
+
+    }
+
+    @PostMapping("/task/hold")
+    public ResponseEntity<ResponseHandling> holdKerjasama(@RequestHeader(HttpHeaders.AUTHORIZATION) String token,
+                                                            @RequestBody ApprovalKerjasamaRequest request){
+        return pengajuanKerjasamaService.holdKerjasama(token.substring(7), request);
 
     }
 

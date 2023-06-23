@@ -1,7 +1,9 @@
 package mii.bsi.apiportal.domain.task;
 
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import mii.bsi.apiportal.domain.User;
 import mii.bsi.apiportal.domain.model.ApprovalGroupType;
 import mii.bsi.apiportal.domain.model.ApprovalStatus;
@@ -27,6 +29,8 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
 @Data
 @Table(name = "bsi_task_approval_history")
@@ -75,5 +79,15 @@ public class TaskApprovalHistory {
 
     public boolean equals(Object obj) {
         return EqualsBuilder.reflectionEquals(this, obj);
+    }
+
+    public TaskApprovalHistory (int currentLevel, User approver, ApprovalStatus status, TaskMaker task, String createdBy){
+        this.approvalSequence = currentLevel;
+        this.approver = approver;
+        this.approvalStatus = status;
+        this.task = task;
+        this.createdDate = new Date();
+        this.processDate = new Date();
+        this.createdBy = createdBy;
     }
 }

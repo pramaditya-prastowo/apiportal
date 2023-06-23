@@ -17,4 +17,5 @@ public interface TaskMakerRepository extends JpaRepository<TaskMaker, String> {
 //    @Query(value = "select * from bsi_task_maker where maker= ?1", nativeQuery = true)
     List<TaskMaker> findByMaker(User maker);
     TaskMaker findByActivityId(String activityId);
+    TaskMaker findByEntityNameAndEntityId(String entityName, String entityId);
 }
