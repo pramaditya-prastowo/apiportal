@@ -6,9 +6,15 @@ import mii.bsi.apiportal.apigw.model.ResponseApiGw;
 import mii.bsi.apiportal.service.LogService;
 import mii.bsi.apiportal.utils.DateUtils;
 import org.apache.http.HttpHeaders;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.params.BasicHttpParams;
+import org.apache.http.params.HttpConnectionParams;
+import org.apache.http.params.HttpParams;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
@@ -97,11 +103,62 @@ public class DataApiClient {
     }
 
 
-    public String getData(String url) throws IOException {
-        HttpGet httpGet = new HttpGet(url);
-        try (CloseableHttpResponse response = httpClient.execute(httpGet)) {
-            HttpEntity entity = response.getEntity();
-            return EntityUtils.toString(entity);
+//    public String getData(String url) throws IOException {
+//        HttpGet httpGet = new HttpGet(url);
+//        try (CloseableHttpResponse response = httpClient.execute(httpGet)) {
+//            HttpEntity entity = response.getEntity();
+//            return EntityUtils.toString(entity);
+//        }
+//    }
+
+    public ResponseApiGw getData(String url) throws IOException {
+        HttpGet request = new HttpGet(url);
+        HttpClient httpClient1 = new DefaultHttpClient();
+        request.setHeader(HttpHeaders.CONTENT_TYPE, ContentType.APPLICATION_JSON.getMimeType());
+        request.setHeader(HttpHeaders.AUTHORIZATION, getAuthorization());
+
+        final HttpParams httpParams = new BasicHttpParams();
+        HttpConnectionParams.setConnectionTimeout(httpParams, 15000);
+        httpClient1 = new DefaultHttpClient(httpParams);
+        HttpResponse httpResponse = httpClient1.execute(request);
+        HttpEntity responseEntity = httpResponse.getEntity();
+        String responseData = EntityUtils.toString(responseEntity);
+        EntityUtils.consume(responseEntity);
+        ResponseApiGw responseApiGw = new ResponseApiGw(httpResponse.getStatusLine().getStatusCode(), responseData);
+        System.out.println(httpResponse.getStatusLine());
+        return responseApiGw;
+//        String result = IOUtils.toString(httpResponse.getEntity().getContent(), "UTF-8");
+//        try (HttpResponse response = httpClient1.execute(request)) {
+//            HttpEntity responseEntity = response.getEntity();
+//            String responseData = EntityUtils.toString(responseEntity);
+//            EntityUtils.consume(responseEntity);
+//    //            logService.logApiGw(request.getAllHeaders(), logService.stringToJson(requestBody),
+//    //                    responseData,SERVICE_API,
+//    //                    String.valueOf(response.getStatusLine().getStatusCode()), url);
+//            ResponseApiGw responseApiGw = new ResponseApiGw(response.getStatusLine().getStatusCode(), responseData);
+//
+//            return responseApiGw;
+//        }
+    }
+
+    public ResponseApiGw postData(String url, String requestBody) throws IOException {
+        HttpPost request = new HttpPost(url);
+        request.setHeader(HttpHeaders.CONTENT_TYPE, ContentType.APPLICATION_JSON.getMimeType());
+        request.setHeader(HttpHeaders.AUTHORIZATION, getAuthorization());
+
+        try (CloseableHttpResponse response = httpClient.execute(request)) {
+            HttpEntity responseEntity = response.getEntity();
+            String responseData = EntityUtils.toString(responseEntity);
+            EntityUtils.consume(responseEntity);
+            System.out.println("Status Code : "+ response.getStatusLine().getStatusCode());
+            System.out.println(responseData);
+            System.out.println(response.getStatusLine().getStatusCode());
+            logService.logApiGw(request.getAllHeaders(), logService.stringToJson(requestBody),
+                    responseData,REQUEST_TOKEN,
+                    String.valueOf(response.getStatusLine().getStatusCode()), url);
+            ResponseApiGw responseApiGw = new ResponseApiGw(response.getStatusLine().getStatusCode(), responseData);
+
+            return responseApiGw;
         }
     }
     public ResponseApiGw requestToken(String url, RequestHeaderApi requestHeader,String requestBody){

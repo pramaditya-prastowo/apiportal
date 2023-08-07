@@ -677,6 +677,77 @@ public class PengajuanKerjasamaService {
         return ResponseEntity.ok(responseData);
     }
 
+    public ResponseEntity<ResponseHandling<List<PengajuanKerjasama>>> getPengejuanKerjasamaByStatus(String token,ApprovalStatus status){
+        ResponseHandling<List<PengajuanKerjasama>> responseData = new ResponseHandling<>();
+
+        try {
+            User user = userValidation.getUserFromToken(token);
+            if(user == null){
+                responseData.failed("User Not Found");
+                logService.saveLog(new RequestData<>(), responseData, StatusCode.NOT_FOUND, this.getClass().getName(),
+                        HOLD);
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(responseData);
+            }
+
+            if(!userValidation.isAdmin(token)){
+                responseData.failed("Access denied");
+                logService.saveLog(new RequestData<>(), responseData, StatusCode.FORBIDDEN, this.getClass().getName(),
+                        HOLD);
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(responseData);
+            }
+
+            List<PengajuanKerjasama> pengajuanKerjasama = pengajuanKerjasamaRepository.findByStatus(status.toString());
+
+            responseData.setPayload(pengajuanKerjasama);
+            responseData.success();
+
+        }catch (Exception e){
+            e.printStackTrace();
+            responseData.failed(e.getMessage());
+            logService.saveLog(new RequestData<>(), responseData, StatusCode.INTERNAL_SERVER_ERROR, this.getClass().getName(),
+                    HOLD);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseData);
+        }
+//        logService.saveLog(new RequestData<>(), responseData, StatusCode.OK, this.getClass().getName(),
+//                HOLD);
+        return ResponseEntity.ok(responseData);
+    }
+
+    public ResponseEntity<ResponseHandling<Integer>> getCountMitraTerdaftar(String token){
+        ResponseHandling<Integer> responseData = new ResponseHandling<>();
+
+        try {
+            User user = userValidation.getUserFromToken(token);
+            if(user == null){
+                responseData.failed("User Not Found");
+                logService.saveLog(new RequestData<>(), responseData, StatusCode.NOT_FOUND, this.getClass().getName(),
+                        HOLD);
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(responseData);
+            }
+
+            if(!userValidation.isAdmin(token)){
+                responseData.failed("Access denied");
+                logService.saveLog(new RequestData<>(), responseData, StatusCode.FORBIDDEN, this.getClass().getName(),
+                        HOLD);
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(responseData);
+            }
+
+            List<PengajuanKerjasama> pengajuanKerjasama = pengajuanKerjasamaRepository.findByStatus(ApprovalStatus.DISETUJUI.toString());
+            responseData.setPayload(pengajuanKerjasama.size());
+            responseData.success();
+
+        }catch (Exception e){
+            e.printStackTrace();
+            responseData.failed(e.getMessage());
+            logService.saveLog(new RequestData<>(), responseData, StatusCode.INTERNAL_SERVER_ERROR, this.getClass().getName(),
+                    HOLD);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseData);
+        }
+        logService.saveLog(new RequestData<>(), responseData, StatusCode.OK, this.getClass().getName(),
+                HOLD);
+        return ResponseEntity.ok(responseData);
+        }
+
     public void updatePengajuanKerjasama(Long id, PengajuanKerjasama pengajuanKerjasama) {
         Optional<PengajuanKerjasama> existingPengajuanKerjasama = pengajuanKerjasamaRepository.findById(id);
         if (existingPengajuanKerjasama.isPresent()) {

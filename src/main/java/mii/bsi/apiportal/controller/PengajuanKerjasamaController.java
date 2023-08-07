@@ -1,6 +1,7 @@
 package mii.bsi.apiportal.controller;
 
 import mii.bsi.apiportal.domain.*;
+import mii.bsi.apiportal.domain.model.ApprovalStatus;
 import mii.bsi.apiportal.dto.ApprovalKerjasamaRequest;
 import mii.bsi.apiportal.dto.LogPengajuanKerjasamaDTO;
 import mii.bsi.apiportal.dto.kerjasama.ReUploadDocumentRequestDTO;
@@ -84,6 +85,13 @@ public class PengajuanKerjasamaController {
     @GetMapping("/available")
     public ResponseEntity<ResponseHandling<Integer>> checkAvailableCreate(@RequestHeader(HttpHeaders.AUTHORIZATION) String token){
         return pengajuanKerjasamaService.checkAvailableCreate(token.substring(7));
+    }
+
+    @GetMapping("/status")
+    public ResponseEntity<ResponseHandling<List<PengajuanKerjasama>>> getPengajuanDisetujui(@RequestHeader(HttpHeaders.AUTHORIZATION) String token, @RequestParam String status){
+        ApprovalStatus approvalStatus = ApprovalStatus.valueOf(status);
+
+        return pengajuanKerjasamaService.getPengejuanKerjasamaByStatus(token.substring(7), approvalStatus);
     }
 
     @PostMapping("/task/approve")
