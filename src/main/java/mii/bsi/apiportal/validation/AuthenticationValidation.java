@@ -42,7 +42,7 @@ public class AuthenticationValidation {
                     errorList.add(error.getDefaultMessage());
                 }
             }
-            responseData.failed("Bad Request");
+            responseData.failed("Permintaan tidak sesuai");
             responseData.setMessageError(errorList);
             validationResponse.setResponse(ResponseEntity.badRequest().body(responseData));
             validationResponse.setValid(false);
@@ -63,7 +63,7 @@ public class AuthenticationValidation {
         System.out.println(user);
 
         if(user == null){
-            responseData.failed("Email or password invalid");
+            responseData.failed("Email atau password salah");
             validationResponse.setValid(false);
             validationResponse.setStatusCode(StatusCode.NOT_FOUND);
             validationResponse.setResponse(ResponseEntity.status(HttpStatus.NOT_FOUND).body(responseData));
@@ -75,7 +75,7 @@ public class AuthenticationValidation {
             int countRetryPass = user.getRetryPasswordCount();
 
             if((countRetryPass+ 1) > 2){
-                responseData.failed("Your account is locked");
+                responseData.failed("Akun anda telah terkunci");
                 user.setAccountLocked(true);
                 user.setRetryPasswordCount(3);
                 userRepository.save(user);
@@ -86,7 +86,7 @@ public class AuthenticationValidation {
             }
             user.setRetryPasswordCount(user.getRetryPasswordCount() + 1);
             userRepository.save(user);
-            responseData.failed("Email or password invalid");
+            responseData.failed("Email atau password salah");
             validationResponse.setValid(false);
             validationResponse.setStatusCode(StatusCode.UNAUTHORIZED);
             validationResponse.setResponse(ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(responseData));
@@ -94,7 +94,7 @@ public class AuthenticationValidation {
         }
 
         if(user.isAccountInactive()){
-            responseData.failed("Your account is inactive");
+            responseData.failed("Akun anda sudah tidak aktif");
             validationResponse.setValid(false);
             validationResponse.setStatusCode(StatusCode.UNAUTHORIZED);
             validationResponse.setResponse(ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(responseData));
@@ -102,7 +102,7 @@ public class AuthenticationValidation {
         }
 
         if(user.isAccountLocked()){
-            responseData.failed("Your account is locked");
+            responseData.failed("Akun anda terkunci");
             validationResponse.setValid(false);
             validationResponse.setStatusCode(StatusCode.UNAUTHORIZED);
             validationResponse.setResponse(ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(responseData));

@@ -259,7 +259,7 @@ public class ServiceApiService {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).body(responseData);
             }
 
-            long count = serviceApiRepository.countServiceApi();
+            long count = serviceApiRepository.countServiceApi("SNAP");
             responseData.setPayload(count);
             responseData.success();
 

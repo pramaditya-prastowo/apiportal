@@ -114,7 +114,7 @@ public class ForgetPasswordService {
 
             BsiTokenVerification resultToken = tokenRepository.findByToken(decToken);
             if(resultToken == null){
-                responseData.failed("Token is not valid");
+                responseData.failed("Token tidak valid");
                 logService.saveLog(requestData, responseData, StatusCode.BAD_REQUEST, this.getClass().getName(), UPDATE_PASSWORD);
                 return ResponseEntity.badRequest().body(responseData);
             }
@@ -122,20 +122,20 @@ public class ForgetPasswordService {
             System.out.println("value of input "+decUid +" must be " + resultToken.getUserId());
 
             if(!resultToken.getUserId().equals(decUid)){
-                responseData.failed("ID is not valid");
+                responseData.failed("ID User tidak valid");
                 logService.saveLog(requestData, responseData, StatusCode.BAD_REQUEST, this.getClass().getName(), UPDATE_PASSWORD);
                 return ResponseEntity.badRequest().body(responseData);
             }
 
             if(resultToken.isTokenExpired()){
-                responseData.failed("Token expired");
+                responseData.failed("Token sudah kadaluarsa");
                 logService.saveLog(requestData, responseData, StatusCode.GONE, this.getClass().getName(), UPDATE_PASSWORD);
                 return ResponseEntity.status(HttpStatus.GONE).body(responseData);
             }
 
             User user = userRepository.findByEmail(resultToken.getValidEmail());
             if(user == null){
-                responseData.failed("User not found");
+                responseData.failed("User tidak ditemukan");
                 logService.saveLog(requestData, responseData, StatusCode.NOT_FOUND, this.getClass().getName(), UPDATE_PASSWORD);
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(responseData);
             }
@@ -146,7 +146,7 @@ public class ForgetPasswordService {
             user.setRetryPasswordCount(0);
             user.setAccountLocked(false);
             userRepository.save(user);
-            responseData.success("Password has been changed");
+            responseData.success("Password berhasil diubah");
 
         }catch (Exception e){
             responseData.failed(e.getMessage());

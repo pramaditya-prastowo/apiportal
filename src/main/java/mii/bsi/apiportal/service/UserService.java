@@ -8,6 +8,7 @@ import javax.validation.Valid;
 import io.jsonwebtoken.Claims;
 import mii.bsi.apiportal.constant.Params;
 import mii.bsi.apiportal.constant.StatusCode;
+import mii.bsi.apiportal.constant.UserAction;
 import mii.bsi.apiportal.domain.BsiTokenVerification;
 import mii.bsi.apiportal.domain.SystemNotification;
 import mii.bsi.apiportal.domain.model.Roles;
@@ -17,6 +18,7 @@ import mii.bsi.apiportal.dto.VerificationEmailRequest;
 import mii.bsi.apiportal.repository.BsiTokenVerificationRepository;
 import mii.bsi.apiportal.utils.*;
 import mii.bsi.apiportal.validation.EmailValidation;
+import mii.bsi.apiportal.validation.UserValidation;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -66,6 +68,9 @@ public class UserService {
     @Autowired
     private EmailValidation emailValidation;
 
+    @Autowired
+    private UserValidation userValidation;
+
     public ResponseHandling<User> create(@Valid User user, Errors errors) {
         ResponseHandling<User> responseHandling = new ResponseHandling<>();
         System.out.println(user);
@@ -102,7 +107,7 @@ public class UserService {
 
             User newUser = userRepository.findById(user.getId()).orElse(null);
             if(newUser == null){
-                responseData.failed("User not found");
+                responseData.failed("User tidak ditemukan");
                 logService.saveLog(new RequestData<>(), responseData, StatusCode.NOT_FOUND, this.getClass().getName(),
                         UPDATE_BY_ADMIN);
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(responseData);
@@ -111,7 +116,7 @@ public class UserService {
             final String username = jwtUtility.getUsernameFromToken(token);
             User userUpdate = userRepository.findByEmail(username);
             if(userUpdate == null){
-                responseData.failed("Access denied");
+                responseData.failed("Akses ditolak");
                 logService.saveLog(requestData, responseData, StatusCode.FORBIDDEN, this.getClass().getName(), UPDATE_BY_ADMIN);
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).body(responseData);
             }
@@ -152,7 +157,7 @@ public class UserService {
 
             User newUser = userRepository.findById(user.getId()).orElse(null);
             if(newUser == null){
-                responseData.failed("User not found");
+                responseData.failed("User tidak ditemukan");
                 logService.saveLog(new RequestData<>(), responseData, StatusCode.NOT_FOUND, this.getClass().getName(),
                         UPDATE_BY_ADMIN);
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(responseData);
@@ -160,7 +165,7 @@ public class UserService {
 
             final Claims claim = jwtUtility.getAllClaimsFromToken(token);
             if(!(claim.get("role").equals(Roles.SUPER_ADMIN.toString()) || claim.get("role").equals(Roles.ADMIN.toString()))){
-                responseData.failed("Access denied");
+                responseData.failed("Akses ditolak");
                 logService.saveLog(requestData, responseData, StatusCode.FORBIDDEN, this.getClass().getName(), UPDATE_BY_ADMIN);
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).body(responseData);
             }
@@ -168,7 +173,7 @@ public class UserService {
             if((user.getAuthPrincipal().equals(Roles.ADMIN) || user.getAuthPrincipal().equals(Roles.SUPER_ADMIN))){
 
                 if(!claim.get("role").equals(Roles.SUPER_ADMIN.toString())){
-                    responseData.failed("Access denied");
+                    responseData.failed("Akses ditolak");
                     logService.saveLog(requestData, responseData, StatusCode.FORBIDDEN, this.getClass().getName(), UPDATE_BY_ADMIN);
                     return ResponseEntity.status(HttpStatus.FORBIDDEN).body(responseData);
                 }
@@ -178,7 +183,7 @@ public class UserService {
             final String username = jwtUtility.getUsernameFromToken(token);
             User admin = userRepository.findByEmail(username);
             if(admin == null){
-                responseData.failed("Access denied");
+                responseData.failed("Akses ditolak");
                 logService.saveLog(requestData, responseData, StatusCode.FORBIDDEN, this.getClass().getName(), UPDATE_BY_ADMIN);
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).body(responseData);
             }
@@ -303,7 +308,7 @@ public class UserService {
 
             User userExist = userRepository.findByEmail(requestData.getPayload().getEmail());
             if (userExist != null) {
-                responseData.failed("Email is already register");
+                responseData.failed("Email sudah terdaftar");
                 requestData.getPayload().setPassword(passwordEncoder.encode(user.getPassword()));
                 logService.saveLog(requestData, responseData, StatusCode.CONFLICT, this.getClass().getName(), REGISTER);
                 return ResponseEntity.status(HttpStatus.CONFLICT).body(responseData);
@@ -549,6 +554,20 @@ public class UserService {
         requestData.setPayload(request);
 
         try {
+            User userAccess = userValidation.getUserFromToken(token);
+            if(userAccess == null){
+                responseData.failed("User Access Not Found");
+                logService.saveLog(requestData, responseData, StatusCode.NOT_FOUND, this.getClass().getName(),
+                        DELETE_USER);
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(responseData);
+            }
+            if(!userValidation.isAdmin(token)){
+                responseData.failed("Access denied");
+                logService.saveLog(requestData, responseData, StatusCode.FORBIDDEN, this.getClass().getName(),
+                        DELETE_USER);
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(responseData);
+            }
+
             if (idUser.equals(null) || idUser.equals("")) {
                 responseData.failed("ID is required");
                 logService.saveLog(requestData, responseData, StatusCode.BAD_REQUEST, this.getClass().getName(),
@@ -605,5 +624,67 @@ public class UserService {
         logService.saveLog(new RequestData<>(), responseData, StatusCode.OK, this.getClass().getName(),
                 COUNT_MITRA);
         return ResponseEntity.ok(responseData);
+    }
+
+    public ResponseEntity<ResponseHandling> updateStatusMitra(String token, UserAction action, String idUser){
+        ResponseHandling responseData = new ResponseHandling<>();
+        RequestData<Map<String, Object>> requestData = new RequestData<>();
+        requestData.setPayload(logService.setValueRequest("idUser",idUser));
+
+        try {
+            User user = userValidation.getUserFromToken(token);
+            if(user == null){
+                responseData.failed("User Not Found");
+                logService.saveLog(requestData, responseData, StatusCode.NOT_FOUND, this.getClass().getName(),
+                        action.toString());
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(responseData);
+            }
+            if(!userValidation.isAdmin(token)){
+                responseData.failed("Access denied");
+                logService.saveLog(requestData, responseData, StatusCode.FORBIDDEN, this.getClass().getName(),
+                        action.toString());
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(responseData);
+            }
+
+            User userData = userRepository.findById(idUser).orElse(null);
+            if(userData == null){
+                responseData.failed("User not found");
+                logService.saveLog(requestData, responseData, StatusCode.NOT_FOUND, this.getClass().getName(),
+                        action.toString());
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(responseData);
+            }
+
+            switch (action){
+                case LOCK:
+                    userData.setAccountLocked(true);
+                    break;
+                case UNLOCK:
+                    userData.setAccountLocked(false);
+                    break;
+                case ACTIVATE:
+                    userData.setAccountInactive(false);
+                    break;
+                case INACTIVATE:
+                    userData.setAccountInactive(true);
+                    break;
+
+            }
+            userData.setUpdateBy(user.getId());
+            userData.setUpdateDate(new Date());
+            userRepository.save(userData);
+
+            responseData.success();
+
+        }catch (Exception e){
+            e.printStackTrace();
+            responseData.failed("Internal Server Error");
+            logService.saveLog(requestData, responseData, StatusCode.INTERNAL_SERVER_ERROR, this.getClass().getName(),
+                    action.toString());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseData);
+        }
+        logService.saveLog(requestData, responseData, StatusCode.OK, this.getClass().getName(),
+                action.toString());
+        return ResponseEntity.ok(responseData);
+
     }
 }

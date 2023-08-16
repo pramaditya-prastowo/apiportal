@@ -2,6 +2,7 @@ package mii.bsi.apiportal.controller;
 
 import javax.validation.Valid;
 
+import mii.bsi.apiportal.constant.UserAction;
 import mii.bsi.apiportal.dto.UpdatePasswordRequestDTO;
 import mii.bsi.apiportal.dto.UserResponseDTO;
 import mii.bsi.apiportal.dto.VerificationEmailRequest;
@@ -75,6 +76,25 @@ public class UserController {
     @GetMapping("/count")
     public ResponseEntity<ResponseHandling<Integer>> getCountMitra(@RequestHeader(HttpHeaders.AUTHORIZATION) String token){
         return userService.countMitra(token.substring(7));
+    }
+
+    @PostMapping("/unlock")
+    public ResponseEntity<ResponseHandling> unlockUser(@RequestHeader(HttpHeaders.AUTHORIZATION) String token,@RequestParam String idUser ){
+        return userService.updateStatusMitra(token.substring(7), UserAction.UNLOCK, idUser);
+    }
+
+    @PostMapping("/lock")
+    public ResponseEntity<ResponseHandling> lockUser(@RequestHeader(HttpHeaders.AUTHORIZATION) String token,@RequestParam String idUser ){
+        return userService.updateStatusMitra(token.substring(7), UserAction.LOCK, idUser);
+    }
+
+    @PostMapping("/activate")
+    public ResponseEntity<ResponseHandling> activateUser(@RequestHeader(HttpHeaders.AUTHORIZATION) String token,@RequestParam String idUser ){
+        return userService.updateStatusMitra(token.substring(7), UserAction.ACTIVATE, idUser);
+    }
+    @PostMapping("/inactivate")
+    public ResponseEntity<ResponseHandling> inactivateUser(@RequestHeader(HttpHeaders.AUTHORIZATION) String token,@RequestParam String idUser ){
+        return userService.updateStatusMitra(token.substring(7), UserAction.INACTIVATE, idUser);
     }
 
 }
