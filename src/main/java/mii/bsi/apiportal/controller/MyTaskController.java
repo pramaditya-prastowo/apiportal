@@ -23,8 +23,10 @@ public class MyTaskController {
     private TaskService taskService;
 
     @GetMapping
-    public ResponseEntity<ResponseHandling<MyTaskResponseDTO>> getAllTaskAdmin(@RequestHeader(HttpHeaders.AUTHORIZATION) String token){
-        return taskService.getAllMyTask(token.substring(7));
+    public ResponseEntity<ResponseHandling<MyTaskResponseDTO>> getAllTaskAdmin(
+            @RequestParam(required = false) String status,
+            @RequestHeader(HttpHeaders.AUTHORIZATION) String token){
+        return taskService.getAllMyTask(token.substring(7), status);
     }
 
     @GetMapping("list-approver")

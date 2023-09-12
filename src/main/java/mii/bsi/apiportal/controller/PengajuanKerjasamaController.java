@@ -4,6 +4,7 @@ import mii.bsi.apiportal.domain.*;
 import mii.bsi.apiportal.domain.model.ApprovalStatus;
 import mii.bsi.apiportal.dto.ApprovalKerjasamaRequest;
 import mii.bsi.apiportal.dto.LogPengajuanKerjasamaDTO;
+import mii.bsi.apiportal.dto.SendIdRequestDTO;
 import mii.bsi.apiportal.dto.kerjasama.ReUploadDocumentRequestDTO;
 import mii.bsi.apiportal.repository.ApprovalGroupRepository;
 import mii.bsi.apiportal.repository.ApprovalMatrixDetailRepository;
@@ -47,6 +48,13 @@ public class PengajuanKerjasamaController {
     public ResponseEntity<ResponseHandling> addPengajuanKerjasama(@Valid @RequestBody PengajuanKerjasama pengajuanKerjasama,
                                                                   @RequestHeader(HttpHeaders.AUTHORIZATION) String token, Errors errors) {
         return pengajuanKerjasamaService.addPengajuanKerjasama(pengajuanKerjasama, token.substring(7), errors);
+    }
+
+    @PostMapping("/cancel")
+    public ResponseEntity<ResponseHandling> cancelPengajuanKerjasama(@Valid @RequestBody SendIdRequestDTO requestDTO,
+                                                                     @RequestHeader(HttpHeaders.AUTHORIZATION) String token,
+                                                                     Errors errors){
+        return pengajuanKerjasamaService.cancelPengajuanKerjasama(token.substring(7), requestDTO, errors);
     }
 
     @PatchMapping("/reupload/data")

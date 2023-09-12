@@ -13,6 +13,7 @@ import mii.bsi.apiportal.domain.BsiTokenVerification;
 import mii.bsi.apiportal.domain.SystemNotification;
 import mii.bsi.apiportal.domain.model.Roles;
 import mii.bsi.apiportal.domain.model.TokenVerificationType;
+import mii.bsi.apiportal.dto.ChangePasswordRequestDTO;
 import mii.bsi.apiportal.dto.UserResponseDTO;
 import mii.bsi.apiportal.dto.VerificationEmailRequest;
 import mii.bsi.apiportal.repository.BsiTokenVerificationRepository;
@@ -50,6 +51,7 @@ public class UserService {
     public static final String UPDATE_BY_ADMIN = "Update by Admin";
     public static final String UPDATE_BY_MITRA = "Update by Mitra";
     public static final String COUNT_MITRA = "Count Mitra";
+    public static final String CHANGE_PASSWORD = "Change Password";
 
     @Autowired
     private BsiTokenVerificationRepository tokenRepository;
@@ -136,6 +138,52 @@ public class UserService {
             userRepository.save(newUser);
 
             responseData.success();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            responseData.failed(e.getMessage());
+            logService.saveLog(new RequestData<>(), responseData, StatusCode.INTERNAL_SERVER_ERROR, this.getClass().getName(),
+                    UPDATE_BY_ADMIN);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseData);
+        }
+        logService.saveLog(new RequestData<>(), responseData, StatusCode.OK, this.getClass().getName(),
+                UPDATE_BY_ADMIN);
+        return ResponseEntity.ok(responseData);
+    }
+
+    public ResponseEntity<ResponseHandling> changePassword(String token, ChangePasswordRequestDTO requestDTO, Errors errors){
+        ResponseHandling responseData = new ResponseHandling<>();
+        RequestData<ChangePasswordRequestDTO> requestData = new RequestData();
+        requestData.setPayload(requestDTO);
+
+        try {
+
+            if (errors.hasErrors()) {
+                responseData.failed(CustomError.validRequest(errors), "Bad Request");
+                logService.saveLog(requestData, responseData, StatusCode.BAD_REQUEST, this.getClass().getName(),
+                        CHANGE_PASSWORD);
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseData);
+            }
+            User user = userValidation.getUserFromToken(token);
+
+            if(user == null){
+                responseData.failed("User not found");
+                logService.saveLog(requestData, responseData, StatusCode.NOT_FOUND, this.getClass().getName(),
+                        CHANGE_PASSWORD);
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(responseData);
+            }
+
+            if(passwordEncoder.matches(requestDTO.getOldPassword(), user.getPassword())){
+                user.setPassword(passwordEncoder.encode(requestDTO.getNewPassword()));
+                userRepository.save(user);
+                responseData.success();
+//                return ResponseEntity.ok(responseData);
+            }else{
+                responseData.failed("Password Lama Salah");
+                logService.saveLog(requestData, responseData, StatusCode.UNAUTHORIZED, this.getClass().getName(),
+                        CHANGE_PASSWORD);
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(responseData);
+            }
 
         } catch (Exception e) {
             e.printStackTrace();

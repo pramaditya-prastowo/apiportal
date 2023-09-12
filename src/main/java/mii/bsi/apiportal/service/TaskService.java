@@ -39,9 +39,10 @@ public class TaskService {
     public static final String GET_ALL_TASK_APPROVER = "Get All Task Approver";
 
 
-    public ResponseEntity<ResponseHandling<MyTaskResponseDTO>> getAllMyTask(String token){
+    public ResponseEntity<ResponseHandling<MyTaskResponseDTO>> getAllMyTask(String token, String status){
         ResponseHandling<MyTaskResponseDTO> responseData = new ResponseHandling<>();
         RequestData requestData = new RequestData<>();
+        System.out.println("status = "+status);
 
         try {
             User user = userValidation.getUserFromToken(token);

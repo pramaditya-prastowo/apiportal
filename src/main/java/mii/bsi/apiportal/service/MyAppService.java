@@ -120,20 +120,20 @@ public class MyAppService {
             String clientKey = RandomStringUtils.randomAlphanumeric(20);;
             CreateAppRequestDTO requestBody = new CreateAppRequestDTO(corpId, apps.getApplicationName(), apps.getCompanyName(),secretKey);
 
-            ResponseApiGw responseApiGw = apiGatewayService.createApplication(requestBody);
-
-
-            if(responseApiGw.getStatusCode() != 200){
-                if(responseApiGw.getStatusCode() == 408){
-                    responseData.failed("Request Timeout from API Gateway");
-                }else{
-                    responseData.failed(responseApiGw.getStatusCode() + " - Failed");
-                }
-
-                logService.saveLog(requestData, responseData, StatusCode.OK, this.getClass().getName(),
-                        CREATE);
-                return  ResponseEntity.status(HttpStatus.OK).body(responseData);
-            }
+            //**inactive hit apigw
+//            ResponseApiGw responseApiGw = apiGatewayService.createApplication(requestBody);
+//
+//            if(responseApiGw.getStatusCode() != 200){
+//                if(responseApiGw.getStatusCode() == 408){
+//                    responseData.failed("Request Timeout from API Gateway");
+//                }else{
+//                    responseData.failed(responseApiGw.getStatusCode() + " - Failed");
+//                }
+//
+//                logService.saveLog(requestData, responseData, StatusCode.OK, this.getClass().getName(),
+//                        CREATE);
+//                return  ResponseEntity.status(HttpStatus.OK).body(responseData);
+//            }
 
             BsmApiKey bsmApiKey = new BsmApiKey(requestBody, clientKey);
 

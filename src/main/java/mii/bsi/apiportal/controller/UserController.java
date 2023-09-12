@@ -3,6 +3,7 @@ package mii.bsi.apiportal.controller;
 import javax.validation.Valid;
 
 import mii.bsi.apiportal.constant.UserAction;
+import mii.bsi.apiportal.dto.ChangePasswordRequestDTO;
 import mii.bsi.apiportal.dto.UpdatePasswordRequestDTO;
 import mii.bsi.apiportal.dto.UserResponseDTO;
 import mii.bsi.apiportal.dto.VerificationEmailRequest;
@@ -35,6 +36,14 @@ public class UserController {
             @RequestHeader(HttpHeaders.AUTHORIZATION) String token,
             Errors errors) {
         return userService.registerByAdmin(user,token.substring(7), errors);
+    }
+
+    @PostMapping("/change-password")
+    public ResponseEntity<ResponseHandling> changePassword(@Valid
+            @RequestHeader(HttpHeaders.AUTHORIZATION) String token,
+            @RequestBody ChangePasswordRequestDTO requestDTO, Errors errors
+            ){
+        return userService.changePassword(token.substring(7), requestDTO, errors);
     }
 
     @GetMapping

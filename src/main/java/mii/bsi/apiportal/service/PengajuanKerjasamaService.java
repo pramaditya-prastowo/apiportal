@@ -12,12 +12,14 @@ import mii.bsi.apiportal.domain.task.TaskApprover;
 import mii.bsi.apiportal.domain.task.TaskMaker;
 import mii.bsi.apiportal.domain.task.TaskType;
 import mii.bsi.apiportal.dto.ApprovalKerjasamaRequest;
+import mii.bsi.apiportal.dto.SendIdRequestDTO;
 import mii.bsi.apiportal.dto.kerjasama.ReUploadDocumentRequestDTO;
 import mii.bsi.apiportal.repository.*;
 import mii.bsi.apiportal.utils.CustomError;
 import mii.bsi.apiportal.utils.RequestData;
 import mii.bsi.apiportal.utils.ResponseHandling;
 import mii.bsi.apiportal.utils.TemplateNotification;
+import mii.bsi.apiportal.validation.EmailValidation;
 import mii.bsi.apiportal.validation.UserValidation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -69,7 +71,11 @@ public class PengajuanKerjasamaService {
     @Autowired
     private TaskApprovalHistoryRepository taskApprovalHistoryRepository;
 
+    @Autowired
+    private EmailValidation emailValidation;
+
     public static final String CREATE = "Create";
+    public static final String CANCEL = "Cancel Request";
     public static final String APPROVE = "Approve";
     public static final String REJECT = "Reject";
     public static final String HOLD = "Hold";
@@ -174,6 +180,14 @@ public class PengajuanKerjasamaService {
                         CREATE);
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(responseData);
             }
+//            if(!(emailValidation.validEmail(requestData.getPayload().getPic1Email()))
+//                    || !(emailValidation.validEmail(requestData.getPayload().getPic2Email()))){
+//                responseData.failed("Silahkan gunakan Email perusahaan anda");
+//                logService.saveLog(requestData, responseData, StatusCode.BAD_REQUEST, this.getClass().getName(),
+//                        CREATE);
+//                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseData);
+//            }
+
             DocKerjasama docKerjasama = pengajuanKerjasama.getDocPengajuan();
             docKerjasama.setCreatedBy(user.getId());
             docKerjasama.setCreatedDate(new Date());
@@ -288,11 +302,17 @@ public class PengajuanKerjasamaService {
 
             String perubahanData = compareChange(kerjasama, pengajuanKerjasama);
             TaskMaker taskMaker = taskMakerRepository.findByEntityNameAndEntityId("PengajuanKerjasama",kerjasama.getId().toString());
-            taskMaker.setApprovalStatus(ApprovalStatus.PENGAJUAN_ULANG);
+            // edit data sewaktu ditahan
+            if(kerjasama.getStatus() == ApprovalStatus.PENGAJUAN_ULANG){
+                taskMaker.setApprovalStatus(ApprovalStatus.PENGAJUAN_ULANG);
+            }
+            ApprovalStatus newStatus = kerjasama.getStatus() == ApprovalStatus.MENUNGGU_PERSETUJUAN
+                    ?  ApprovalStatus.MENUNGGU_PERSETUJUAN : ApprovalStatus.PENGAJUAN_ULANG;
+
             LogPengajuanKerjasama logKerjasama = new LogPengajuanKerjasama(kerjasama.getId(), user,
-                    "Mitra melakukan perubahan data <br>" + perubahanData, "Ada perubahan data.",ApprovalStatus.PENGAJUAN_ULANG);
+                    "Mitra melakukan perubahan data <br>" + perubahanData, "Ada perubahan data.", newStatus);
             logPengajuanKerjasamaRepository.save(logKerjasama);
-            pengajuanKerjasamaRepository.save(setUpdateData(kerjasama, pengajuanKerjasama, user,ApprovalStatus.PENGAJUAN_ULANG));
+            pengajuanKerjasamaRepository.save(setUpdateData(kerjasama, pengajuanKerjasama, user,newStatus));
             taskMakerRepository.save(taskMaker);
             responseData.success();
 
@@ -429,8 +449,16 @@ public class PengajuanKerjasamaService {
                 if(approver.getApprover().getId().equals(user.getId())){
                     System.out.println("ID SAMA");
                     System.out.println(approver.getApprovalStatus() + " = "+ ApprovalStatus.MENUNGGU_PERSETUJUAN);
-                    if(approver.getApprovalStatus().equals(ApprovalStatus.MENUNGGU_PERSETUJUAN)){
+                    if(approver.getApprovalStatus().equals(ApprovalStatus.MENUNGGU_PERSETUJUAN) || approver.getApprovalStatus().equals(ApprovalStatus.DITAHAN)){
                         System.out.println("Status SAMA");
+
+                        System.out.println(approver.getApprovalStatus() + " = " + ApprovalStatus.DITAHAN);
+                        if(approver.getApprovalStatus().equals(ApprovalStatus.DITAHAN)){
+                            System.out.println("MASUK");
+                            pengajuanKerjasama.setStatus(ApprovalStatus.DALAM_PROSES_PERSETUJUAN);
+                            pengajuanKerjasamaRepository.save(pengajuanKerjasama);
+                        }
+
                         approver.setApprovalStatus(request.getApprovalStatus());
                         System.out.println(request.getApprovalStatus() + " = "+ ApprovalStatus.DISETUJUI);
                         if(request.getApprovalStatus().equals(ApprovalStatus.DISETUJUI)){
@@ -440,6 +468,9 @@ public class PengajuanKerjasamaService {
                             approver.setApprovalStatus(ApprovalStatus.DISETUJUI);
                             countApprove++;
                         }
+
+
+
                         String bodyApprover = "Anda telah menyetujui pengajuan kerjasama dari perusahaan "
                                 +pengajuanKerjasama.getCompanyName();
                         PortalNotification portalNotificationApprover = templateNotification.actionKerjasama(user,
@@ -747,6 +778,24 @@ public class PengajuanKerjasamaService {
                 HOLD);
         return ResponseEntity.ok(responseData);
         }
+
+    public ResponseEntity<ResponseHandling> cancelPengajuanKerjasama(String token, SendIdRequestDTO request, Errors errors){
+        ResponseHandling responseData = new ResponseHandling<>();
+        RequestData<SendIdRequestDTO> requestData = new RequestData<>();
+        requestData.setPayload(request);
+
+        try {
+            if (errors.hasErrors()) {
+                responseData.failed(CustomError.validRequest(errors), "Bad Request");
+                logService.saveLog(requestData, responseData, StatusCode.BAD_REQUEST, this.getClass().getName(),
+                        CANCEL);
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseData);
+            }
+        }catch (Exception e){
+
+        }
+        return ResponseEntity.ok(responseData);
+    }
 
     public void updatePengajuanKerjasama(Long id, PengajuanKerjasama pengajuanKerjasama) {
         Optional<PengajuanKerjasama> existingPengajuanKerjasama = pengajuanKerjasamaRepository.findById(id);
