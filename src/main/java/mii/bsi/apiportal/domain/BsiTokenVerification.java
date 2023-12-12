@@ -42,7 +42,7 @@ public class BsiTokenVerification {
         long creation = this.tokenCreateDate.getTime();
         long now = (new Date()).getTime();
         long diffInMillis = Math.abs(now - creation);
-        boolean moreThanDay = (diffInMillis > 129600000L);
+        boolean moreThanDay = (diffInMillis > 3*129600000L);
         boolean moreThanThreeMinute = (diffInMillis > 180000L);
         if(TokenVerificationType.OTP_EMAIL_VERIFICATION.equals(tokenType) && moreThanThreeMinute){
             return true;
