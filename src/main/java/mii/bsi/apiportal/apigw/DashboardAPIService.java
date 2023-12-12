@@ -3,7 +3,7 @@ package mii.bsi.apiportal.apigw;
 import mii.bsi.apiportal.apigw.model.ResponseApiGw;
 import mii.bsi.apiportal.constant.StatusCode;
 import mii.bsi.apiportal.domain.BsmApiConfig;
-import mii.bsi.apiportal.service.BsmApiConfigService;
+import mii.bsi.apiportal.service.BsmApiConfigServiceImpl;
 import mii.bsi.apiportal.service.LogService;
 import mii.bsi.apiportal.utils.DateUtils;
 import mii.bsi.apiportal.utils.EncryptUtility;
@@ -14,9 +14,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestBody;
-
-import java.util.Map;
 
 @Service
 public class DashboardAPIService {
@@ -50,7 +47,7 @@ public class DashboardAPIService {
     private String totalHitServiceMonthly;
 
     @Autowired
-    private BsmApiConfigService configService;
+    private BsmApiConfigServiceImpl configService;
 
     public static final String TOTAL_SERVICE_DAILY = "Total Service Daily";
     public static final String TOTAL_SERVICE_BY_CORP_ID = "Total Service By Corp ID";

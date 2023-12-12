@@ -68,7 +68,7 @@ public class DashboardService {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).body(responseData);
             }
             Long countUser = userRepository.countUserByAuthPrincipal(Roles.MITRA.toString());
-            Long countService = serviceApiRepository.countServiceApi("SNAP");
+            Long countService = serviceApiRepository.countServiceApiAll();
             Long countRequestDaily = 0L;
             Long countMitraRegister = 0L;
             ResponseEntity<ResponseHandling<Integer>> responseMitraTerdaftar = pengajuanKerjasamaService.getCountMitraTerdaftar(token);

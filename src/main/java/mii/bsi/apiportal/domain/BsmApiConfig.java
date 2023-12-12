@@ -9,6 +9,7 @@ import org.hibernate.annotations.Type;
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
 import java.io.Serializable;
+import java.util.Date;
 
 @Entity
 @Data
@@ -31,5 +32,21 @@ public class BsmApiConfig implements Serializable {
     private String cacheManager;
     private String cacheName;
     private String enabled;
+
+    private Date createdDate;
+    private String createdBy;
+    private Date updatedDate;
+    private String updatedBy;
+
+    public void initData(String createdBy){
+        Date createdDate = new Date();
+        this.cacheManager = "APIPORTAL";
+        this.enabled = "true";
+        this.createdDate = createdDate;
+        this.updatedDate = createdDate;
+        this.createdBy = createdBy;
+//        this.updatedBy = createdBy;
+        this.cacheName = this.keyname.replaceAll(" ",".").replaceAll("\\.", "-");
+    }
 
 }

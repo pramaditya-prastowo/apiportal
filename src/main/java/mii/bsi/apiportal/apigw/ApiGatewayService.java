@@ -9,14 +9,12 @@ import mii.bsi.apiportal.constant.StatusCode;
 import mii.bsi.apiportal.domain.BsmApiConfig;
 import mii.bsi.apiportal.domain.model.Token;
 import mii.bsi.apiportal.repository.BsmApiConfigRepository;
-import mii.bsi.apiportal.service.BsmApiConfigService;
+import mii.bsi.apiportal.service.BsmApiConfigServiceImpl;
 import mii.bsi.apiportal.service.LogService;
 import mii.bsi.apiportal.utils.DateUtils;
 import mii.bsi.apiportal.utils.EncryptUtility;
 import mii.bsi.apiportal.utils.RequestData;
 import mii.bsi.apiportal.utils.ResponseHandling;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -24,7 +22,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Map;
@@ -41,7 +38,7 @@ public class ApiGatewayService {
     @Autowired
     private DataApiClient dataApiClient;
     @Autowired
-    private BsmApiConfigService configService;
+    private BsmApiConfigServiceImpl configService;
     @Autowired
     private BsmApiConfigRepository configRepository;
     @Value("${endpoint.insert.application}")

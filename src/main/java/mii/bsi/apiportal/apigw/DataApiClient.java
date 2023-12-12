@@ -18,6 +18,7 @@ import org.apache.http.params.HttpParams;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -35,6 +36,7 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+//@Service
 public class DataApiClient {
     SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX");
     DateTimeFormatter outputFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssXXX");
@@ -57,6 +59,14 @@ public class DataApiClient {
     private String apiGwUsername;
     @Value("${apigw.password}")
     private String apiGwPassword;
+    @Value("${esbsandbox.username}")
+    private String esbsandboxUsername;
+    @Value("${esbsandbox.password}")
+    private String aesbsandboxPassword;
+    @Value("${esbapi.username}")
+    private String esbapiUsername;
+    @Value("${esbapi.password}")
+    private String esbapiPassword;
 
     public DataApiClient(CloseableHttpClient httpClient) {
         this.httpClient = httpClient;
@@ -69,6 +79,8 @@ public class DataApiClient {
         String authHeader = "Basic " + new String(encodedAuth);
         return authHeader;
     }
+
+
 
     public ResponseApiGw signatureAuth(String url, RequestHeaderApi requestHeader, String requestBody){
         HttpPost request = new HttpPost(url);
@@ -328,6 +340,49 @@ public class DataApiClient {
     }
 
 
+    public String testing(){
+        String url = "https://apidevportal.bankbsi.co.id/api/v1.0/utilities/signature-auth";
+        HttpPost request = new HttpPost(url);
+
+        request.setHeader(org.apache.http.HttpHeaders.CONTENT_TYPE, ContentType.APPLICATION_JSON.getMimeType());
+        request.setHeader("X-TIMESTAMP", "2023-11-15T11:15:11+07:00");
+        request.setHeader("X-CLIENT-KEY", "d67432f4-f780-465d-a2af-bcd256300f59");
+        request.setHeader("Private_Key", "MIIEvwIBADANBgkqhkiG9w0BAQEFAASCBKkwggSlAgEAAoIBAQCggUTfA0dsY0Vg5f8Fzhenfxq3E6gbLp19lGLKSoFZYVflRncLJv/WzG8fJdS7AKq8vjzaAHymJoDJjVRUtmAIH1brBSYc1H9kAMkVdyGH+vnVHIVN/tEbbZg9BKgdpXR6LQDkD2rxwLsJ+OpYf10Z8nTWQ0lpew0aWvJIyBrbevo3AQ1shrytSYq5J8+Llek6ZxcpxtmE2uB0yy7/REhuMyTTBE61JXptkcLHpJkAG90DJvPZnAGaA/rK5M1Zb/AgIHI/VxmctcJgL6xGQ35wNXvG1WI6tvIEojVJ8V4QBU+/DEeeAFCbU0LNFpHA8nsKE7HU850FbnBCxiO+GNMVAgMBAAECggEAWrTTZCkpOxLbCYjRV8mByrHlOiOMtFfivy6VqfbzJL0DfFoXOqE+oniEMBkkIM6eru3f29+8kfVegQky6HDs0opLh6QwRsi8eZqMCWp686sdd5eXql1gdVy5VXqFO8PekJFQWJJyAM/HpDoczgikZ96Csvfxy/+zhvpwxDr6GqB+7SYXGY5ff9EgPwRsap7utDxnuJm5pv/Npiq5GUHN84QyNIKa3rXeZb0cZrvEkjKvAdBZ6TaZAN3Mc3m3aXHfgDwm0ZhlBAr2V8+oauepPamO15Phy4xSV5xMdBmsZJ2lMb44ZUrOmTxNkjo9gZ6l+crFUERg1+FK9hstZpKlYQKBgQDTBU6C4oMnR7WD3kbPEGT1UrjCNwD0ODPsUmaSFcVb3+lPBINQ5BQF2z4pHU4AEJA4MyoMPthGv6XlFvgoSLtfEbq2O+G1+ErsWbSnG9qTnGoox70S4BhjVZt016oY+nIjg7LJXojo0qNvT62inRzvoNzFMFTfoQO8+Df3AOXkzQKBgQDCt3xyMo2YYaeg+JUD43ad2zQ9Cic8WeR1iMOhZetkigQKJz+Z7BNAcaZl8aQwgmVuzHCH2T7fahAGeUnnATMh/IhCcKHZlfGYxc4NcwNUnQSZu6ZF6obLbUgnGAcGuN7sOxrT9AjHjKuo1tFpNP0a0z8Zvl6TLAONtv1vD73naQKBgQCq0ufsomtjl/RD7ONLak0gHzf72MUH7ptx2n64EbGznz5iPhgDmq7u0r2uUM+806u8IwcN5K32D9y+6Go5Si+MVXDdZvpf8cDNNg09HhpCVmPF4XOY3RpBB6MR4igLkmplf45y3vlb6HBvgoPgWOl8vq8ZXffHFLRO/G1poit4nQKBgQCEQiOKYeIhpfs5cH+vQ3qXYIRMDbB24sw2NW5EG7lW8hQqXVxrDZpKBKg0yHxw4rFJIB4zeBGnqSA3dX0IJp13sVNQZbbZ12piDcGXCw8xEvJEBdy70sA6PwFqZHypSTtKFB915mVsPZV/umJFZtOgu+o5b0BIEPZc9PWR0Yx5OQKBgQCZG2h96il0o9LTAVlyQEzmncMoQgJsSPbY3HB0NHopl+zIdYVmZeBLzGvG1PIr57AbCjZXqwexhdJ1E2b6HmaKMZ2xvOR+rnjTW4pEYLZ++xwMJUmLHXqQHT2sTOa3JHEY+qnCAzSfEyxzBHqLC3nqfjKoNZUOzN7RbCT6LZzmww==");
+        request.setHeader("Content-Type", "application/json");
+        request.setHeader("Cookie", "visid_incap_2838255=+gOdGy2jS3WefoaGpo9H2Ojvb2UAAAAAQUIPAAAAAADGiqQOg0atfL8INgoO9R1k");
+//        request.setHeader(org.apache.http.HttpHeaders.AUTHORIZATION, getAuthorizationEsbSandbox());
+//        headers.add("X-TIMESTAMP", "2023-11-15T11:15:11+07:00");
+//        headers.add("X-CLIENT-KEY", "d67432f4-f780-465d-a2af-bcd256300f59");
+//        headers.add("Private_Key", "MIIEvwIBADANBgkqhkiG9w0BAQEFAASCBKkwggSlAgEAAoIBAQCggUTfA0dsY0Vg5f8Fzhenfxq3E6gbLp19lGLKSoFZYVflRncLJv/WzG8fJdS7AKq8vjzaAHymJoDJjVRUtmAIH1brBSYc1H9kAMkVdyGH+vnVHIVN/tEbbZg9BKgdpXR6LQDkD2rxwLsJ+OpYf10Z8nTWQ0lpew0aWvJIyBrbevo3AQ1shrytSYq5J8+Llek6ZxcpxtmE2uB0yy7/REhuMyTTBE61JXptkcLHpJkAG90DJvPZnAGaA/rK5M1Zb/AgIHI/VxmctcJgL6xGQ35wNXvG1WI6tvIEojVJ8V4QBU+/DEeeAFCbU0LNFpHA8nsKE7HU850FbnBCxiO+GNMVAgMBAAECggEAWrTTZCkpOxLbCYjRV8mByrHlOiOMtFfivy6VqfbzJL0DfFoXOqE+oniEMBkkIM6eru3f29+8kfVegQky6HDs0opLh6QwRsi8eZqMCWp686sdd5eXql1gdVy5VXqFO8PekJFQWJJyAM/HpDoczgikZ96Csvfxy/+zhvpwxDr6GqB+7SYXGY5ff9EgPwRsap7utDxnuJm5pv/Npiq5GUHN84QyNIKa3rXeZb0cZrvEkjKvAdBZ6TaZAN3Mc3m3aXHfgDwm0ZhlBAr2V8+oauepPamO15Phy4xSV5xMdBmsZJ2lMb44ZUrOmTxNkjo9gZ6l+crFUERg1+FK9hstZpKlYQKBgQDTBU6C4oMnR7WD3kbPEGT1UrjCNwD0ODPsUmaSFcVb3+lPBINQ5BQF2z4pHU4AEJA4MyoMPthGv6XlFvgoSLtfEbq2O+G1+ErsWbSnG9qTnGoox70S4BhjVZt016oY+nIjg7LJXojo0qNvT62inRzvoNzFMFTfoQO8+Df3AOXkzQKBgQDCt3xyMo2YYaeg+JUD43ad2zQ9Cic8WeR1iMOhZetkigQKJz+Z7BNAcaZl8aQwgmVuzHCH2T7fahAGeUnnATMh/IhCcKHZlfGYxc4NcwNUnQSZu6ZF6obLbUgnGAcGuN7sOxrT9AjHjKuo1tFpNP0a0z8Zvl6TLAONtv1vD73naQKBgQCq0ufsomtjl/RD7ONLak0gHzf72MUH7ptx2n64EbGznz5iPhgDmq7u0r2uUM+806u8IwcN5K32D9y+6Go5Si+MVXDdZvpf8cDNNg09HhpCVmPF4XOY3RpBB6MR4igLkmplf45y3vlb6HBvgoPgWOl8vq8ZXffHFLRO/G1poit4nQKBgQCEQiOKYeIhpfs5cH+vQ3qXYIRMDbB24sw2NW5EG7lW8hQqXVxrDZpKBKg0yHxw4rFJIB4zeBGnqSA3dX0IJp13sVNQZbbZ12piDcGXCw8xEvJEBdy70sA6PwFqZHypSTtKFB915mVsPZV/umJFZtOgu+o5b0BIEPZc9PWR0Yx5OQKBgQCZG2h96il0o9LTAVlyQEzmncMoQgJsSPbY3HB0NHopl+zIdYVmZeBLzGvG1PIr57AbCjZXqwexhdJ1E2b6HmaKMZ2xvOR+rnjTW4pEYLZ++xwMJUmLHXqQHT2sTOa3JHEY+qnCAzSfEyxzBHqLC3nqfjKoNZUOzN7RbCT6LZzmww==");
+//        headers.add("Content-Type", "application/json");
+//        headers.add("Cookie", "visid_incap_2838255=+gOdGy2jS3WefoaGpo9H2Ojvb2UAAAAAQUIPAAAAAADGiqQOg0atfL8INgoO9R1k");
+
+//        String requestJson = objectMapper.writeValueAsString(requestData);
+        HttpEntity requestEntity = new StringEntity("{}", ContentType.APPLICATION_JSON);
+
+        request.setEntity(requestEntity);
+
+        try (CloseableHttpResponse response = httpClient.execute(request)) {
+            HttpEntity responseEntity = response.getEntity();
+            String responseData = EntityUtils.toString(responseEntity);
+            EntityUtils.consume(responseEntity);
+            System.out.println("Status Code : "+ response.getStatusLine().getStatusCode());
+            System.out.println(responseData);
+            System.out.println(response.getStatusLine().getStatusCode());
+//            logService.logApiGw(request.getAllHeaders(), logService.stringToJson(requestBody),
+//                    responseData,INSERT_APP,
+//                    String.valueOf(response.getStatusLine().getStatusCode()), url);
+            ResponseApiGw responseApiGw = new ResponseApiGw(response.getStatusLine().getStatusCode(),responseData);
+            return responseApiGw.getResponseBody();
+        }catch (Exception e){
+//            e.printStackTrace();
+//            logService.logApiGw(request.getAllHeaders(), logService.stringToJson(requestBody),
+//                    null,INSERT_APP,
+//                    "408", url);
+            e.printStackTrace();
+            return "INTERNAL SERVER ERROR";
+        }
+    }
 
 
     //    public String postData(String url, String requestBody) throws IOException {

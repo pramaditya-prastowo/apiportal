@@ -54,4 +54,5 @@ public class DocKerjasama implements Serializable {
     private String createdBy;
     private Date updatedDate;
     private String updatedBy;
+
 }

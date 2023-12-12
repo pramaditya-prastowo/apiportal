@@ -9,8 +9,13 @@ import io.jsonwebtoken.Claims;
 import mii.bsi.apiportal.constant.Params;
 import mii.bsi.apiportal.constant.StatusCode;
 import mii.bsi.apiportal.constant.UserAction;
+import mii.bsi.apiportal.constant.sql.BuilderUserQuery;
+import mii.bsi.apiportal.constant.sql.BuilderUserQueryImpl;
+import mii.bsi.apiportal.constant.sql.ConstantQuery;
+import mii.bsi.apiportal.constant.sql.MyPagination;
 import mii.bsi.apiportal.domain.BsiTokenVerification;
 import mii.bsi.apiportal.domain.SystemNotification;
+import mii.bsi.apiportal.domain.model.FilterGetData;
 import mii.bsi.apiportal.domain.model.Roles;
 import mii.bsi.apiportal.domain.model.TokenVerificationType;
 import mii.bsi.apiportal.dto.ChangePasswordRequestDTO;
@@ -24,6 +29,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.Errors;
@@ -42,6 +48,7 @@ public class UserService {
     private LogService logService;
 
     public static final String FETCH_ALL_USER = "Fetch All User";
+    public static final String FETCH_USER_FILTER = "Fetch User FILTER";
     public static final String REGISTER = "Register";
 
     public static final String REGISTER_BY_ADMIN = "Register by Admin";
@@ -55,6 +62,9 @@ public class UserService {
 
     @Autowired
     private BsiTokenVerificationRepository tokenRepository;
+
+    @Autowired
+    private NamedParameterJdbcTemplate jdbc;
 
     @Autowired
     private UserRepository userRepository;
@@ -72,6 +82,14 @@ public class UserService {
 
     @Autowired
     private UserValidation userValidation;
+
+    @Autowired
+    private QueryUtils queryUtils;
+
+    @Autowired
+    private MyPagination<UserResponseDTO> myPagination;
+    @Autowired
+    private BuilderUserQuery builderUser;
 
     public ResponseHandling<User> create(@Valid User user, Errors errors) {
         ResponseHandling<User> responseHandling = new ResponseHandling<>();
@@ -261,7 +279,7 @@ public class UserService {
     }
 
 
-    public ResponseEntity<ResponseHandling<List<UserResponseDTO>>> getAll(String token) {
+    public ResponseEntity<ResponseHandling<List<UserResponseDTO>>> getAll(String token, String typeUser) {
         ResponseHandling<List<UserResponseDTO>> responseData = new ResponseHandling<>();
         try {
 
@@ -285,7 +303,7 @@ public class UserService {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).body(responseData);
             }
 
-            List<User> userList = userRepository.findByAccountActive();
+            List<User> userList = userRepository.findByAccountActiveAndType(typeUser);
             List<UserResponseDTO> userListResponse = new ArrayList<>();
             for (User data: userList) {
 
@@ -316,6 +334,63 @@ public class UserService {
         logService.saveLog(new RequestData<>(), responseData, StatusCode.OK, this.getClass().getName(),
                 FETCH_ALL_USER);
         return ResponseEntity.ok(responseData);
+    }
+
+    public ResponseEntity<ResponseHandling<RowDataResponse<UserResponseDTO>>> getFilter(String token, FilterGetData filter){
+        ResponseHandling<RowDataResponse<UserResponseDTO>> responseData =  new ResponseHandling<>();
+        RequestData<Map<String, Object>> requestData = new RequestData<>();
+        try {
+            User user = userValidation.getUserFromToken(token);
+            if(user == null){
+                responseData.failed("User not found");
+                logService.saveLog(requestData, responseData, StatusCode.NOT_FOUND, this.getClass().getName(),
+                        FETCH_USER_FILTER);
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(responseData);
+            }
+            if(!userValidation.isAdmin(token)){
+                responseData.failed("Access denied");
+                logService.saveLog(requestData, responseData, StatusCode.FORBIDDEN, this.getClass().getName(),
+                        FETCH_USER_FILTER);
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(responseData);
+            }
+            String sql = builderUser.getWithFilter(ConstantQuery.user, ConstantQuery.userOrder, filter);
+            RowDataResponse<UserResponseDTO> rowDataResponse = myPagination.getData(filter, sql, UserResponseDTO.class);
+
+//            MapSqlParameterSource paramSource = new MapSqlParameterSource();
+//            for(Map.Entry<String,String> itr : filter.getFilter().entrySet()){
+//                paramSource.addValue(itr.getKey(), itr.getValue());
+//            }
+//
+//            paramSource.addValue("pageNumber", filter.getPageNumber());
+//            paramSource.addValue("pageSize", filter.getPageSize());
+//
+//            String sql = BuilderUserQuery.getWithFilter(ConstantQuery.user, ConstantQuery.userOrder, filter);
+//            String pagination = queryUtils.generatePagination(sql, filter.getOrderBy(), filter.getSort());
+//            logService.logQuery("\r\nsql = \r\n" + pagination);
+//
+//            String total = queryUtils.countTotalRows(sql);
+//            String totalRecord = jdbc.queryForObject(total, paramSource, String.class);
+//            List<UserResponseDTO> dataRecord = jdbc.query(pagination, paramSource,
+//                    BeanPropertyRowMapper.newInstance(UserResponseDTO.class));
+//
+//            RowDataResponse<UserResponseDTO> rowDataResponse = new RowDataResponse<>();
+//            rowDataResponse.setRowData(dataRecord.size());
+//            rowDataResponse.setData(dataRecord);
+//            rowDataResponse.setTotalData(Integer.parseInt(totalRecord));
+
+            responseData.success();
+            responseData.setPayload(rowDataResponse);
+            return ResponseEntity.ok(responseData);
+
+        }catch (Exception e){
+            e.printStackTrace();
+            responseData.failed(e.getMessage());
+            logService.saveLog(requestData, responseData, StatusCode.INTERNAL_SERVER_ERROR, this.getClass().getName(),
+                    FETCH_USER_FILTER);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseData);
+        }
+
+
     }
 
     public ResponseEntity<ResponseHandling<User>> getById(String id) {

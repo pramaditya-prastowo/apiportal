@@ -22,6 +22,7 @@ public class AuthenticationResponseDTO {
     private boolean emailVerified;
     private Roles roles;
     private Long groupId;
+    private String photoProfile;
 
     public AuthenticationResponseDTO(User user, String token, Date expiredAt){
         this.id = user.getId();
@@ -36,6 +37,7 @@ public class AuthenticationResponseDTO {
         this.emailVerified = user.isEmailVerified();
         this.roles = user.getAuthPrincipal();
         this.groupId = user.getGroupId();
+        this.photoProfile = user.getPhotoProfile();
     }
     
 }

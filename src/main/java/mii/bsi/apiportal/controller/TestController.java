@@ -1,6 +1,10 @@
 package mii.bsi.apiportal.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.JsonParser;
 import mii.bsi.apiportal.apigw.ApiGatewayService;
+import mii.bsi.apiportal.apigw.DataApiClient;
+import mii.bsi.apiportal.apigw.model.ResponseApiGw;
 import mii.bsi.apiportal.domain.*;
 import mii.bsi.apiportal.domain.task.TaskApprover;
 import mii.bsi.apiportal.domain.task.TaskMaker;
@@ -12,17 +16,30 @@ import mii.bsi.apiportal.service.TaskService;
 import mii.bsi.apiportal.utils.DateUtils;
 import mii.bsi.apiportal.utils.EncryptUtility;
 import mii.bsi.apiportal.utils.ResponseHandling;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.HttpEntity;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.ContentType;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.util.EntityUtils;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import javax.servlet.http.HttpServletRequest;
+import java.util.*;
 
 @RestController
 @RequestMapping("/test")
@@ -35,36 +52,66 @@ public class TestController {
     @Autowired
     private DateUtils dateUtils;
 
-    @GetMapping
-    public String testing(){
-        String corpId = "";
-        String seqNumber = "2";
-        corpId = "ABC"+ String.format("%05d", 2);
-        return corpId;
+
+    @Autowired
+    private DataApiClient dataApiClient;
+
+
+
+    @PostMapping
+    public String testing(@RequestBody String request){
+        JSONObject json = new JSONObject(request);
+        System.out.println(json.toString());
+        String code = json.getString("code");
+        return code;
+    }
+
+    private CloseableHttpClient httpClient;
+
+//    public TestController(CloseableHttpClient httpClient) {
+//        this.httpClient = httpClient;
+////        this.objectMapper = new ObjectMapper();
+//    }
+
+    private String getClientIpAddr(HttpServletRequest request) {
+        String xForwardedForHeader = request.getHeader("X-Forwarded-For");
+        if (xForwardedForHeader == null) {
+            return request.getLocalAddr();
+        } else {
+            // Jika ada header X-Forwarded-For, maka ambil IP pertama dari daftar IP
+            return xForwardedForHeader.split(",")[0].trim();
+        }
     }
 
     @GetMapping("/string")
-    public String testString(){
-        String companyName = "PT Mitra Integrasi Informatika";
-
-        int seq = 1;
-
-        String name = companyName.toUpperCase().replaceAll("\\.", "").replaceAll("PT ","");
-        String [] names  = name.split(" ");
+    public String testString(HttpServletRequest request) throws Exception{
+        System.out.println(getClientIpAddr(request));
+//       return dataApiClient.testing();
+        return getClientIpAddr(request);
 
 
-        String initialName = "";
-        if(names.length > 2){
-            for (int i = 0; i < names.length; i++) {
-                System.out.println(names[i]);
-                initialName = initialName + names[i].charAt(0);
-            }
-        }else if(names.length == 1){
-            initialName = names[0].substring(0,3);
-        }else{
-            initialName = names[0].substring(0,2) + names[1].charAt(0);
-        }
-        return initialName.substring(0,3) + String.format("%05d", seq);
+        
+//        String companyName = "PT Mitra Integrasi Informatika";
+//
+//        int seq = 1;
+//
+//        String name = companyName.toUpperCase().replaceAll("\\.", "").replaceAll("PT ","");
+//        String [] names  = name.split(" ");
+//
+//
+//        String initialName = "";
+//        if(names.length > 2){
+//            for (int i = 0; i < names.length; i++) {
+//                System.out.println(names[i]);
+//                initialName = initialName + names[i].charAt(0);
+//            }
+//        }else if(names.length == 1){
+//            initialName = names[0].substring(0,3);
+//        }else{
+//            initialName = names[0].substring(0,2) + names[1].charAt(0);
+//        }
+//        return initialName.substring(0,3) + String.format("%05d", seq);
+//        return "";
     }
 
 //    @GetMapping("/sign-auth")

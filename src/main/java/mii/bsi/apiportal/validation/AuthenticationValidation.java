@@ -109,6 +109,14 @@ public class AuthenticationValidation {
             return validationResponse;
         }
 
+        if(!user.isEmailVerified()){
+            responseData.failed("Akun anda belum terverifikasi, silahkan cek kembali email verifikasi yang sudah dikirim");
+            validationResponse.setValid(false);
+            validationResponse.setStatusCode(StatusCode.UNAUTHORIZED);
+            validationResponse.setResponse(ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(responseData));
+            return validationResponse;
+        }
+
         validationResponse.setValid(true);
         return validationResponse;
     }

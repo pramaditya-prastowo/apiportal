@@ -3,14 +3,14 @@ package mii.bsi.apiportal.apigw;
 import mii.bsi.apiportal.apigw.model.RequestHeaderApi;
 import mii.bsi.apiportal.apigw.model.ResponseApiGw;
 import mii.bsi.apiportal.domain.BsmApiConfig;
-import mii.bsi.apiportal.service.BsmApiConfigService;
+import mii.bsi.apiportal.service.BsmApiConfigServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 public class SecurityService {
     @Autowired
-    private BsmApiConfigService configService;
+    private BsmApiConfigServiceImpl configService;
     @Autowired
     private DataApiClient dataApiClient;
 

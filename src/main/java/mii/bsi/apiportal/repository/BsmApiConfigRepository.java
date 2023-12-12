@@ -17,7 +17,7 @@ public interface BsmApiConfigRepository extends JpaRepository<BsmApiConfig, Stri
     @Query(value = "SELECT * from bsm_api_config where keyname=?1 and keygroup=?2 and enabled='true'", nativeQuery = true)
     BsmApiConfig findByKeynameAndKeygroup(String keyname, String keygroup);
 
-//    @Query(value = "SELECT * from bsm_api_config where keyname=?1 and keygroup=?2", nativeQuery = true)
+    @Query(value = "SELECT * from bsm_api_config where enabled=?", nativeQuery = true)
     List<BsmApiConfig> findByEnabled(String enabled);
 
     @Query(value = "SELECT * from bsm_api_config where keyname=?1 and enabled='true'", nativeQuery = true)

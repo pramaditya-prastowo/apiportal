@@ -3,26 +3,20 @@ package mii.bsi.apiportal.apigw;
 import mii.bsi.apiportal.apigw.model.RequestHeaderApi;
 import mii.bsi.apiportal.apigw.model.ResponseApiGw;
 import mii.bsi.apiportal.domain.BsmApiConfig;
-import mii.bsi.apiportal.service.BsmApiConfigService;
+import mii.bsi.apiportal.service.BsmApiConfigServiceImpl;
 import mii.bsi.apiportal.service.LogService;
 import mii.bsi.apiportal.utils.DateUtils;
-import mii.bsi.apiportal.utils.RequestData;
-import mii.bsi.apiportal.utils.ResponseHandling;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
-import java.util.Map;
 
 @Service
 public class TryApiService {
 
     @Autowired
-    private BsmApiConfigService configService;
+    private BsmApiConfigServiceImpl configService;
 
     @Autowired
     private DataApiClient dataApiClient;

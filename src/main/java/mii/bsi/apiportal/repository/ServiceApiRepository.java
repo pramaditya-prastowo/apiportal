@@ -17,8 +17,11 @@ public interface ServiceApiRepository extends JpaRepository<ServiceApiDomain, Lo
     @Query(value = "SELECT * from bsi_service_api_api_portal where  service_type= ? and in_active = false", nativeQuery = true)
     public List<ServiceApiDomain> findByServiceApiActiveAndServiceType(String serviceType);
 
-    @Query(value="select count(id) from bsi_service_api_api_portal where service_type = ?", nativeQuery = true)
-    long countServiceApi(String serviceType);
+    @Query(value="select count(id) from bsi_service_api_api_portal where service_type = ? and in_active = false", nativeQuery = true)
+    long countServiceApiByType(String serviceType);
+
+    @Query(value="select count(id) from bsi_service_api_api_portal where in_active = false", nativeQuery = true)
+    long countServiceApiAll();
     @Query(value = "SELECT * from bsi_service_api_api_portal where id=?1 and in_active = false", nativeQuery = true)
     public ServiceApiDomain findByIdActive(Long paramLong);
 }

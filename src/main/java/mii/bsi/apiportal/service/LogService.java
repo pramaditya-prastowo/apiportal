@@ -33,6 +33,12 @@ public class LogService {
 
     private Gson gson = new Gson();
 
+    public void logQuery(String query){
+        log.info("==================================================================");
+        log.info(query);
+        log.info("==================================================================");
+    }
+
     public void saveLog(RequestData request, ResponseHandling response,
                         StatusCode statusCode, String serviceName, String actionType){
 

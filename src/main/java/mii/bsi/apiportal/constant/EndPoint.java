@@ -24,14 +24,15 @@ public class EndPoint {
             "/api/files/apps/**",
             "/api/files/kerjasama/**",
             "/api/files/download/**",
+            "/api/files/profile",
             "/api/v1.0/serviceApi/groups",
             "/api/v1.0/params/**",
             "/security/**",
-            "/try-api/**"
+            "/try-api/**",
 //            "/forget_password/**",
 //            "/session",
 //            "/session/user",
 //            "/login",
-//            "/testing"
+            "/test/**"
     };
 }

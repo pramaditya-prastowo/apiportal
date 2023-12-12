@@ -7,6 +7,7 @@ import lombok.Getter;
 import mii.bsi.apiportal.domain.model.Roles;
 import mii.bsi.apiportal.domain.model.TokenVerificationType;
 import org.apache.commons.lang3.StringUtils;
+import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
@@ -87,6 +88,10 @@ public class User implements Serializable {
     private Roles authPrincipal = Roles.MITRA;
 
     private Long groupId;
+    @Lob
+    @Type(type = "org.hibernate.type.TextType")
+    private String photoProfile;
+
 
     public User() {
     }

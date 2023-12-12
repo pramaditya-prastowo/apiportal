@@ -56,6 +56,21 @@ public class ServiceApiService {
         requestData.setPayload(serviceApi);
 
         try {
+            User user = adminValidation.getUserFromToken(token);
+
+            if(user == null){
+                responseData.failed("Access denied");
+                logService.saveLog(requestData, responseData, StatusCode.FORBIDDEN, this.getClass().getName(),
+                        CREATE);
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(responseData);
+            }
+            if(user.getAuthPrincipal().equals(Roles.MITRA)){
+                responseData.failed("Access denied");
+                logService.saveLog(requestData, responseData, StatusCode.FORBIDDEN, this.getClass().getName(),
+                        CREATE);
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(responseData);
+            }
+
             if (errors.hasErrors()) {
                 responseData.failed(CustomError.validRequest(errors), "Bad Request");
                 logService.saveLog(requestData, responseData, StatusCode.BAD_REQUEST, this.getClass().getName(),
@@ -63,8 +78,10 @@ public class ServiceApiService {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseData);
             }
             final String username = jwtUtility.getUsernameFromToken(token);
-            serviceApi.setCreateDate(new Date());
-            serviceApi.setCreateBy(username.split("@")[0]);
+            Date dateNow = new Date();
+            serviceApi.setCreateDate(dateNow);
+            serviceApi.setUpdateDate(dateNow);
+            serviceApi.setCreateBy(user.getId());
 
 
             serviceApiRepository.save(serviceApi);
@@ -259,7 +276,7 @@ public class ServiceApiService {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).body(responseData);
             }
 
-            long count = serviceApiRepository.countServiceApi("SNAP");
+            long count = serviceApiRepository.countServiceApiByType("SNAP");
             responseData.setPayload(count);
             responseData.success();
 

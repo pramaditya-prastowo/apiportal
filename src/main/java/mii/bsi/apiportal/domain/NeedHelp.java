@@ -31,7 +31,7 @@ public class NeedHelp {
     private String companyType;
     @NotEmpty(message = "Message is required")
     private String message;
-    private String status;
+    private Integer status;
     private Date createDate;
     private Date updateDate;
 

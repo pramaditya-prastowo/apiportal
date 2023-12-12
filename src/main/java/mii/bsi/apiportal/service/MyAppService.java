@@ -2,6 +2,7 @@ package mii.bsi.apiportal.service;
 
 import com.google.gson.Gson;
 import mii.bsi.apiportal.apigw.ApiGatewayService;
+import mii.bsi.apiportal.apigw.EsbService;
 import mii.bsi.apiportal.apigw.dto.CreateAppRequestDTO;
 import mii.bsi.apiportal.apigw.model.ResponseApiGw;
 import mii.bsi.apiportal.constant.StatusCode;
@@ -54,7 +55,7 @@ public class MyAppService {
     private BsmApiKeyService apiKeyService;
 
     @Autowired
-    private ApiGatewayService apiGatewayService;
+    private EsbService sandboxService;
 
     public static final String GET_BY_USER = "Get by UserId";
     public static final String GET_BY_ID = "Get by ID";
@@ -116,24 +117,24 @@ public class MyAppService {
             }
 
             String corpId = generateCorpId(apps.getCompanyName());
-            String secretKey = RandomStringUtils.randomAlphanumeric(32);;
-            String clientKey = RandomStringUtils.randomAlphanumeric(20);;
+            String secretKey = RandomStringUtils.randomAlphanumeric(32);
+            String clientKey = RandomStringUtils.randomAlphanumeric(20);
             CreateAppRequestDTO requestBody = new CreateAppRequestDTO(corpId, apps.getApplicationName(), apps.getCompanyName(),secretKey);
 
             //**inactive hit apigw
-//            ResponseApiGw responseApiGw = apiGatewayService.createApplication(requestBody);
-//
-//            if(responseApiGw.getStatusCode() != 200){
-//                if(responseApiGw.getStatusCode() == 408){
-//                    responseData.failed("Request Timeout from API Gateway");
-//                }else{
-//                    responseData.failed(responseApiGw.getStatusCode() + " - Failed");
-//                }
-//
-//                logService.saveLog(requestData, responseData, StatusCode.OK, this.getClass().getName(),
-//                        CREATE);
-//                return  ResponseEntity.status(HttpStatus.OK).body(responseData);
-//            }
+            ResponseApiGw responseApiGw = sandboxService.createApplication(requestBody);
+
+            if(responseApiGw.getStatusCode() != 200){
+                if(responseApiGw.getStatusCode() == 408){
+                    responseData.failed("Request Timeout from API Gateway");
+                }else{
+                    responseData.failed(responseApiGw.getStatusCode() + " - Failed");
+                }
+
+                logService.saveLog(requestData, responseData, StatusCode.OK, this.getClass().getName(),
+                        CREATE);
+                return  ResponseEntity.status(HttpStatus.OK).body(responseData);
+            }
 
             BsmApiKey bsmApiKey = new BsmApiKey(requestBody, clientKey);
 

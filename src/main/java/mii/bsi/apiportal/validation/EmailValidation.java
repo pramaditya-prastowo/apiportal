@@ -1,13 +1,10 @@
 package mii.bsi.apiportal.validation;
 
 import mii.bsi.apiportal.domain.BsmApiConfig;
-import mii.bsi.apiportal.service.BsmApiConfigService;
+import mii.bsi.apiportal.service.BsmApiConfigServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 
-import java.util.Arrays;
-import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -16,7 +13,7 @@ public class EmailValidation {
 
 
     @Autowired
-    private BsmApiConfigService apiConfigService;
+    private BsmApiConfigServiceImpl apiConfigService;
 
 //    private List<String> blackListEmail = Arrays.asList("gmail","outlook", "yahoo", "hotmail","zoho", "mail","email",
 //            "aol", "yandex","lycos", "protonmail","tutanota", "tutamail","tuta","keemail","icloud");

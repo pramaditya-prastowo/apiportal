@@ -1,0 +1,85 @@
+{
+  "swagger" : "2.0",
+  "info" : {
+    "description" : "Service For generate signature Auth\n",
+    "version" : "1.0",
+    "title" : "signatureX"
+  },
+  "host" : "dev-mitraapi-wb:5111",
+  "basePath" : "/gateway/signatureX/1.0",
+  "schemes" : [ "http" ],
+  "consumes" : [ "application/json" ],
+  "produces" : [ "application/json" ],
+  "paths" : {
+    "/create" : {
+      "post" : {
+        "operationId" : "create_POST_1",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "X-CLIENT-KEY",
+          "in" : "header",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "X-TIMESTAMP",
+          "in" : "header",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "Private_Key",
+          "in" : "header",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "required" : false,
+          "schema" : {
+            "$ref" : "#/definitions/HTTPRequest"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "schema" : {
+              "$ref" : "#/definitions/create_POST_response"
+            }
+          },
+          "401" : {
+            "description" : "Access Denied"
+          }
+        }
+      }
+    }
+  },
+  "definitions" : {
+    "headers" : {
+      "type" : "object"
+    },
+    "HTTPRequest" : {
+      "type" : "object",
+      "required" : [ "headers", "method", "requestURL" ],
+      "properties" : {
+        "headers" : {
+          "$ref" : "#/definitions/headers"
+        },
+        "method" : {
+          "type" : "string"
+        },
+        "requestURL" : {
+          "type" : "string"
+        }
+      }
+    },
+    "create_POST_response" : {
+      "type" : "object",
+      "required" : [ "X-SIGNATURE" ],
+      "properties" : {
+        "X-SIGNATURE" : {
+          "type" : "string"
+        }
+      }
+    }
+  }
+}

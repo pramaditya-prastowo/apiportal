@@ -1,11 +1,17 @@
 package mii.bsi.apiportal.controller;
 
+import io.jsonwebtoken.ExpiredJwtException;
 import mii.bsi.apiportal.domain.DocKerjasama;
 import mii.bsi.apiportal.domain.PengajuanKerjasama;
+import mii.bsi.apiportal.domain.User;
 import mii.bsi.apiportal.domain.model.FileGroup;
 import mii.bsi.apiportal.domain.model.FileInfo;
+import mii.bsi.apiportal.domain.model.Roles;
 import mii.bsi.apiportal.repository.PengajuanKerjasamaRepository;
 import mii.bsi.apiportal.utils.DateUtils;
+import mii.bsi.apiportal.utils.FileValidation;
+import mii.bsi.apiportal.utils.JwtUtility;
+import mii.bsi.apiportal.validation.UserValidation;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.FileSystemResource;
@@ -49,8 +55,16 @@ public class FilesController {
     FilesStorageService storageService;
     @Autowired
     private PengajuanKerjasamaRepository pengajuanKerjasamaRepository;
+    @Autowired
+    private UserValidation userValidation;
+    @Autowired
+    private FileValidation fileValidation;
+    @Autowired
+    private JwtUtility jwtUtility;
+
     @PostMapping("/service-api")
-    public ResponseEntity<ResponseHandling> uploadFile(@RequestParam("file") MultipartFile file) {
+    public ResponseEntity<ResponseHandling> uploadFile(@RequestParam("file") MultipartFile file,
+                                                       @RequestHeader(HttpHeaders.AUTHORIZATION) String token) {
         ResponseHandling responseData = new ResponseHandling();
         String message = "";
         try {
@@ -84,6 +98,50 @@ public class FilesController {
     public ResponseEntity<Resource> getFile(@PathVariable String filename) {
         try {
             Resource file = storageService.load(filename, FileGroup.SERVICE_API);
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + file.getFilename() + "\"").body(file);
+        }catch (Exception e){
+            e.printStackTrace();
+
+            return ResponseEntity.internalServerError().body(null);
+        }
+    }
+
+    @PostMapping("/profile")
+    public ResponseEntity<ResponseHandling> uploadProfile(@RequestParam("file") MultipartFile file,
+                                                          @RequestHeader(HttpHeaders.AUTHORIZATION) String token){
+        ResponseHandling responseData = new ResponseHandling();
+        String message = "";
+        try {
+
+            User user = userValidation.getUserFromToken(token.substring(7));
+            if(user == null){
+                message = "Forbidden";
+                responseData.failed(message);
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(responseData);
+            }
+
+            storageService.save(file, FileGroup.PROFILE,user);
+
+            message = "Uploaded the file successfully: " + file.getOriginalFilename();
+            responseData.success(message);
+            return ResponseEntity.status(HttpStatus.OK).body(responseData);
+        } catch (Exception e) {
+            message = "Could not upload the file: " + file.getOriginalFilename() + ". Error: " + e.getMessage();
+            responseData.failed(message);
+            return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(responseData);
+        }
+    }
+
+    @GetMapping("/profile")
+    @ResponseBody
+    public ResponseEntity<Resource> getPhotoProfile(@RequestParam("filename") String filename) {
+        ResponseHandling responseData = new ResponseHandling();
+        String message = "";
+        try {
+
+
+            Resource file = storageService.load(filename, FileGroup.PROFILE);
             return ResponseEntity.ok()
                     .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + file.getFilename() + "\"").body(file);
         }catch (Exception e){
@@ -199,38 +257,134 @@ public class FilesController {
 
     @GetMapping("/kerjasama/download")
     @ResponseBody
-    public ResponseEntity<Resource> downloadFileKerjasama(@RequestParam String filename, HttpServletRequest request) {
-//        try {
-//            Resource file = storageService.load(filename, FileGroup.KERJASAMA);
-//            return ResponseEntity.ok()
-//                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + file.getFilename() + "\"").body(file);
-//        }catch (Exception e){
-//            e.printStackTrace();
-//            return ResponseEntity.internalServerError().body(null);
-//        }
-        Resource resource = new FileSystemResource("files/uploads/kerjasama/" + filename);
-        if(!resource.exists()){
+    public ResponseEntity<Resource> downloadFileKerjasama(@RequestParam String filename,
+                                                          @RequestParam(name = "token") String token,
+                                                          @RequestParam(name = "id") String pekerId,
+                                                          HttpServletRequest request) {
+
+        try {
+            if(jwtUtility.isTokenExpired(token)){
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+            }
+
+            User user = userValidation.getUserFromToken(token);
+            if(user == null){
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+            }
+
+            if(user.getAuthPrincipal() == Roles.MITRA){
+                PengajuanKerjasama pengajuanKerjasama = pengajuanKerjasamaRepository.findByIdPeker(Long.parseLong(pekerId));
+                if(pengajuanKerjasama == null){
+                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+                }
+                if(!fileValidation.existDocument(filename, pengajuanKerjasama.getDocPengajuan())){
+                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+                }
+                if(!pengajuanKerjasama.getCreatedBy().equals(user.getId())){
+                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+                }
+            }
+
+            Resource resource = new FileSystemResource("files/uploads/kerjasama/" + filename);
+            if(!resource.exists()){
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+            }
+
+            // Try to determine file's content type
+            String contentType = null;
+            try {
+                contentType = request.getServletContext().getMimeType(resource.getFile().getAbsolutePath());
+            } catch (IOException ex) {
+                // log error
+            }
+
+            // Fallback to the default content type if type could not be determined
+            if(contentType == null) {
+                contentType = "application/octet-stream";
+            }
+            return ResponseEntity.ok()
+                    .contentType(MediaType.parseMediaType(contentType))
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
+                    .body(resource);
+        }catch (Exception e){
+            if(e instanceof ExpiredJwtException){
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
+            }else if(e instanceof IOException){
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+            }
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
 
-        // Try to determine file's content type
-        String contentType = null;
-        try {
-            contentType = request.getServletContext().getMimeType(resource.getFile().getAbsolutePath());
-        } catch (IOException ex) {
-            // log error
-        }
-
-        // Fallback to the default content type if type could not be determined
-        if(contentType == null) {
-            contentType = "application/octet-stream";
-        }
-
-        return ResponseEntity.ok()
-                .contentType(MediaType.parseMediaType(contentType))
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
-                .body(resource);
     }
+
+    @GetMapping("/kerjasama/download/form-kerjasama")
+    @ResponseBody
+    public ResponseEntity<Resource> downloadFormKerjasama(@RequestParam String filename,
+                                                          @RequestParam(name = "token") String token,
+                                                          @RequestParam(name = "id") String pekerId,
+                                                          HttpServletRequest request) {
+        PengajuanKerjasama pengajuanKerjasama = null;
+        try {
+            if(jwtUtility.isTokenExpired(token)){
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+            }
+
+            User user = userValidation.getUserFromToken(token);
+            if(user == null){
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+            }
+
+            if(user.getAuthPrincipal() == Roles.MITRA){
+                pengajuanKerjasama = pengajuanKerjasamaRepository.findByIdPeker(Long.parseLong(pekerId));
+                if(pengajuanKerjasama == null){
+                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+                }
+                if(!fileValidation.existDocument(filename, pengajuanKerjasama.getDocPengajuan())){
+                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+                }
+                if(!pengajuanKerjasama.getCreatedBy().equals(user.getId())){
+                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+                }
+            }
+
+//            PengajuanKerjasama kerjasama = pengajuanKerjasamaRepository.findById(id).get();
+            DocKerjasama docKerjasama = pengajuanKerjasama.getDocPengajuan();
+//            // list of file paths for download
+//            List<String> paths = new ArrayList<>();
+//            paths.add("files/uploads/kerjasama/"+docKerjasama.getSrtPernyataanPengajuan());
+
+            Resource resource = new FileSystemResource("files/uploads/kerjasama/" + docKerjasama.getSrtPernyataanPengajuan());
+            if(!resource.exists()){
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+            }
+
+            // Try to determine file's content type
+            String contentType = null;
+            try {
+                contentType = request.getServletContext().getMimeType(resource.getFile().getAbsolutePath());
+            } catch (IOException ex) {
+                // log error
+            }
+
+            // Fallback to the default content type if type could not be determined
+            if(contentType == null) {
+                contentType = "application/octet-stream";
+            }
+            return ResponseEntity.ok()
+                    .contentType(MediaType.parseMediaType(contentType))
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
+                    .body(resource);
+        }catch (Exception e){
+            if(e instanceof ExpiredJwtException){
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
+            }else if(e instanceof IOException){
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+            }
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
+
+    }
+
     @PostMapping("/kerjasama/all")
     public ResponseEntity<String> uploadAllFilesKerjasama(@RequestParam("files") List<MultipartFile> files) {
         for (MultipartFile file : files) {
@@ -248,74 +402,102 @@ public class FilesController {
 
     @GetMapping("/kerjasama/all/download")
     public ResponseEntity<StreamingResponseBody> downloadZip(HttpServletResponse response,
-                                                             @RequestParam(name = "id") Long id){
+                                                             @RequestParam(name = "id") Long id,
+                                                             @RequestParam(name = "token") String token){
+
+        if(token.equals("") || token == null){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
+
+        try {
+            if(jwtUtility.isTokenExpired(token)){
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+            }
+
+            User user = userValidation.getUserFromToken(token);
+            if(user == null){
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+            }
+
+            if(user.getAuthPrincipal() == Roles.MITRA){
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
+            }
+
 //        logger.info("download request for sampleId = {}", sampleId);
-        PengajuanKerjasama kerjasama = pengajuanKerjasamaRepository.findById(id).get();
-        DocKerjasama docKerjasama = kerjasama.getDocPengajuan();
-        // list of file paths for download
-        List<String> paths = new ArrayList<>();
-        paths.add("files/uploads/kerjasama/"+docKerjasama.getSrtPernyataanPengajuan());
-        paths.add("files/uploads/kerjasama/"+docKerjasama.getSrtKetKemenkumham());
-        paths.add("files/uploads/kerjasama/"+docKerjasama.getAktaPendirianPerubahan());
-        paths.add("files/uploads/kerjasama/"+docKerjasama.getCompanyProfile());
-        paths.add("files/uploads/kerjasama/"+docKerjasama.getCompanyNpwp());
-        paths.add("files/uploads/kerjasama/"+docKerjasama.getFotoKtpPengurus());
-        paths.add("files/uploads/kerjasama/"+docKerjasama.getFotoKtpPM());
-        paths.add("files/uploads/kerjasama/"+docKerjasama.getSrtSiup());
-        paths.add("files/uploads/kerjasama/"+docKerjasama.getNib());
-        paths.add("files/uploads/kerjasama/"+docKerjasama.getHasilSandbox());
-        paths.add("files/uploads/kerjasama/"+docKerjasama.getBukuTabungan());
-        paths.add("files/uploads/kerjasama/"+docKerjasama.getPublicKey());
+            PengajuanKerjasama kerjasama = pengajuanKerjasamaRepository.findById(id).get();
+            DocKerjasama docKerjasama = kerjasama.getDocPengajuan();
+            // list of file paths for download
+            List<String> paths = new ArrayList<>();
+            paths.add("files/uploads/kerjasama/"+docKerjasama.getSrtPernyataanPengajuan());
+            paths.add("files/uploads/kerjasama/"+docKerjasama.getSrtKetKemenkumham());
+            paths.add("files/uploads/kerjasama/"+docKerjasama.getAktaPendirianPerubahan());
+            paths.add("files/uploads/kerjasama/"+docKerjasama.getCompanyProfile());
+            paths.add("files/uploads/kerjasama/"+docKerjasama.getCompanyNpwp());
+            paths.add("files/uploads/kerjasama/"+docKerjasama.getFotoKtpPengurus());
+            paths.add("files/uploads/kerjasama/"+docKerjasama.getFotoKtpPM());
+            paths.add("files/uploads/kerjasama/"+docKerjasama.getSrtSiup());
+            paths.add("files/uploads/kerjasama/"+docKerjasama.getNib());
+            paths.add("files/uploads/kerjasama/"+docKerjasama.getHasilSandbox());
+            paths.add("files/uploads/kerjasama/"+docKerjasama.getBukuTabungan());
+            paths.add("files/uploads/kerjasama/"+docKerjasama.getPublicKey());
 //        List<String> paths = Arrays.asList("/home/Videos/part1.mp4",
 //                "/home/Videos/part2.mp4",
 //                "/home/Videos/part3.mp4",
 //                "/home/Videos/part4.pp4");
-        Date now = new Date();
-        String filename =  RandomStringUtils.randomAlphanumeric(16)+"-doc-kerjasama.zip";;
+            Date now = new Date();
+            String filename =  RandomStringUtils.randomAlphanumeric(16)+"-doc-kerjasama.zip";;
 
-        int BUFFER_SIZE = 1024;
+            int BUFFER_SIZE = 1024;
 
-        StreamingResponseBody streamResponseBody = out -> {
+            StreamingResponseBody streamResponseBody = out -> {
 
-            final ZipOutputStream zipOutputStream = new ZipOutputStream(response.getOutputStream());
-            ZipEntry zipEntry = null;
-            InputStream inputStream = null;
+                final ZipOutputStream zipOutputStream = new ZipOutputStream(response.getOutputStream());
+                ZipEntry zipEntry = null;
+                InputStream inputStream = null;
 
-            try {
-                for (String path : paths) {
-                    File file = new File(path);
-                    zipEntry = new ZipEntry(file.getName());
+                try {
+                    for (String path : paths) {
+                        File file = new File(path);
+                        zipEntry = new ZipEntry(file.getName());
 
-                    inputStream = new FileInputStream(file);
+                        inputStream = new FileInputStream(file);
 
-                    zipOutputStream.putNextEntry(zipEntry);
-                    byte[] bytes = new byte[BUFFER_SIZE];
-                    int length;
-                    while ((length = inputStream.read(bytes)) >= 0) {
-                        zipOutputStream.write(bytes, 0, length);
+                        zipOutputStream.putNextEntry(zipEntry);
+                        byte[] bytes = new byte[BUFFER_SIZE];
+                        int length;
+                        while ((length = inputStream.read(bytes)) >= 0) {
+                            zipOutputStream.write(bytes, 0, length);
+                        }
+
                     }
+                    // set zip size in response
+                    response.setContentLength((int) (zipEntry != null ? zipEntry.getSize() : 0));
+                } catch (IOException e) {
+                    System.out.println("Exception while reading and streaming data {} "+ e);
+                } finally {
+                    if (inputStream != null) {
+                        inputStream.close();
+                    }
+                    if (zipOutputStream != null) {
+                        zipOutputStream.close();
+                    }
+                }
 
-                }
-                // set zip size in response
-                response.setContentLength((int) (zipEntry != null ? zipEntry.getSize() : 0));
-            } catch (IOException e) {
-                System.out.println("Exception while reading and streaming data {} "+ e);
-            } finally {
-                if (inputStream != null) {
-                    inputStream.close();
-                }
-                if (zipOutputStream != null) {
-                    zipOutputStream.close();
-                }
+            };
+
+            response.setContentType("application/zip");
+            response.setHeader("Content-Disposition", "attachment; filename="+filename);
+            response.addHeader("Pragma", "no-cache");
+            response.addHeader("Expires", "0");
+
+            return ResponseEntity.ok(streamResponseBody);
+        }catch (Exception e){
+            if(e instanceof ExpiredJwtException){
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
+            }else if(e instanceof IOException){
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
             }
-
-        };
-
-        response.setContentType("application/zip");
-        response.setHeader("Content-Disposition", "attachment; filename="+filename);
-        response.addHeader("Pragma", "no-cache");
-        response.addHeader("Expires", "0");
-
-        return ResponseEntity.ok(streamResponseBody);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
     }
 }
