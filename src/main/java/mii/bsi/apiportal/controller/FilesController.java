@@ -7,7 +7,9 @@ import mii.bsi.apiportal.domain.User;
 import mii.bsi.apiportal.domain.model.FileGroup;
 import mii.bsi.apiportal.domain.model.FileInfo;
 import mii.bsi.apiportal.domain.model.Roles;
+import mii.bsi.apiportal.dto.UserResponseDTO;
 import mii.bsi.apiportal.repository.PengajuanKerjasamaRepository;
+import mii.bsi.apiportal.repository.UserRepository;
 import mii.bsi.apiportal.utils.DateUtils;
 import mii.bsi.apiportal.utils.FileValidation;
 import mii.bsi.apiportal.utils.JwtUtility;
@@ -61,6 +63,8 @@ public class FilesController {
     private FileValidation fileValidation;
     @Autowired
     private JwtUtility jwtUtility;
+    @Autowired
+    private UserRepository userRepository;
 
     @PostMapping("/service-api")
     public ResponseEntity<ResponseHandling> uploadFile(@RequestParam("file") MultipartFile file,
@@ -114,6 +118,8 @@ public class FilesController {
         String message = "";
         try {
 
+            System.out.println(file.getOriginalFilename());
+
             User user = userValidation.getUserFromToken(token.substring(7));
             if(user == null){
                 message = "Forbidden";
@@ -122,6 +128,8 @@ public class FilesController {
             }
 
             storageService.save(file, FileGroup.PROFILE,user);
+            user.setPhotoProfile(user.getId()+"/"+file.getOriginalFilename());
+            userRepository.save(user);
 
             message = "Uploaded the file successfully: " + file.getOriginalFilename();
             responseData.success(message);

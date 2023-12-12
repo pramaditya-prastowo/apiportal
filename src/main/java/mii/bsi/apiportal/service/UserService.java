@@ -18,6 +18,7 @@ import mii.bsi.apiportal.domain.SystemNotification;
 import mii.bsi.apiportal.domain.model.FilterGetData;
 import mii.bsi.apiportal.domain.model.Roles;
 import mii.bsi.apiportal.domain.model.TokenVerificationType;
+import mii.bsi.apiportal.dto.AuthenticationResponseDTO;
 import mii.bsi.apiportal.dto.ChangePasswordRequestDTO;
 import mii.bsi.apiportal.dto.UserResponseDTO;
 import mii.bsi.apiportal.dto.VerificationEmailRequest;
@@ -49,6 +50,7 @@ public class UserService {
 
     public static final String FETCH_ALL_USER = "Fetch All User";
     public static final String FETCH_USER_FILTER = "Fetch User FILTER";
+    public static final String FETCH_DETAIL_USER = "Fetch Detail User";
     public static final String REGISTER = "Register";
 
     public static final String REGISTER_BY_ADMIN = "Register by Admin";
@@ -404,6 +406,29 @@ public class UserService {
             responseHandling.setResponseMessage("failed");
         }
         return ResponseEntity.status(HttpStatus.CREATED).body(responseHandling);
+    }
+
+    public ResponseEntity<ResponseHandling<AuthenticationResponseDTO>> getDetailUser(String token) {
+        ResponseHandling<AuthenticationResponseDTO> responseHandling = new ResponseHandling<>();
+        try {
+            User user = userValidation.getUserFromToken(token);
+            if(user == null){
+                responseHandling.failed("User not found");
+                logService.saveLog(new RequestData<>(), responseHandling, StatusCode.NOT_FOUND, this.getClass().getName(),
+                        FETCH_DETAIL_USER);
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(responseHandling);
+            }
+
+            AuthenticationResponseDTO responseDTO = new AuthenticationResponseDTO(user, "", new Date());
+
+            responseHandling.setPayload(responseDTO);
+            responseHandling.setResponseCode("00");
+            responseHandling.setResponseMessage("success");
+        } catch (Exception e) {
+            responseHandling.setResponseCode("99");
+            responseHandling.setResponseMessage("failed");
+        }
+        return ResponseEntity.status(HttpStatus.OK).body(responseHandling);
     }
 
     public ResponseEntity<ResponseHandling<User>> register(User user, Errors errors) {

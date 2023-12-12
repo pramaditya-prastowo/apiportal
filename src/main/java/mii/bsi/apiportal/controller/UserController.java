@@ -5,10 +5,7 @@ import javax.validation.Valid;
 import mii.bsi.apiportal.constant.MappingUtils;
 import mii.bsi.apiportal.constant.UserAction;
 import mii.bsi.apiportal.domain.model.FilterGetData;
-import mii.bsi.apiportal.dto.ChangePasswordRequestDTO;
-import mii.bsi.apiportal.dto.UpdatePasswordRequestDTO;
-import mii.bsi.apiportal.dto.UserResponseDTO;
-import mii.bsi.apiportal.dto.VerificationEmailRequest;
+import mii.bsi.apiportal.dto.*;
 import mii.bsi.apiportal.utils.RowDataResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -97,6 +94,11 @@ public class UserController {
     @GetMapping("/{id}")
     public ResponseEntity<ResponseHandling<User>> getById(@PathVariable("id") String id) {
         return userService.getById(id);
+    }
+
+    @GetMapping("/detail")
+    public ResponseEntity<ResponseHandling<AuthenticationResponseDTO>> getDetailUser(@RequestHeader(HttpHeaders.AUTHORIZATION) String token) {
+        return userService.getDetailUser(token.substring(7));
     }
 
     @PatchMapping

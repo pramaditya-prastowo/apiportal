@@ -107,7 +107,7 @@ public class FilesStorageServiceImpl implements FilesStorageService {
                     System.out.println("files/profile/"+pathUser);
                     Files.createDirectories(path);
 
-                    Files.copy(file.getInputStream(), path.resolve(UUID.randomUUID()+"."+extension));
+                    Files.copy(file.getInputStream(), path.resolve(file.getOriginalFilename()));
                     break;
             }
 
